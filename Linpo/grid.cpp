@@ -6,18 +6,20 @@
 #include "sharedfunctions.h"
 
 
-Grid::Grid(int rows, int cols)
+Grid::Grid(int cols, int rows)
 {
-	this->cols = rows;
-	this->rows = cols;
+	this->cols = cols;
+	this->rows = rows;
 	point_radius = 5;
 	line_width = 2 * point_radius;
 
+	hover_line = Line();
+
 	int n_points = rows * cols;
-	int n_edges = 2 * rows * cols - rows - cols;
-	grid_points = std::vector<SDL_Point>(n_points);
-	grid_collision_rects = std::vector<CollisionRect>(n_edges);
-	grid_lines = std::vector<Line>(n_edges);
+	n_edges = 2 * rows * cols - rows - cols;
+	grid_points.reserve(n_points);
+	grid_collision_rects.reserve(n_edges);
+	grid_lines.reserve(n_edges);
 	resize_update();
 }
 
@@ -30,16 +32,23 @@ void Grid::handle_event(SDL_Event& e)
 		if (e.button.button == SDL_BUTTON_LEFT)
 			handle_mouse_click(e.button.x, e.button.y, PLAYER1);
 	}
+	else if (e.type == SDL_MOUSEMOTION)
+	{
+		handle_mouse_hover(e.motion.x, e.motion.y, PLAYER1);
+	}
 }
 
 void Grid::render()
 {
+	if (hover_line.start != NULL && hover_line.end != NULL)
+		render_line(*hover_line.start, *hover_line.end, { 255, 0, 0, 64 });
+
 	for (auto & line : grid_lines)
 	{
 		if (line.owner == PLAYER1)
-			render_line(line.start, line.end, PLAYER1_COLOR);
+			render_line(*line.start, *line.end, PLAYER1_COLOR);
 		else if (line.owner == PLAYER2)
-			render_line(line.start, line.end, PLAYER2_COLOR);
+			render_line(*line.start, *line.end, PLAYER2_COLOR);
 	}
 
 	render_points(grid_points, { 0, 0, 0, 0xFF });
@@ -61,20 +70,16 @@ void Grid::update_grid_points()
 	}
 }
 
-void Grid::update_grid_lines()
-{
-	grid_lines[0] = { grid_points[0], grid_points[1], 2 };
-}
-
 void Grid::set_grid_line(Line & line)
 {
-	grid_lines.push_back(line);
+	if (grid_lines.size() < n_edges)
+		grid_lines.push_back(line);
 }
 
 void Grid::update_grid_collision_rects()
 {
 	SDL_Point point_distance = get_point_distance();
-	int grid_collision_rects_index = 0;
+	grid_collision_rects.clear();
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int col = 0; col < cols; ++col)
@@ -95,8 +100,7 @@ void Grid::update_grid_collision_rects()
 				rect.collision_rect = collision_rect;
 				rect.point_a = &grid_points[a_index];
 				rect.point_b = &grid_points[a_index + 1];
-				grid_collision_rects[grid_collision_rects_index] = rect;
-				++grid_collision_rects_index;
+				grid_collision_rects.push_back(rect);
 			}
 
 			// make a collision_rect for the y direction
@@ -112,8 +116,7 @@ void Grid::update_grid_collision_rects()
 				rect.collision_rect = collision_rect;
 				rect.point_a = &grid_points[a_index];
 				rect.point_b = &grid_points[a_index + cols];
-				grid_collision_rects[grid_collision_rects_index] = rect;
-				++grid_collision_rects_index;
+				grid_collision_rects.push_back(rect);
 			}
 		}
 	}
@@ -123,7 +126,6 @@ void Grid::resize_update()
 {
 	SDL_GetRendererOutputSize(mainRenderer, &this->width, &this->height);
 	update_grid_points();
-	update_grid_lines();
 	update_grid_collision_rects();
 }
 
@@ -134,16 +136,30 @@ void Grid::update()
 
 void Grid::handle_mouse_click(int x, int y, Player player)
 {
+	Line new_line;
+	if (make_collision_line(new_line, x, y, player))
+		set_grid_line(new_line);
+}
+
+void Grid::handle_mouse_hover(int x, int y, Player player)
+{
+	Line new_line;
+	if (make_collision_line(new_line, x, y, player))
+		hover_line = new_line;
+}
+
+bool Grid::make_collision_line(Line & new_line, int x, int y, Player player)
+{
 	CollisionRect* target_rect;
 	check_collision(x, y, target_rect);
 	if (target_rect != NULL)
 	{
-		Line new_line;
-		new_line.start = *target_rect->point_a;
-		new_line.end = *target_rect->point_b;
+		new_line.start = target_rect->point_a;
+		new_line.end = target_rect->point_b;
 		new_line.owner = player;
-		set_grid_line(new_line);
+		return true;
 	}
+	return false;
 }
 
 bool Grid::check_collision(int x, int y, CollisionRect* & target_rect)

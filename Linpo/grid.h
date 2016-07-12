@@ -7,8 +7,9 @@
 
 struct Line
 {
-	SDL_Point start, end;
-	int owner;
+	SDL_Point* start;
+	SDL_Point* end;
+	Player owner;
 };
 
 struct CollisionRect
@@ -22,10 +23,11 @@ struct CollisionRect
 class Grid
 {
 public:
-	Grid(int rows, int cols);
+	Grid(int cols, int rows);
 
 	void handle_event(SDL_Event& e);
 	void handle_mouse_click(int x, int y, Player player);
+	void handle_mouse_hover(int x, int y, Player player);
 
 	void update();
 
@@ -38,14 +40,17 @@ public:
 private:
 	void resize_update();
 	void update_grid_points();
-	void update_grid_lines();
 	void update_grid_collision_rects();
 	void set_grid_line(Line& line);
+	bool make_collision_line(Line & new_line, int x, int y, Player player);
 
 	SDL_Point get_point_distance();
 
+	int n_edges;
 	int cols, rows, width, height;
 	int point_radius, line_width;
+
+	Line hover_line;
 
 	std::vector<SDL_Point> grid_points;
 	std::vector<Line> grid_lines;
