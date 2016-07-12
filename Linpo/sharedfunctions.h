@@ -1,8 +1,6 @@
-#ifndef SHAREDFUNCTIONS_H
-#define SHAREDFUNCTIONS_H
+#pragma once
 
 #include <string>
 
-void log(std::ostream& dest, const std::string& message, const std::string append_string = "");
+void log(const std::string& message, const std::string append_string = "");
 
-#endif // !SHAREDFUNCTIONS_H
