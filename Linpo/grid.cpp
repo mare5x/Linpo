@@ -28,13 +28,13 @@ void Grid::handle_event(SDL_Event& e)
 	else if (e.type == SDL_MOUSEBUTTONDOWN)
 	{
 		if (e.button.button == SDL_BUTTON_LEFT)
-			handle_mouse_click(e.button.x, e.button.y);
+			handle_mouse_click(e.button.x, e.button.y, PLAYER1);
 	}
 }
 
 void Grid::render()
 {
-	for (auto line : grid_lines)
+	for (auto & line : grid_lines)
 	{
 		if (line.owner == PLAYER1)
 			render_line(line.start, line.end, PLAYER1_COLOR);
@@ -64,6 +64,11 @@ void Grid::update_grid_points()
 void Grid::update_grid_lines()
 {
 	grid_lines[0] = { grid_points[0], grid_points[1], 2 };
+}
+
+void Grid::set_grid_line(Line & line)
+{
+	grid_lines.push_back(line);
 }
 
 void Grid::update_grid_collision_rects()
@@ -127,17 +132,32 @@ void Grid::update()
 
 }
 
-void Grid::handle_mouse_click(int x, int y)
+void Grid::handle_mouse_click(int x, int y, Player player)
 {
-	if (check_collision(x, y))
+	CollisionRect* target_rect;
+	check_collision(x, y, target_rect);
+	if (target_rect != NULL)
 	{
-
+		Line new_line;
+		new_line.start = *target_rect->point_a;
+		new_line.end = *target_rect->point_b;
+		new_line.owner = player;
+		set_grid_line(new_line);
 	}
 }
 
-bool Grid::check_collision(int x, int y)
+bool Grid::check_collision(int x, int y, CollisionRect* & target_rect)
 {
-	
+	SDL_Point mouse_point = { x, y };
+	for (auto & grid_collision_rect : grid_collision_rects)
+	{
+		if (SDL_PointInRect(&mouse_point, &grid_collision_rect.collision_rect) == SDL_TRUE)
+		{
+			target_rect = &grid_collision_rect;
+			return true;
+		}
+	}
+	target_rect = NULL;
 	return false;
 }
 
@@ -146,14 +166,14 @@ void Grid::render_line(SDL_Point& start, SDL_Point& end, const SDL_Color& color)
 	thickLineRGBA(mainRenderer, start.x, start.y, end.x, end.y, line_width, color.r, color.g, color.b, color.a);
 }
 
-void Grid::render_point(SDL_Point & point, const SDL_Color & color)
+void Grid::render_point(const SDL_Point & point, const SDL_Color & color)
 {
 	filledCircleRGBA(mainRenderer, point.x, point.y, point_radius, color.r, color.g, color.b, color.a);
 }
 
 void Grid::render_points(const std::vector<SDL_Point>& points, const SDL_Color & color)
 {
-	for (auto point : points)
+	for (auto const & point : points)
 	{
 		render_point(point, color);
 	}
