@@ -40,7 +40,7 @@ void Grid::handle_event(SDL_Event& e)
 
 void Grid::render()
 {
-	if (hover_line.start != NULL && hover_line.end != NULL)
+	if (hover_line.start != nullptr && hover_line.end != nullptr)
 		render_line(*hover_line.start, *hover_line.end, { 255, 0, 0, 64 });
 
 	for (auto & line : grid_lines)
@@ -70,7 +70,7 @@ void Grid::update_grid_points()
 	}
 }
 
-void Grid::set_grid_line(Line & line)
+void Grid::set_grid_line(Line line)
 {
 	if (grid_lines.size() < n_edges)
 		grid_lines.push_back(line);
@@ -136,9 +136,14 @@ void Grid::update()
 
 void Grid::handle_mouse_click(int x, int y, Player player)
 {
-	Line new_line;
-	if (make_collision_line(new_line, x, y, player))
-		set_grid_line(new_line);
+	if (hover_line.start != nullptr && hover_line.end != nullptr)
+		set_grid_line(hover_line);
+	else
+	{
+		Line new_line;
+		if (make_collision_line(new_line, x, y, player))
+			set_grid_line(new_line);
+	}
 }
 
 void Grid::handle_mouse_hover(int x, int y, Player player)
@@ -152,7 +157,7 @@ bool Grid::make_collision_line(Line & new_line, int x, int y, Player player)
 {
 	CollisionRect* target_rect;
 	check_collision(x, y, target_rect);
-	if (target_rect != NULL)
+	if (target_rect != nullptr)
 	{
 		new_line.start = target_rect->point_a;
 		new_line.end = target_rect->point_b;
@@ -173,7 +178,7 @@ bool Grid::check_collision(int x, int y, CollisionRect* & target_rect)
 			return true;
 		}
 	}
-	target_rect = NULL;
+	target_rect = nullptr;
 	return false;
 }
 

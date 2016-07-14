@@ -25,23 +25,23 @@ class Grid
 public:
 	Grid(int cols, int rows);
 
-	void handle_event(SDL_Event& e);
+	void handle_event(SDL_Event & e);
 	void handle_mouse_click(int x, int y, Player player);
 	void handle_mouse_hover(int x, int y, Player player);
 
 	void update();
 
-	bool check_collision(int x, int y, CollisionRect*& target_rect);
+	bool check_collision(int x, int y, CollisionRect* & target_rect);
 
-	void render_line(SDL_Point& start, SDL_Point& end, const SDL_Color& color);
-	void render_point(const SDL_Point& point, const SDL_Color& color);
-	void render_points(const std::vector<SDL_Point>& points, const SDL_Color& color);
+	void render_line(SDL_Point & start, SDL_Point& end, const SDL_Color& color);
+	void render_point(const SDL_Point & point, const SDL_Color & color);
+	void render_points(const std::vector<SDL_Point> & points, const SDL_Color & color);
 	void render();
 private:
 	void resize_update();
 	void update_grid_points();
 	void update_grid_collision_rects();
-	void set_grid_line(Line& line);
+	void set_grid_line(Line line);
 	bool make_collision_line(Line & new_line, int x, int y, Player player);
 
 	SDL_Point get_point_distance();

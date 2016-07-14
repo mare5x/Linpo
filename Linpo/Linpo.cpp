@@ -2,6 +2,7 @@
 #include "constants.h"
 #include "globals.h"
 #include "grid.h"
+#include "fpstimer.h"
 
 
 bool init()
@@ -18,15 +19,19 @@ bool init()
 	}
 
 	mainWindow = SDL_CreateWindow("Linpo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-	if (mainWindow == NULL)
+	if (mainWindow == nullptr)
 	{
 		log("Error creating mainWindow: ", SDL_GetError());
 		return false;
 	}
 	else
 	{
-		mainRenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-		if (mainRenderer == NULL)
+		if (VSYNC_ENABLED)
+			mainRenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+		else
+			mainRenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED);
+
+		if (mainRenderer == nullptr)
 		{
 			log("Error creating mainRenderer: ", SDL_GetError());
 			return false;
@@ -43,10 +48,10 @@ bool init()
 
 void close()
 {
-	mainRenderer = NULL;
+	mainRenderer = nullptr;
 	SDL_DestroyRenderer(mainRenderer);
 
-	mainWindow = NULL;
+	mainWindow = nullptr;
 	SDL_DestroyWindow(mainWindow);
 	SDL_Quit();
 }
@@ -60,15 +65,21 @@ int main(int argc, char* argv[])
 		SDL_Event e;
 
 		Grid game_grid(10, 10);
+		Timer fps_cap_timer;
 
 		while (!quit)
 		{
-			while (SDL_PollEvent(&e))
-			{
-				game_grid.handle_event(e);
+			if (!VSYNC_ENABLED) fps_cap_timer.start();
 
-				if (e.type == SDL_QUIT)
-					quit = true;
+			if (SDL_WaitEvent(&e))
+			{
+				do {
+					game_grid.handle_event(e);
+
+					if (e.type == SDL_QUIT)
+						quit = true;
+
+				} while (SDL_PollEvent(&e) != 0);
 			}
 
 			SDL_SetRenderDrawColor(mainRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -79,6 +90,13 @@ int main(int argc, char* argv[])
 			game_grid.render();
 
 			SDL_RenderPresent(mainRenderer);
+
+			if (!VSYNC_ENABLED)
+			{
+				auto frame_ticks = fps_cap_timer.get_ticks();
+				if (frame_ticks < TICKS_PER_FRAME)
+					SDL_Delay(TICKS_PER_FRAME - frame_ticks);
+			}
 		}
 	}
 
