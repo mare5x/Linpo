@@ -13,6 +13,8 @@ Grid::Grid(int cols, int rows)
 	point_radius = 5;
 	line_width = 2 * point_radius;
 
+	grid_texture = SDL_CreateTexture(mainRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 	hover_line = Line();
 
 	int n_points = rows * cols;
@@ -21,6 +23,12 @@ Grid::Grid(int cols, int rows)
 	grid_collision_rects.reserve(n_edges);
 	grid_lines.reserve(n_edges);
 	resize_update();
+}
+
+Grid::~Grid()
+{
+	SDL_DestroyTexture(grid_texture);
+	grid_texture = nullptr;
 }
 
 void Grid::handle_event(SDL_Event& e)
@@ -40,6 +48,10 @@ void Grid::handle_event(SDL_Event& e)
 
 void Grid::render()
 {
+	SDL_SetRenderTarget(mainRenderer, grid_texture);
+	SDL_SetRenderDrawColor(mainRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(mainRenderer);
+
 	if (hover_line.start != nullptr && hover_line.end != nullptr)
 		render_line(*hover_line.start, *hover_line.end, { 255, 0, 0, 64 });
 
@@ -52,6 +64,9 @@ void Grid::render()
 	}
 
 	render_points(grid_points, { 0, 0, 0, 0xFF });
+
+	SDL_SetRenderTarget(mainRenderer, NULL);
+	SDL_RenderCopy(mainRenderer, grid_texture, NULL, NULL);
 }
 
 void Grid::update_grid_points()
@@ -136,7 +151,7 @@ void Grid::update()
 
 void Grid::handle_mouse_click(int x, int y, Player player)
 {
-	if (hover_line.start != nullptr && hover_line.end != nullptr)
+	if (hover_line.start != nullptr)  //  && hover_line.end != nullptr
 		set_grid_line(hover_line);
 	else
 	{
@@ -155,30 +170,28 @@ void Grid::handle_mouse_hover(int x, int y, Player player)
 
 bool Grid::make_collision_line(Line & new_line, int x, int y, Player player)
 {
-	CollisionRect* target_rect;
-	check_collision(x, y, target_rect);
-	if (target_rect != nullptr)
+	CollisionRect target_rect;
+	if (check_collision(x, y, target_rect))
 	{
-		new_line.start = target_rect->point_a;
-		new_line.end = target_rect->point_b;
+		new_line.start = target_rect.point_a;
+		new_line.end = target_rect.point_b;
 		new_line.owner = player;
 		return true;
 	}
 	return false;
 }
 
-bool Grid::check_collision(int x, int y, CollisionRect* & target_rect)
+bool Grid::check_collision(int x, int y, CollisionRect & target_rect)
 {
 	SDL_Point mouse_point = { x, y };
 	for (auto & grid_collision_rect : grid_collision_rects)
 	{
 		if (SDL_PointInRect(&mouse_point, &grid_collision_rect.collision_rect) == SDL_TRUE)
 		{
-			target_rect = &grid_collision_rect;
+			target_rect = grid_collision_rect;
 			return true;
 		}
 	}
-	target_rect = nullptr;
 	return false;
 }
 

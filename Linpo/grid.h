@@ -24,6 +24,7 @@ class Grid
 {
 public:
 	Grid(int cols, int rows);
+	~Grid();
 
 	void handle_event(SDL_Event & e);
 	void handle_mouse_click(int x, int y, Player player);
@@ -31,7 +32,7 @@ public:
 
 	void update();
 
-	bool check_collision(int x, int y, CollisionRect* & target_rect);
+	bool check_collision(int x, int y, CollisionRect & target_rect);
 
 	void render_line(SDL_Point & start, SDL_Point& end, const SDL_Color& color);
 	void render_point(const SDL_Point & point, const SDL_Color & color);
@@ -55,4 +56,6 @@ private:
 	std::vector<SDL_Point> grid_points;
 	std::vector<Line> grid_lines;
 	std::vector<CollisionRect> grid_collision_rects;
+	
+	SDL_Texture* grid_texture;
 };
