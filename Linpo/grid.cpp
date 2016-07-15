@@ -15,6 +15,10 @@ Grid::Grid(int cols, int rows)
 
 	grid_texture = SDL_CreateTexture(mainRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	mouse_x = 0;
+	mouse_y = 0;
+	mouse_clicked = false;
+
 	hover_line = Line();
 
 	int n_points = rows * cols;
@@ -38,11 +42,12 @@ void Grid::handle_event(SDL_Event& e)
 	else if (e.type == SDL_MOUSEBUTTONDOWN)
 	{
 		if (e.button.button == SDL_BUTTON_LEFT)
-			handle_mouse_click(e.button.x, e.button.y, PLAYER1);
+			mouse_clicked = true;
 	}
 	else if (e.type == SDL_MOUSEMOTION)
 	{
-		handle_mouse_hover(e.motion.x, e.motion.y, PLAYER1);
+		mouse_x = e.motion.x;
+		mouse_y = e.motion.y;
 	}
 }
 
@@ -146,25 +151,23 @@ void Grid::resize_update()
 
 void Grid::update()
 {
-
-}
-
-void Grid::handle_mouse_click(int x, int y, Player player)
-{
-	if (hover_line.start != nullptr)  //  && hover_line.end != nullptr
-		set_grid_line(hover_line);
-	else
+	handle_mouse_hover(PLAYER1);
+	if (mouse_clicked)
 	{
-		Line new_line;
-		if (make_collision_line(new_line, x, y, player))
-			set_grid_line(new_line);
+		handle_mouse_click(PLAYER1);
+		mouse_clicked = false;
 	}
 }
 
-void Grid::handle_mouse_hover(int x, int y, Player player)
+void Grid::handle_mouse_click(Player player)
+{
+	set_grid_line(hover_line);
+}
+
+void Grid::handle_mouse_hover(Player player)
 {
 	Line new_line;
-	if (make_collision_line(new_line, x, y, player))
+	if (make_collision_line(new_line, mouse_x, mouse_y, player))
 		hover_line = new_line;
 }
 
