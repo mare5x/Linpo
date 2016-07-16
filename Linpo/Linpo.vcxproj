@@ -125,6 +125,7 @@
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="Linpo.cpp" />
     <ClCompile Include="sharedfunctions.cpp" />
+    <ClCompile Include="texturewrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="globals.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="sharedfunctions.h" />
+    <ClInclude Include="texturewrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

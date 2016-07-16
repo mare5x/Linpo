@@ -13,7 +13,7 @@ Grid::Grid(int cols, int rows)
 	point_radius = 5;
 	line_width = 2 * point_radius;
 
-	grid_texture = SDL_CreateTexture(mainRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+	grid_texture = new TextureWrapper(mainRenderer, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	mouse_x = 0;
 	mouse_y = 0;
@@ -31,8 +31,7 @@ Grid::Grid(int cols, int rows)
 
 Grid::~Grid()
 {
-	SDL_DestroyTexture(grid_texture);
-	grid_texture = nullptr;
+	delete grid_texture;
 }
 
 void Grid::handle_event(SDL_Event& e)
@@ -44,16 +43,12 @@ void Grid::handle_event(SDL_Event& e)
 		if (e.button.button == SDL_BUTTON_LEFT)
 			mouse_clicked = true;
 	}
-	else if (e.type == SDL_MOUSEMOTION)
-	{
-		mouse_x = e.motion.x;
-		mouse_y = e.motion.y;
-	}
 }
 
 void Grid::render()
 {
-	SDL_SetRenderTarget(mainRenderer, grid_texture);
+	grid_texture->set_as_render_target();
+
 	SDL_SetRenderDrawColor(mainRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(mainRenderer);
 
@@ -70,8 +65,8 @@ void Grid::render()
 
 	render_points(grid_points, { 0, 0, 0, 0xFF });
 
-	SDL_SetRenderTarget(mainRenderer, NULL);
-	SDL_RenderCopy(mainRenderer, grid_texture, NULL, NULL);
+	grid_texture->reset_render_target();
+	grid_texture->render();
 }
 
 void Grid::update_grid_points()
@@ -145,12 +140,15 @@ void Grid::update_grid_collision_rects()
 void Grid::resize_update()
 {
 	SDL_GetRendererOutputSize(mainRenderer, &this->width, &this->height);
+	grid_texture->resize(width, height);
 	update_grid_points();
 	update_grid_collision_rects();
 }
 
 void Grid::update()
 {
+	SDL_GetMouseState(&mouse_x, &mouse_y);
+
 	handle_mouse_hover(PLAYER1);
 	if (mouse_clicked)
 	{
@@ -161,6 +159,7 @@ void Grid::update()
 
 void Grid::handle_mouse_click(Player player)
 {
+	// mouse hover always happens before a click, so no need for anything else
 	set_grid_line(hover_line);
 }
 
@@ -198,7 +197,7 @@ bool Grid::check_collision(int x, int y, CollisionRect & target_rect)
 	return false;
 }
 
-void Grid::render_line(SDL_Point& start, SDL_Point& end, const SDL_Color& color)
+void Grid::render_line(SDL_Point & start, SDL_Point & end, const SDL_Color & color)
 {
 	thickLineRGBA(mainRenderer, start.x, start.y, end.x, end.y, line_width, color.r, color.g, color.b, color.a);
 }
@@ -208,7 +207,7 @@ void Grid::render_point(const SDL_Point & point, const SDL_Color & color)
 	filledCircleRGBA(mainRenderer, point.x, point.y, point_radius, color.r, color.g, color.b, color.a);
 }
 
-void Grid::render_points(const std::vector<SDL_Point>& points, const SDL_Color & color)
+void Grid::render_points(const std::vector<SDL_Point> & points, const SDL_Color & color)
 {
 	for (auto const & point : points)
 	{

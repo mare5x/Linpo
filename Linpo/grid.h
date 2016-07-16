@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <vector>
 #include "constants.h"
+#include "texturewrapper.h"
 
 
 struct Line
@@ -60,5 +61,5 @@ private:
 	std::vector<Line> grid_lines;
 	std::vector<CollisionRect> grid_collision_rects;
 	
-	SDL_Texture* grid_texture;
+	TextureWrapper* grid_texture;
 };
