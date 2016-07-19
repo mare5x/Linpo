@@ -66,6 +66,7 @@ int main(int argc, char* argv[])
 
 		Grid game_grid(10, 10);
 		Timer fps_cap_timer;
+		Player player_one({ 0, 0, 255, 255 });
 
 		while (!quit)
 		{
@@ -86,7 +87,7 @@ int main(int argc, char* argv[])
 			SDL_RenderClear(mainRenderer);
 
 			// Code below
-			game_grid.update();
+			game_grid.update(player_one);
 			game_grid.render();
 
 			SDL_RenderPresent(mainRenderer);

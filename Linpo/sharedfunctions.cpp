@@ -3,7 +3,7 @@
 #include "sharedfunctions.h"
 
 
-void log(const std::string& message, const std::string append_string)
+void log(const std::string &message, const std::string append_string)
 {
 	std::cerr << message << append_string << std::endl;
 }
