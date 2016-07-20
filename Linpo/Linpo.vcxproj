@@ -123,9 +123,8 @@
     <ClCompile Include="fpstimer.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="grid.cpp" />
+    <ClCompile Include="linpo.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="player.cpp" />
-    <ClCompile Include="sharedfunctions.cpp" />
     <ClCompile Include="texturewrapper.cpp" />
   </ItemGroup>
   <ItemGroup>

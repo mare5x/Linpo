@@ -46,6 +46,8 @@ public:
 	void render_points(const std::vector<SDL_Point> &points, const SDL_Color &color);
 	void render_string(const std::string s, const SDL_Point &top_left, const SDL_Color &color);
 	void render_rect_score(const int score, const SDL_Point &top_left, const SDL_Color &color);
+
+	bool new_line_placed();
 private:
 	void handle_mouse_click(Player &player);
 	void handle_mouse_hover(Player &player);
@@ -73,6 +75,7 @@ private:
 	bool mouse_clicked;
 
 	Line hover_line;
+	int prev_n_lines;
 
 	std::vector<SDL_Point> grid_points;
 	std::vector<Line> grid_lines;

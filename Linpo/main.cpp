@@ -3,25 +3,26 @@
 #include "globals.h"
 #include "grid.h"
 #include "fpstimer.h"
+#include "linpo.h"
 
 
 bool init()
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	{
-		log("Error with SDL_Init: ", SDL_GetError());
+		mlog("Error with SDL_Init: ", SDL_GetError());
 		return false;
 	}
 
 	if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
 	{
-		log("Warning: Linear texture filtering not enabled!");
+		mlog("Warning: Linear texture filtering not enabled!");
 	}
 
 	mainWindow = SDL_CreateWindow("Linpo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (mainWindow == nullptr)
 	{
-		log("Error creating mainWindow: ", SDL_GetError());
+		mlog("Error creating mainWindow: ", SDL_GetError());
 		return false;
 	}
 	else
@@ -33,7 +34,7 @@ bool init()
 
 		if (mainRenderer == nullptr)
 		{
-			log("Error creating mainRenderer: ", SDL_GetError());
+			mlog("Error creating mainRenderer: ", SDL_GetError());
 			return false;
 		}
 		else
@@ -66,7 +67,7 @@ int main(int argc, char* argv[])
 
 		Grid game_grid(10, 10);
 		Timer fps_cap_timer;
-		Player player_one({ 0, 0, 255, 255 });
+		Linpo linpo_logic(game_grid);
 
 		while (!quit)
 		{
@@ -87,7 +88,8 @@ int main(int argc, char* argv[])
 			SDL_RenderClear(mainRenderer);
 
 			// Code below
-			game_grid.update(player_one);
+			linpo_logic.update();
+			game_grid.update(linpo_logic.get_current_player());
 			game_grid.render();
 
 			SDL_RenderPresent(mainRenderer);

@@ -21,6 +21,7 @@ Grid::Grid(int cols, int rows)
 	mouse_clicked = false;
 
 	hover_line = Line();
+	prev_n_lines = 0;
 
 	int n_points = rows * cols;
 	int n_edges = 2 * rows * cols - rows - cols;
@@ -57,17 +58,17 @@ void Grid::render()
 
 	if (hover_line.start != nullptr &&hover_line.end != nullptr)
 	{
-		auto hover_line_color = hover_line.owner->get_color();
+		auto hover_line_color = hover_line.owner->color;
 		hover_line_color.a = 60;
 		render_line(*hover_line.start, *hover_line.end, hover_line_color);
 	}
 
 	for (const auto &line : grid_lines)
-		render_line(*line.start, *line.end, line.owner->get_color());
+		render_line(*line.start, *line.end, line.owner->color);
 
 	for (const auto &grid_box_score : grid_score_boxes)
 	{
-		render_rect_score(grid_box_score.score, *grid_box_score.top_left, grid_box_score.owner->get_color());
+		render_rect_score(grid_box_score.score, *grid_box_score.top_left, grid_box_score.owner->color);
 	}
 
 	render_points(grid_points, { 0, 0, 0, 0xFF });
@@ -172,7 +173,11 @@ void Grid::handle_mouse_click(Player &player)
 		set_grid_line(hover_line);
 
 		auto boxes = get_boxes_around_line(grid_lines.back());
-		std::for_each(boxes.begin(), boxes.end(), [this, &player](auto &box) { grid_score_boxes.push_back(box); player.score += box.score; });
+
+		std::for_each(boxes.begin(), boxes.end(), [this, &player](auto &box) { 
+			grid_score_boxes.push_back(box);
+			player.score += box.score; 
+		});
 	}
 }
 
@@ -401,6 +406,16 @@ void Grid::render_rect_score(const int score, const SDL_Point &top_left, const S
 	centered_top_left.y = top_left.y + (point_distance.y / 2) - (score_string.length() * font_width);
 
 	render_string(std::to_string(score), centered_top_left, color);
+}
+
+bool Grid::new_line_placed()
+{
+	if (grid_lines.size() > prev_n_lines)
+	{
+		prev_n_lines = grid_lines.size();
+		return true;
+	}
+	return false;
 }
 
 SDL_Point Grid::get_point_distance()
