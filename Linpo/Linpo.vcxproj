@@ -125,6 +125,8 @@
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="linpo.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="render_functions.cpp" />
+    <ClCompile Include="score_board.cpp" />
     <ClCompile Include="texturewrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +136,8 @@
     <ClInclude Include="grid.h" />
     <ClInclude Include="linpo.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="render_functions.h" />
+    <ClInclude Include="score_board.h" />
     <ClInclude Include="sharedfunctions.h" />
     <ClInclude Include="texturewrapper.h" />
   </ItemGroup>

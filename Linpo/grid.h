@@ -41,11 +41,7 @@ public:
 	void resize_update();
 
 	void render();
-	void render_line(const SDL_Point &start, const SDL_Point &end, const SDL_Color &color);
-	void render_point(const SDL_Point &point, const SDL_Color &color);
-	void render_points(const std::vector<SDL_Point> &points, const SDL_Color &color);
-	void render_string(const std::string s, const SDL_Point &top_left, const SDL_Color &color);
-	void render_rect_score(const int score, const SDL_Point &top_left, const SDL_Color &color);
+	void render_box_score(const int score, const SDL_Point &top_left, const SDL_Color &color);
 
 	bool new_line_placed();
 private:
@@ -54,6 +50,7 @@ private:
 
 	bool check_collision(int x, int y, CollisionRect &target_rect);
 
+	SDL_Point get_point_distance();
 	void update_grid_points();
 	void update_grid_collision_rects();
 
@@ -66,7 +63,7 @@ private:
 	bool find_box(const Line* base_line, Line* &top, Line* &right, Line* &bot, Line* &left);
 	int calculate_box_score(const Line &top, const Line &right, const Line &bot, const Line &left, const Player &last_player);
 
-	SDL_Point get_point_distance();
+	SDL_Rect viewport_rect;
 
 	int cols, rows, width, height;
 	int point_radius, line_width;

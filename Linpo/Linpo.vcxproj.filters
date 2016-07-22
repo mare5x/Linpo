@@ -33,6 +33,12 @@
     <ClCompile Include="linpo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="score_board.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render_functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globals.h">
@@ -57,6 +63,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sharedfunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="score_board.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render_functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

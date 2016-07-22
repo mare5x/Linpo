@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 
-extern SDL_Window* mainWindow;
-extern SDL_Renderer* mainRenderer;
+extern SDL_Window* main_window;
+extern SDL_Renderer* main_renderer;
 
 

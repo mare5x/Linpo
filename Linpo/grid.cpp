@@ -1,10 +1,9 @@
-#include "SDL2_gfxPrimitives.h"
-
 #include <algorithm>
 #include "grid.h"
 #include "globals.h"
 #include "constants.h"
 #include "sharedfunctions.h"
+#include "render_functions.h"
 
 
 Grid::Grid(int cols, int rows)
@@ -14,8 +13,8 @@ Grid::Grid(int cols, int rows)
 	point_radius = 5;
 	line_width = 2 * point_radius;
 
-	grid_texture = new TextureWrapper(mainRenderer, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
-
+	grid_texture = new TextureWrapper(main_renderer, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+	
 	mouse_x = 0;
 	mouse_y = 0;
 	mouse_clicked = false;
@@ -51,27 +50,29 @@ void Grid::handle_event(SDL_Event&e)
 
 void Grid::render()
 {
+	SDL_RenderSetViewport(main_renderer, &viewport_rect);
+
 	grid_texture->set_as_render_target();
 
-	SDL_SetRenderDrawColor(mainRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderClear(mainRenderer);
+	SDL_SetRenderDrawColor(main_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(main_renderer);
 
 	if (hover_line.start != nullptr &&hover_line.end != nullptr)
 	{
 		auto hover_line_color = hover_line.owner->color;
 		hover_line_color.a = 60;
-		render_line(*hover_line.start, *hover_line.end, hover_line_color);
+		render_line(*hover_line.start, *hover_line.end, line_width, hover_line_color);
 	}
 
 	for (const auto &line : grid_lines)
-		render_line(*line.start, *line.end, line.owner->color);
+		render_line(*line.start, *line.end, line_width, line.owner->color);
 
 	for (const auto &grid_box_score : grid_score_boxes)
 	{
-		render_rect_score(grid_box_score.score, *grid_box_score.top_left, grid_box_score.owner->color);
+		render_box_score(grid_box_score.score, *grid_box_score.top_left, grid_box_score.owner->color);
 	}
 
-	render_points(grid_points, { 0, 0, 0, 0xFF });
+	render_points(grid_points, point_radius, { 0, 0, 0, 0xFF });
 
 	grid_texture->reset_render_target();
 	grid_texture->render();
@@ -146,7 +147,13 @@ void Grid::update_grid_collision_rects()
 
 void Grid::resize_update()
 {
-	SDL_GetRendererOutputSize(mainRenderer, &this->width, &this->height);
+	SDL_GetRendererOutputSize(main_renderer, &this->width, &this->height);
+
+	viewport_rect.x = 0;
+	viewport_rect.y = 20;
+	viewport_rect.w = width;
+	viewport_rect.h = height - viewport_rect.y;
+
 	grid_texture->resize(width, height);
 	update_grid_points();
 	update_grid_collision_rects();
@@ -373,37 +380,14 @@ bool Grid::check_collision(int x, int y, CollisionRect &target_rect)
 	return false;
 }
 
-void Grid::render_line(const SDL_Point &start, const SDL_Point &end, const SDL_Color &color)
-{
-	thickLineRGBA(mainRenderer, start.x, start.y, end.x, end.y, line_width, color.r, color.g, color.b, color.a);
-}
-
-void Grid::render_point(const SDL_Point &point, const SDL_Color &color)
-{
-	filledCircleRGBA(mainRenderer, point.x, point.y, point_radius, color.r, color.g, color.b, color.a);
-}
-
-void Grid::render_points(const std::vector<SDL_Point> &points, const SDL_Color &color)
-{
-	for (auto const &point : points)
-	{
-		render_point(point, color);
-	}
-}
-
-void Grid::render_string(const std::string s, const SDL_Point &top_left, const SDL_Color &color)
-{
-	stringRGBA(mainRenderer, top_left.x, top_left.y, s.c_str(), color.r, color.g, color.b, color.a);
-}
-
-void Grid::render_rect_score(const int score, const SDL_Point &top_left, const SDL_Color &color)
+void Grid::render_box_score(const int score, const SDL_Point &top_left, const SDL_Color &color)
 {
 	int font_width = 8;  // temp
 	auto point_distance = get_point_distance();
 	auto score_string = std::to_string(score);
 	SDL_Point centered_top_left;
-	centered_top_left.x = top_left.x + (point_distance.x / 2) - (score_string.length() * font_width);
-	centered_top_left.y = top_left.y + (point_distance.y / 2) - (score_string.length() * font_width);
+	centered_top_left.x = top_left.x + (point_distance.x / 2) - (score_string.length() * font_width) + point_radius;
+	centered_top_left.y = top_left.y + (point_distance.y / 2) - (score_string.length() * font_width) + point_radius;
 
 	render_string(std::to_string(score), centered_top_left, color);
 }

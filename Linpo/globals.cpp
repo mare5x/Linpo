@@ -1,5 +1,5 @@
 #include <SDL.h>
 #include "globals.h"
 
-SDL_Window* mainWindow = nullptr;
-SDL_Renderer* mainRenderer = nullptr;
+SDL_Window* main_window = nullptr;
+SDL_Renderer* main_renderer = nullptr;
