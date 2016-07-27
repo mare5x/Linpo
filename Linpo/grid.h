@@ -43,6 +43,19 @@ public:
 	void render();
 	void render_box_score(const int score, const SDL_Point &top_left, const SDL_Color &color);
 
+	std::vector<SDL_Point> &get_grid_points();
+	std::vector<ScoreBox> get_boxes_around_line(Line &line);  // it is actually const Line &line
+	Line &get_last_line_placed();
+	SDL_Point get_point_distance();
+	int get_grid_point_index(int row, int col);
+	const int &get_rows() const { return rows; }
+	const int &get_cols() const { return cols; }
+
+	void add_grid_score_boxes(std::vector<ScoreBox> &score_boxes, Player &player);
+
+	void set_grid_line(Line line);
+	bool is_line_taken(Line &line);
+	bool is_grid_full();
 	bool new_line_placed();
 private:
 	void handle_mouse_click(Player &player);
@@ -50,22 +63,18 @@ private:
 
 	bool check_collision(int x, int y, CollisionRect &target_rect);
 
-	SDL_Point get_point_distance();
 	void update_grid_points();
 	void update_grid_collision_rects();
-
-	void set_grid_line(Line line);
 	bool make_collision_line(Line &new_line, int x, int y, Player &player);
-	bool is_line_taken(Line &line);
 
 	ScoreBox make_box(const Line &top_line, const Line &right_line, const Line &bot_line, const Line &left_line, Player &player);
-	std::vector<ScoreBox> get_boxes_around_line(Line &line);  // it is actually const Line &line
 	bool find_box(const Line* base_line, Line* &top, Line* &right, Line* &bot, Line* &left);
 	int calculate_box_score(const Line &top, const Line &right, const Line &bot, const Line &left, const Player &last_player);
 
 	SDL_Rect viewport_rect;
 
-	int cols, rows, width, height;
+	const int cols, const rows, const n_edges;
+	int width, height;
 	int point_radius, line_width;
 
 	int mouse_x, mouse_y;

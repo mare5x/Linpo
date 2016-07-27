@@ -75,16 +75,13 @@ int main(int argc, char* argv[])
 		{
 			if (!VSYNC_ENABLED) fps_cap_timer.start();
 
-			if (SDL_WaitEvent(&e))
+			while (SDL_PollEvent(&e) != 0)
 			{
-				do {
-					game_grid.handle_event(e);
-					score_board.handle_event(e);
+				game_grid.handle_event(e);
+				score_board.handle_event(e);
 
-					if (e.type == SDL_QUIT)
-						quit = true;
-
-				} while (SDL_PollEvent(&e) != 0);
+				if (e.type == SDL_QUIT)
+					quit = true;
 			}
 
 			SDL_SetRenderDrawColor(main_renderer, 0xFF, 0xFF, 0xFF, 0xFF);

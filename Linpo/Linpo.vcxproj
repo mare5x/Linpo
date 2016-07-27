@@ -120,6 +120,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ai_logic.cpp" />
     <ClCompile Include="fpstimer.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="grid.cpp" />
@@ -130,6 +131,7 @@
     <ClCompile Include="texturewrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ai_logic.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="fpstimer.h" />
     <ClInclude Include="globals.h" />

@@ -26,11 +26,11 @@ void ScoreBoard::render()
 	int prev_str_len = 0;
 	for (int i = 0; i < N_PLAYERS; ++i)
 	{
-		SDL_Point top_left = { (width / 2 / (N_PLAYERS - i)) + (prev_str_len * 8), 4 };
 		std::stringstream s;
 		s << "Player " << i + 1 << ": " << players[i].score;
 		auto score_str = s.str();
-		prev_str_len += score_str.length();
+		prev_str_len = score_str.length();
+		SDL_Point top_left = { (i * (width / N_PLAYERS / N_PLAYERS)) + (width / N_PLAYERS / 2), 4 };
 		render_string(score_str, top_left, players[i].color);
 	}
 }

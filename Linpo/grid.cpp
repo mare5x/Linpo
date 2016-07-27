@@ -6,10 +6,8 @@
 #include "render_functions.h"
 
 
-Grid::Grid(int cols, int rows)
+Grid::Grid(int cols, int rows) : cols(cols), rows(rows), n_edges(2 * rows * cols - rows - cols)
 {
-	this->cols = cols;
-	this->rows = rows;
 	point_radius = 5;
 	line_width = 2 * point_radius;
 
@@ -23,7 +21,6 @@ Grid::Grid(int cols, int rows)
 	prev_n_lines = 0;
 
 	int n_points = rows * cols;
-	int n_edges = 2 * rows * cols - rows - cols;
 	int n_boxes = (rows - 1) * (cols - 1);
 	grid_points.reserve(n_points);
 	grid_collision_rects.reserve(n_edges);
@@ -94,6 +91,15 @@ void Grid::update_grid_points()
 	}
 }
 
+void Grid::add_grid_score_boxes(std::vector<ScoreBox>& score_boxes, Player &player)
+{
+	for (auto &box : score_boxes) 
+	{
+		grid_score_boxes.push_back(box);
+		player.score += box.score;
+	};
+}
+
 void Grid::set_grid_line(Line line)
 {
 	grid_lines.push_back(line);
@@ -107,7 +113,7 @@ void Grid::update_grid_collision_rects()
 	{
 		for (int col = 0; col < cols; ++col)
 		{
-			int a_index = row * cols + col;
+			int a_index = get_grid_point_index(row, col);
 			SDL_Point point_a = grid_points[a_index];
 
 			// make a collision_rect for the x direction
@@ -181,10 +187,7 @@ void Grid::handle_mouse_click(Player &player)
 
 		auto boxes = get_boxes_around_line(grid_lines.back());
 
-		std::for_each(boxes.begin(), boxes.end(), [this, &player](auto &box) { 
-			grid_score_boxes.push_back(box);
-			player.score += box.score; 
-		});
+		add_grid_score_boxes(boxes, player);
 	}
 }
 
@@ -216,6 +219,18 @@ bool Grid::is_line_taken(Line &line)
 	if (it != grid_lines.end())
 		return true;
 	return false;
+}
+
+bool Grid::is_grid_full()
+{
+	return grid_lines.size() >= n_edges;
+}
+
+int Grid::get_grid_point_index(int row, int col)
+{
+	if (row < rows && col < cols)
+		return (row * cols) + col;
+	return -1;
 }
 
 ScoreBox Grid::make_box(const Line & top_line, const Line & right_line, const Line & bot_line, const Line & left_line, Player & player)
@@ -390,6 +405,16 @@ void Grid::render_box_score(const int score, const SDL_Point &top_left, const SD
 	centered_top_left.y = top_left.y + (point_distance.y / 2) - (score_string.length() * font_width) + point_radius;
 
 	render_string(std::to_string(score), centered_top_left, color);
+}
+
+std::vector<SDL_Point> &Grid::get_grid_points()
+{
+	return grid_points;
+}
+
+Line &Grid::get_last_line_placed()
+{
+	return grid_lines.back();
 }
 
 bool Grid::new_line_placed()

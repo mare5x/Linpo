@@ -10,3 +10,4 @@ const int TICKS_PER_FRAME = 1000 / FPS_CAP;
 const bool VSYNC_ENABLED = false;
 
 const int N_PLAYERS = 2;
+const bool AI_ENABLED = true;
