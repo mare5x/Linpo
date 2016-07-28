@@ -136,6 +136,7 @@
     <ClInclude Include="fpstimer.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="grid.h" />
+    <ClInclude Include="grid_types.h" />
     <ClInclude Include="linpo.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="render_functions.h" />

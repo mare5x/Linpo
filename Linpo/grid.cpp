@@ -11,14 +11,18 @@ Grid::Grid(int cols, int rows) : cols(cols), rows(rows), n_edges(2 * rows * cols
 	point_radius = 5;
 	line_width = 2 * point_radius;
 
-	grid_texture = new TextureWrapper(main_renderer, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+	// it'll get properly resized in resize_update()
+	grid_texture = new TextureWrapper(main_renderer, viewport_rect.w, viewport_rect.h);
+	hover_line_texture = new TextureWrapper(main_renderer, 0, 0);
 	
 	mouse_x = 0;
 	mouse_y = 0;
 	mouse_clicked = false;
 
 	hover_line = Line();
+	prev_hover_line = Line();
 	prev_n_lines = 0;
+	prev_n_boxes = 0;
 
 	int n_points = rows * cols;
 	int n_boxes = (rows - 1) * (cols - 1);
@@ -32,6 +36,7 @@ Grid::Grid(int cols, int rows) : cols(cols), rows(rows), n_edges(2 * rows * cols
 Grid::~Grid()
 {
 	delete grid_texture;
+	delete hover_line_texture;
 }
 
 void Grid::handle_event(SDL_Event&e)
@@ -49,17 +54,26 @@ void Grid::render()
 {
 	SDL_RenderSetViewport(main_renderer, &viewport_rect);
 
-	grid_texture->set_as_render_target();
+	grid_texture->render();
 
-	SDL_SetRenderDrawColor(main_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderClear(main_renderer);
+	if (hover_line.owner != nullptr)
+		if (hover_line.start->y == hover_line.end->y)  // horizontal
+			hover_line_texture->render(hover_line.start->x, hover_line.start->y - line_width / 2);
+		else
+			hover_line_texture->render(hover_line.start->x - line_width / 2, hover_line.start->y + point_radius / 2);
+}
 
-	if (hover_line.start != nullptr &&hover_line.end != nullptr)
-	{
-		auto hover_line_color = hover_line.owner->color;
-		hover_line_color.a = 60;
-		render_line(*hover_line.start, *hover_line.end, line_width, hover_line_color);
-	}
+void Grid::update_textures()
+{
+	if (grid_texture_update_pending())
+		update_grid_texture();
+	if (hover_line_update_pending())
+		update_hover_line_texture();
+}
+
+void Grid::update_grid_texture()
+{
+	grid_texture->clear();
 
 	for (const auto &line : grid_lines)
 		render_line(*line.start, *line.end, line_width, line.owner->color);
@@ -72,7 +86,35 @@ void Grid::render()
 	render_points(grid_points, point_radius, { 0, 0, 0, 0xFF });
 
 	grid_texture->reset_render_target();
-	grid_texture->render();
+}
+
+void Grid::update_hover_line_texture()
+{
+	if (hover_line.owner == nullptr)
+		return;
+
+	if (hover_line.start->x == hover_line.end->x)  // is vertical
+		hover_line_texture->resize(line_width, get_point_distance().y);  // resize() resizes only if it's necessary
+	else  // horizontal
+		hover_line_texture->resize(get_point_distance().x, line_width);
+
+	auto hover_line_color = hover_line.owner->color;
+	hover_line_color.a = 60;
+	hover_line_texture->clear(hover_line_color);
+
+	hover_line_texture->reset_render_target();
+}
+
+bool Grid::hover_line_update_pending()
+{
+	bool ret_val = prev_hover_line != hover_line && !is_line_taken(hover_line);
+	prev_hover_line = hover_line;
+	return ret_val;
+}
+
+bool Grid::grid_texture_update_pending()
+{
+	return new_line_placed(prev_n_lines) || score_changed(prev_n_boxes);
 }
 
 void Grid::update_grid_points()
@@ -160,9 +202,13 @@ void Grid::resize_update()
 	viewport_rect.w = width;
 	viewport_rect.h = height - viewport_rect.y;
 
-	grid_texture->resize(width, height);
+	grid_texture->resize(viewport_rect.w, viewport_rect.h);
+
 	update_grid_points();
 	update_grid_collision_rects();
+
+	update_grid_texture();
+	update_hover_line_texture();
 }
 
 void Grid::update(Player &player)
@@ -176,6 +222,8 @@ void Grid::update(Player &player)
 		handle_mouse_click(player);
 		mouse_clicked = false;
 	}
+
+	update_textures();
 }
 
 void Grid::handle_mouse_click(Player &player)
@@ -195,7 +243,10 @@ void Grid::handle_mouse_hover(Player &player)
 {
 	Line new_line;
 	if (make_collision_line(new_line, mouse_x, mouse_y, player))
-		hover_line = new_line;
+	{
+		if (new_line != hover_line)
+			hover_line = new_line;
+	}
 }
 
 bool Grid::make_collision_line(Line &new_line, int x, int y, Player &player)
@@ -214,7 +265,7 @@ bool Grid::make_collision_line(Line &new_line, int x, int y, Player &player)
 bool Grid::is_line_taken(Line &line)
 {
 	auto it = std::find_if(grid_lines.begin(), grid_lines.end(), 
-		[&line](const Line &grid_line) -> bool { return (grid_line.start == line.start &&grid_line.end == line.end) || (grid_line.end == line.start &&grid_line.start == line.end); });
+		[&line](const Line &grid_line) -> bool { return (grid_line.start == line.start && grid_line.end == line.end) || (grid_line.end == line.start && grid_line.start == line.end); });
 
 	if (it != grid_lines.end())
 		return true;
@@ -417,11 +468,21 @@ Line &Grid::get_last_line_placed()
 	return grid_lines.back();
 }
 
-bool Grid::new_line_placed()
+bool Grid::new_line_placed(int &prev_lines)
 {
-	if (grid_lines.size() > prev_n_lines)
+	if (grid_lines.size() > prev_lines)
 	{
-		prev_n_lines = grid_lines.size();
+		prev_lines = grid_lines.size();
+		return true;
+	}
+	return false;
+}
+
+bool Grid::score_changed(int &prev_boxes)
+{
+	if (grid_score_boxes.size() > prev_boxes)
+	{
+		prev_boxes = grid_score_boxes.size();
 		return true;
 	}
 	return false;

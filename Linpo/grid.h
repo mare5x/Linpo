@@ -5,28 +5,8 @@
 #include "constants.h"
 #include "texturewrapper.h"
 #include "player.h"
+#include "grid_types.h"
 
-
-struct Line
-{
-	SDL_Point* start;
-	SDL_Point* end;
-	Player* owner;
-};
-
-struct CollisionRect
-{
-	SDL_Rect collision_rect;
-	SDL_Point* point_a;
-	SDL_Point* point_b;
-};
-
-struct ScoreBox
-{
-	SDL_Point* top_left;
-	int score;
-	Player* owner;
-};
 
 class Grid
 {
@@ -46,22 +26,30 @@ public:
 	std::vector<SDL_Point> &get_grid_points();
 	std::vector<ScoreBox> get_boxes_around_line(Line &line);  // it is actually const Line &line
 	Line &get_last_line_placed();
-	SDL_Point get_point_distance();
 	int get_grid_point_index(int row, int col);
 	const int &get_rows() const { return rows; }
 	const int &get_cols() const { return cols; }
+	SDL_Point get_point_distance();
 
 	void add_grid_score_boxes(std::vector<ScoreBox> &score_boxes, Player &player);
 
 	void set_grid_line(Line line);
 	bool is_line_taken(Line &line);
 	bool is_grid_full();
-	bool new_line_placed();
+	bool new_line_placed(int &prev_lines);
+	bool score_changed(int &prev_boxes);
 private:
 	void handle_mouse_click(Player &player);
 	void handle_mouse_hover(Player &player);
 
 	bool check_collision(int x, int y, CollisionRect &target_rect);
+
+	void update_textures();
+	void update_grid_texture();
+	void update_hover_line_texture();
+
+	bool hover_line_update_pending();
+	bool grid_texture_update_pending();
 
 	void update_grid_points();
 	void update_grid_collision_rects();
@@ -80,13 +68,13 @@ private:
 	int mouse_x, mouse_y;
 	bool mouse_clicked;
 
-	Line hover_line;
-	int prev_n_lines;
+	Line hover_line, prev_hover_line;
+	int prev_n_lines, prev_n_boxes;
 
 	std::vector<SDL_Point> grid_points;
 	std::vector<Line> grid_lines;
 	std::vector<CollisionRect> grid_collision_rects;
 	std::vector<ScoreBox> grid_score_boxes;
 	
-	TextureWrapper* grid_texture;
+	TextureWrapper* grid_texture, *hover_line_texture;
 };

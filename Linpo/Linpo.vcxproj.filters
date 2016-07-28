@@ -77,5 +77,8 @@
     <ClInclude Include="ai_logic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="grid_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 		Grid game_grid(7, 7);
 		Timer fps_cap_timer;
 		Linpo linpo_logic(game_grid);
-		ScoreBoard score_board(linpo_logic.get_players());
+		ScoreBoard score_board(linpo_logic.get_players(), game_grid);
 
 		while (!quit)
 		{
@@ -107,3 +107,6 @@ int main(int argc, char* argv[])
 	close();
 	return 0;
 }
+
+// TODO: use std::set for grid_lines
+// TODO: make textures be only of necessary size

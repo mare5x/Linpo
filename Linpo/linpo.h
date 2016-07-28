@@ -16,7 +16,6 @@ public:
 
 	void update();
 
-	bool score_changed();
 	int calculate_score();
 
 	bool is_game_over();
@@ -33,6 +32,5 @@ private:
 
 	AI_Logic* ai_logic;
 
-	// last_score is the sum of all players' scores
-	int last_score;
+	int prev_n_lines, prev_n_boxes;
 };
