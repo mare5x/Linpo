@@ -120,14 +120,14 @@ bool Grid::grid_texture_update_pending()
 void Grid::update_grid_points()
 {
 	grid_points.clear();
-	int padding_x = 0.05 * width;
-	int padding_y = 0.05 * height;
+	int padding_x = viewport_rect.w / cols / 2;
+	int padding_y = viewport_rect.h / rows / 2;
 
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int col = 0; col < cols; ++col)
 		{
-			SDL_Point point = { padding_x + col * (width / cols), padding_y + row * (height / rows) };
+			SDL_Point point = { padding_x + col * (viewport_rect.w / cols), padding_y + row * (viewport_rect.h / rows) };
 			grid_points.push_back(point);
 		}
 	}
