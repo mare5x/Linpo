@@ -21,6 +21,6 @@ struct CollisionRect
 struct ScoreBox
 {
 	SDL_Point* top_left;
-	int score;
+	char score;
 	Player* owner;
 };

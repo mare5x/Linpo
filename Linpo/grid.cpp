@@ -56,7 +56,7 @@ void Grid::render()
 
 	grid_texture->render();
 
-	if (hover_line.owner != nullptr)
+	if (hover_line.owner != nullptr && !is_line_taken(hover_line))
 		if (hover_line.start->y == hover_line.end->y)  // horizontal
 			hover_line_texture->render(hover_line.start->x, hover_line.start->y - line_width / 2);
 		else
@@ -446,16 +446,16 @@ bool Grid::check_collision(int x, int y, CollisionRect &target_rect)
 	return false;
 }
 
-void Grid::render_box_score(const int score, const SDL_Point &top_left, const SDL_Color &color)
+void Grid::render_box_score(const char score, const SDL_Point &top_left, const SDL_Color &color)
 {
-	int font_width = 8;  // temp
+	const char font_width = 8;  // temp
 	auto point_distance = get_point_distance();
-	auto score_string = std::to_string(score);
-	SDL_Point centered_top_left;
-	centered_top_left.x = top_left.x + (point_distance.x / 2) - (score_string.length() * font_width) + point_radius;
-	centered_top_left.y = top_left.y + (point_distance.y / 2) - (score_string.length() * font_width) + point_radius;
 
-	render_string(std::to_string(score), centered_top_left, color);
+	SDL_Point centered_top_left;
+	centered_top_left.x = top_left.x + (point_distance.x / 2) - (font_width) + point_radius;
+	centered_top_left.y = top_left.y + (point_distance.y / 2) - (font_width) + point_radius;
+
+	render_char(score + '0', centered_top_left, color);
 }
 
 std::vector<SDL_Point> &Grid::get_grid_points()

@@ -21,7 +21,7 @@ public:
 	void resize_update();
 
 	void render();
-	void render_box_score(const int score, const SDL_Point &top_left, const SDL_Color &color);
+	void render_box_score(const char score, const SDL_Point &top_left, const SDL_Color &color);
 
 	std::vector<SDL_Point> &get_grid_points();
 	std::vector<ScoreBox> get_boxes_around_line(Line &line);  // it is actually const Line &line
