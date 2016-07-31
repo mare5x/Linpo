@@ -19,6 +19,8 @@ Grid::Grid(int cols, int rows) : cols(cols), rows(rows), n_edges(2 * rows * cols
 	mouse_y = 0;
 	mouse_clicked = false;
 
+	_show_collision_boxes = false;
+
 	hover_line = Line();
 	prev_hover_line = Line();
 	prev_n_lines = 0;
@@ -84,6 +86,13 @@ void Grid::update_grid_texture()
 	}
 
 	render_points(grid_points, point_radius, { 0, 0, 0, 0xFF });
+
+	if (_show_collision_boxes)
+	{
+		SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 0xff);
+		for (const auto &rect : grid_collision_rects)
+			SDL_RenderDrawRect(main_renderer, &rect.collision_rect);
+	}
 
 	grid_texture->reset_render_target();
 }

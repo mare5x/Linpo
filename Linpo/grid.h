@@ -68,6 +68,8 @@ private:
 	int mouse_x, mouse_y;
 	bool mouse_clicked;
 
+	bool _show_collision_boxes;
+
 	Line hover_line, prev_hover_line;
 	int prev_n_lines, prev_n_boxes;
 

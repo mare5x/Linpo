@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 		bool quit = false;
 		SDL_Event e;
 
-		Grid game_grid(7, 7);
+		Grid game_grid(10, 10);
 		Timer fps_cap_timer;
 		Linpo linpo_logic(game_grid);
 		ScoreBoard score_board(linpo_logic.get_players(), game_grid);
@@ -110,6 +110,8 @@ int main(int argc, char* argv[])
 	close();
 	return 0;
 }
+
+// TODO: options screen
 
 // TODO: use std::set for grid_lines
 // TODO: make textures be only of necessary size
