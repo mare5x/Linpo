@@ -7,6 +7,7 @@ class TextureWrapper
 {
 public:
 	TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access = SDL_TEXTUREACCESS_TARGET, SDL_Color base_color = { 0xFF, 0xFF, 0xFF, 0xFF });
+	TextureWrapper(SDL_Renderer* &renderer);
 	~TextureWrapper();
 
 	void resize(int new_width, int new_height);
@@ -19,19 +20,20 @@ public:
 	/* Clears the texture to the clear_color and sets it as the current rendering target. */
 	void clear(const SDL_Color &clear_color);
 
+	void free();
+
 	void render();
 	void render(int x, int y);
+	void render(const SDL_Rect &dest_rect);
 
 	SDL_Texture* get_texture() { return texture; }
 	int get_width() { return width; }
 	int get_height() { return height; }
-private:
+protected:
 	SDL_Renderer* &renderer;
-
 	SDL_Texture* texture;
-
+	int width, height;
+private:
 	SDL_Color base_color;
 	int access;
-
-	int width, height;
 };

@@ -9,22 +9,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="globals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="grid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fpstimer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="texturewrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -42,6 +32,15 @@
     <ClCompile Include="ai_logic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fps_timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="texture_wrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="text_texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globals.h">
@@ -53,19 +52,10 @@
     <ClInclude Include="grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="fpstimer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="texturewrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="linpo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sharedfunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="score_board.h">
@@ -78,6 +68,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="grid_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fps_timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shared_functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_wrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="text_texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

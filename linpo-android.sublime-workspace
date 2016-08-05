@@ -1,0 +1,1595 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"inner",
+				"inner_old_fields"
+			],
+			[
+				"write_last_dow",
+				"write_last_download_change_token"
+			],
+			[
+				"con",
+				"convert_time_to_datetime"
+			],
+			[
+				"Retry",
+				"RETRYABLE_ERRORS"
+			],
+			[
+				"delete",
+				"delete_instance"
+			],
+			[
+				"H",
+				"HttpError"
+			],
+			[
+				"rem",
+				"removed_file_id"
+			],
+			[
+				"Drive",
+				"DriveArchive"
+			],
+			[
+				"futu",
+				"future_to_archive"
+			],
+			[
+				"_ba",
+				"_batch"
+			],
+			[
+				"drive",
+				"drive_service"
+			],
+			[
+				"_bat",
+				"_batch_error_counter"
+			],
+			[
+				"Dri",
+				"DriveArchive"
+			],
+			[
+				"cha",
+				"changes_request"
+			],
+			[
+				"h",
+				"httplib2"
+			],
+			[
+				"ne",
+				"nextPageToken"
+			],
+			[
+				"dirs",
+				"dirs_to_archive"
+			],
+			[
+				"sil",
+				"_silent"
+			],
+			[
+				"prog",
+				"progressless_attempt"
+			],
+			[
+				"handl",
+				"handle_http_error"
+			],
+			[
+				"Goo",
+				"GoogleDrive"
+			],
+			[
+				"conte",
+				"contextmanager"
+			],
+			[
+				"ch",
+				"chunk_time"
+			],
+			[
+				"fu",
+				"futures"
+			],
+			[
+				"threa",
+				"threaded_download"
+			],
+			[
+				"string",
+				"string_list_model"
+			],
+			[
+				"incre",
+				"increment_interval_spinner"
+			],
+			[
+				"reset",
+				"reset_settings"
+			],
+			[
+				"inc",
+				"increment_label"
+			],
+			[
+				"show_st",
+				"show_stars_viewer"
+			],
+			[
+				"uplo",
+				"upload"
+			],
+			[
+				"dir_archi",
+				"drive_archived"
+			],
+			[
+				"fl",
+				"actionFlipUpDown"
+			],
+			[
+				"actionOpe",
+				"actionOpenInFolder"
+			],
+			[
+				"fil",
+				"files_downloaded"
+			],
+			[
+				"upda",
+				"update_logText"
+			],
+			[
+				"ini",
+				"initialize_logText"
+			],
+			[
+				"log",
+				"logText"
+			],
+			[
+				"ma",
+				"make_list"
+			],
+			[
+				"print",
+				"print_contents"
+			],
+			[
+				"pri",
+				"print_contents"
+			],
+			[
+				"row",
+				"row_copy"
+			],
+			[
+				"n",
+				"n_size"
+			],
+			[
+				"min_",
+				"min_len"
+			],
+			[
+				"min",
+				"min_len"
+			],
+			[
+				"te",
+				"tests"
+			],
+			[
+				"wi",
+				"widths"
+			],
+			[
+				"i",
+				"inc	#include \"…\""
+			],
+			[
+				"I",
+				"IPv6"
+			],
+			[
+				"IP",
+				"IPv4"
+			],
+			[
+				"PA",
+				"PATTERN"
+			],
+			[
+				"int",
+				"intersection"
+			],
+			[
+				"in",
+				"intersection"
+			],
+			[
+				"pomo",
+				"pomodoros_completed"
+			],
+			[
+				"up",
+				"update_tooltip"
+			],
+			[
+				"next",
+				"next_active_label"
+			],
+			[
+				"dela",
+				"delayed_start"
+			],
+			[
+				"is",
+				"isChecked"
+			],
+			[
+				"rest",
+				"_restoreGeometry"
+			],
+			[
+				"adva",
+				"advancedOptionsCheckBox"
+			],
+			[
+				"wit",
+				"with_button"
+			],
+			[
+				"dea",
+				"delayed_start"
+			],
+			[
+				"re",
+				"restore_tray"
+			],
+			[
+				"noti",
+				"timer_finished_notification"
+			],
+			[
+				"sho",
+				"showMessage"
+			],
+			[
+				"Win",
+				"WindowMinimized"
+			],
+			[
+				"tray",
+				"tray_icon"
+			],
+			[
+				"win",
+				"windowState"
+			],
+			[
+				"wind",
+				"WindowStateChange"
+			],
+			[
+				"tra",
+				"tray_icon"
+			],
+			[
+				"QS",
+				"QSystemTrayIcon"
+			],
+			[
+				"pom",
+				"pomodoros"
+			],
+			[
+				"tran",
+				"transitionCheckBox"
+			],
+			[
+				"po",
+				"pomodoros"
+			],
+			[
+				"acti",
+				"active_label"
+			],
+			[
+				"se",
+				"secs_to_run_and_active_label"
+			],
+			[
+				"ac",
+				"active_label"
+			],
+			[
+				"tab",
+				"tabWidget"
+			],
+			[
+				"trans",
+				"next_transition"
+			],
+			[
+				"ina",
+				"inactive_labels"
+			],
+			[
+				"play",
+				"play_sound"
+			],
+			[
+				"curren",
+				"currentIndex"
+			],
+			[
+				"play_s",
+				"play_select_sound"
+			],
+			[
+				"try",
+				"try	Try/Except"
+			],
+			[
+				"secs_",
+				"secs_to_run"
+			],
+			[
+				"secs_to",
+				"secs_to_run_and_active_label"
+			],
+			[
+				"norm",
+				"normTimeEdit"
+			],
+			[
+				"updta",
+				"update_image"
+			],
+			[
+				"secs",
+				"secs_to_run"
+			],
+			[
+				"long",
+				"long_time"
+			],
+			[
+				"shor",
+				"short_time"
+			],
+			[
+				"app",
+				"apply_options"
+			],
+			[
+				"d",
+				"defs	Method"
+			],
+			[
+				"high",
+				"highest_solutions"
+			],
+			[
+				"f",
+				"forv	Vector For Loop"
+			],
+			[
+				"b",
+				"beginend	$1.begin(), $1.end()"
+			],
+			[
+				"img",
+				"img_req"
+			],
+			[
+				"nu",
+				"num_set"
+			],
+			[
+				"sum",
+				"sum_of_all"
+			],
+			[
+				"ove",
+				"obvestila_titles"
+			],
+			[
+				"prin",
+				"print_obvestila_table"
+			],
+			[
+				"ob",
+				"obvestila_links"
+			],
+			[
+				"raw_",
+				"raw_text"
+			],
+			[
+				"text",
+				"text"
+			],
+			[
+				"html",
+				"html_for_table"
+			],
+			[
+				"ht",
+				"html_for_table"
+			],
+			[
+				"get",
+				"get_obvestila_data"
+			],
+			[
+				"Pre",
+				"PrettyTable"
+			],
+			[
+				"raw",
+				"raw_data"
+			],
+			[
+				"ra",
+				"raw_data"
+			],
+			[
+				"make",
+				"make_prettytable"
+			],
+			[
+				"su",
+				"subprocess"
+			],
+			[
+				"_",
+				"_all"
+			],
+			[
+				"mi",
+				"min_"
+			],
+			[
+				"st",
+				"stick_len"
+			],
+			[
+				"from",
+				"fromstring"
+			],
+			[
+				"M",
+				"MAIN_URL"
+			],
+			[
+				"Mai",
+				"MAIN_PAGE_URL"
+			],
+			[
+				"e",
+				"ExponentsOfTwo"
+			],
+			[
+				"time",
+				"timeElapsed"
+			],
+			[
+				"tim",
+				"timeIt"
+			],
+			[
+				"abun",
+				"abundantSums"
+			],
+			[
+				"abu",
+				"abundant_sums"
+			],
+			[
+				"ord",
+				"orderNames"
+			],
+			[
+				"nam",
+				"names_list"
+			],
+			[
+				"to",
+				"total"
+			],
+			[
+				"l",
+				"letter"
+			],
+			[
+				"let",
+				"letter_sum"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/D/Android/dev/SDL2-2.0.4/android-project/jni/src/Android.mk",
+			"settings":
+			{
+				"buffer_size": 600,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/D/Android/dev/SDL2-2.0.4/android-project/jni/SDL2_gfx-1.0.1/Android.mk",
+			"settings":
+			{
+				"buffer_size": 289,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/D/Android/dev/SDL2-2.0.4/android-project/jni/SDL2_image/Android.mk",
+			"settings":
+			{
+				"buffer_size": 4560,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/D/Android/dev/SDL2-2.0.4/android-project/src/org/libsdl/app/SDLActivity.java",
+			"settings":
+			{
+				"buffer_size": 60113,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/D/Android/dev/SDL2-2.0.4/android-project/ant.properties",
+			"settings":
+			{
+				"buffer_size": 715,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/D/Android/dev/SDL2-2.0.4/android-project/src/com/mare5/linpo/LinpoSDL2Activity.java",
+			"settings":
+			{
+				"buffer_size": 120,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/D/Android/dev/SDL2-2.0.4/android-project/res/values/strings.xml",
+			"settings":
+			{
+				"buffer_size": 107,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/D/Android/dev/SDL2-2.0.4/android-project/AndroidManifest.xml",
+			"settings":
+			{
+				"buffer_size": 2064,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/D/Android/dev/SDL2-2.0.4/android-project/jni/Application.mk",
+			"settings":
+			{
+				"buffer_size": 247,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/Vintageous/Vintageous.sublime-build",
+					""
+				],
+				[
+					"Packages/Vintageous/Vintageous.sublime-build",
+					"Vintageous - Test (All)"
+				],
+				[
+					"Packages/Vintageous/Vintageous.sublime-build",
+					"Vintageous - Test (This File Only)"
+				],
+				[
+					"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+					""
+				],
+				[
+					"Packages/User/pythonrun.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/User/pythonrun.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"colo",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"Package Control: l",
+				"Package Control: List Packages"
+			],
+			[
+				"vin",
+				"Set Syntax: Vintageous Command Line"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"c++",
+				"Set Syntax: C++"
+			],
+			[
+				"sspy",
+				"Set Syntax: Python"
+			],
+			[
+				"ssp",
+				"Set Syntax: Python"
+			],
+			[
+				"SSP",
+				"Set Syntax: Python"
+			],
+			[
+				"syn py",
+				"Set Syntax: Python"
+			],
+			[
+				"c+",
+				"Set Syntax: C++"
+			],
+			[
+				"ssc",
+				"Set Syntax: C++"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"packa",
+				"Package Control: Disable Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"instl",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"git stat",
+				"Git: Status"
+			],
+			[
+				"ins",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"pack",
+				"Package Control: Remove Package"
+			],
+			[
+				"package",
+				"Package Control: Remove Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"col",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"colosubl",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"packag",
+				"Package Control: List Packages"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"Package Control: li",
+				"Package Control: List Packages"
+			],
+			[
+				"ru",
+				"SublimeREPL: Python - RUN current file"
+			],
+			[
+				"run",
+				"SublimeREPL: Python - RUN current file"
+			],
+			[
+				"package control instal",
+				"Package Control: Install Package"
+			],
+			[
+				"package control",
+				"Package Control: Remove Package"
+			],
+			[
+				"ss",
+				"Set Syntax: Python"
+			],
+			[
+				"remov",
+				"Package Control: Remove Package"
+			],
+			[
+				"packaga",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 664.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os; pr='Preferences.sublime-settings'; ip='ignored_packages'; n='Package Control'; s=sublime.load_settings(pr); ig=s.get(ip); ig.append(n); s.set(ip,ig); sublime.save_settings('Preferences.sublime-settings'); pf=n+'.sublime-package'; urllib.request.install_opener(urllib.request.build_opener(urllib.request.ProxyHandler())); by=urllib.request.urlopen('https://packagecontrol.io/'+pf.replace(' ','%20')).read(); open(os.path.join(sublime.installed_packages_path(),pf),'wb').write(by); ig.remove(n); s.set(ip,ig); sublime.save_settings(pr); print('Package Control: 3.0.0 upgrade successful!')",
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/D/Android/dev/SDL2-2.0.4/android-project/src/com/tutorial/game/HelloSDL2Activity.java",
+		"/D/Android/dev/SDL2-2.0.4/android-project/jni/SDL2_gfx-1.0.1/Makefile.am",
+		"/D/Android/dev/SDL2-2.0.4/android-project/build.properties",
+		"/D/Android/dev/SDL2-2.0.4/android-project/AndroidManifest.xml",
+		"/D/Android/dev/SDL2-2.0.4/android-project/project.properties",
+		"/D/Android/dev/SDL2-2.0.4/android-project/jni/Application.mk",
+		"/D/Android/dev/SDL2-2.0.4/android-project/jni/SDL2_image/Android.mk",
+		"/D/Android/dev/SDL2-2.0.4/android-project/jni/SDL2/Android.mk",
+		"/D/Android/dev/SDL2-2.0.4/android-project/src/org/libsdl/app/SDLActivity.java",
+		"/D/Android/dev/SDL2-2.0.4/android-project/jni/Android.mk",
+		"/D/Mare5/Documents/Visual Studio 2015/Projects/Linpo/LINPO (LINes & POints).txt",
+		"/C/Users/Mare5/AppData/Local/Temp/superhexagon.DMP",
+		"/C/Users/Mare5/projects/backuper/archived.db",
+		"/C/Users/Mare5/projects/backuper/backuper/dropbox.py",
+		"/C/Users/Mare5/projects/backuper/main.py",
+		"/C/Python35/Tools/scripts/which.py",
+		"/C/Python35/Tools/scripts/treesync.py",
+		"/C/Python35/Tools/scripts/pysource.py",
+		"/C/Python35/Tools/scripts/pydoc3.py",
+		"/C/Python35/Tools/scripts/pindent.py",
+		"/C/Python35/Tools/scripts/pathfix.py",
+		"/C/Python35/Tools/scripts/objgraph.py",
+		"/C/Python35/Tools/scripts/lll.py",
+		"/C/Python35/Tools/scripts/linktree.py",
+		"/C/Python35/Tools/scripts/ifdef.py",
+		"/C/Python35/Tools/scripts/highlight.py",
+		"/C/Python35/Tools/scripts/generate_opcode_h.py",
+		"/C/Python35/Tools/scripts/finddiv.py",
+		"/C/Python35/Tools/scripts/dutree.py",
+		"/C/Python35/Tools/scripts/eptags.py",
+		"/C/Python35/Tools/scripts/copytime.py",
+		"/C/Python35/Tools/scripts/byteyears.py",
+		"/C/Python35/Tools/scripts/byext.py",
+		"/C/Python35/Tools/scripts/diff.py",
+		"/C/Python35/Tools/scripts/win_add2path.py",
+		"/C/Python35/Tools/scripts/md5sum.py",
+		"/C/Python35/Tools/scripts/google.py",
+		"/C/Users/Mare5/projects/backuper/client_secret.json",
+		"/C/Users/Mare5/projects/backuper/client_secret_964483597009-5mnrqiecrnsa75fjld5prpdklt8m6n4s.apps.googleusercontent.com.json",
+		"/C/Users/Mare5/projects/backuper/Logs/2015_Sep_09.txt",
+		"/C/Users/Mare5/projects/backuper/Logs/2015_Sep_08 (2).txt",
+		"/C/Users/Mare5/projects/backuper/Logs/2015_Sep_08.txt",
+		"/D/Cmder/vendor/init.bat",
+		"/D/Cmder/vendor/sources.json",
+		"/C/Users/Mare5/projects/backuper/Logs/2015_Sep_05 (2).txt",
+		"/C/Users/Mare5/projects/backuper/Logs/2015_Sep_05 (1).txt",
+		"/C/Users/Mare5/projects/backuper/Logs/2015_Sep_05.txt",
+		"/C/Users/Mare5/projects/backuper/Logs/2015_Sep_04 (8).txt",
+		"/C/Users/Mare5/projects/backuper/backuper_venv/Lib/site-packages/pip/_vendor/distlib/util.py",
+		"/C/Users/Mare5/projects/backuper/Logs/2015_Sep_04.txt",
+		"/C/Users/Mare5/projects/backuper/Logs/2015_Sep_03 (12).txt",
+		"/C/Users/Mare5/projects/backuper/backuper/structurebackup.py",
+		"/C/Users/Mare5/projects/hi10anime/asdf",
+		"/C/Windows/System32/drivers/etc/hosts",
+		"/C/Users/Mare5/projects/asdf.mkv",
+		"/C/Users/Mare5/projects/hi10anime/Logs/2015_Aug_21.txt",
+		"/C/Users/Mare5/projects/hi10anime/log_file",
+		"/C/Users/Mare5/projects/GIMB/gimb.py",
+		"/C/Users/Mare5/projects/Deviant Art Downloader/deviantartgui.py",
+		"/C/Users/Mare5/projects/manga-downloader/manga_downloader_threaded.py",
+		"/C/Users/Mare5/projects/myrequests/(Hi10)_Fairy_Tail_S2_-_25_(200)_(720p)_(HS_Hatsuyuki-Kaitou)_(9682BE73).mkv",
+		"/C/Users/Mare5/sadf.mkv",
+		"/C/Users/Mare5/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/Mare5/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/Mare5/projects/random/PySide/qtquick/TRTA/TRTA/qml/TRTA.qml",
+		"/C/Users/Mare5/projects/random/PySide/qtquick/TRTA/TRTA/TRTAQtQuick.py",
+		"/C/Users/Mare5/projects/random/PySide/qtquick/samegame/Block.qml",
+		"/C/Users/Mare5/projects/random/PySide/qtquick/samegame/Button.qml",
+		"/C/Users/Mare5/projects/random/PySide/qtquick/samegame/samegame.qml",
+		"/C/Users/Mare5/projects/random/PySide/qtquick/helloworld/main.py",
+		"/C/Users/Mare5/projects/random/PySide/qtquick/helloworld/Cell.qml",
+		"/C/Users/Mare5/projects/random/PySide/qtquick/helloworld/view.qml",
+		"/C/Users/Mare5/projects/files/files/fileutils.py",
+		"/C/Users/Mare5/projects/files/files/structurebackup.py",
+		"/C/Users/Mare5/projects/files/main.py",
+		"/C/Users/Mare5/projects/Reminderer/reminderer_tracker.txt",
+		"/C/Users/Mare5/projects/pomodoro/TRACKER.txt",
+		"/C/Users/Mare5/projects/Pose viewer/poseviewer/guiwidgets.py",
+		"/C/Users/Mare5/projects/Pose viewer/poseviewer/corewidgets.py",
+		"/C/Users/Mare5/projects/Pose viewer/poseviewer/poseviewer.py",
+		"/C/Users/Mare5/projects/Pose viewer/main.py",
+		"/C/Users/Mare5/projects/pomodoro/pomodoro.py",
+		"/C/Users/Mare5/projects/Deviant Art Downloader/daGui.py",
+		"/C/Users/Mare5/projects/random/PySide/test.py",
+		"/C/Users/Mare5/projects/Pose viewer/poseviewer/ui/poseviewerMainGui.py",
+		"/C/Users/Mare5/projects/Pose viewer/poseviewer.py",
+		"/C/Users/Mare5/projects/random/PySide/qtquick/helloworld/string.qml",
+		"/C/Users/Mare5/Downloads/2015_Jul_03_ebooks_BACKUP.txt",
+		"/C/Users/Mare5/projects/files/structbackup_venv/Lib/site-packages/rsa/cli.py",
+		"/C/Users/Mare5/projects/files/structbackup_venv/Lib/site-packages/rsa/bigfile.py",
+		"/C/Users/Mare5/projects/files/credentials.json",
+		"/C/Users/Mare5/projects/files/cred.json",
+		"/C/Program Files (x86)/osu!/scores.db",
+		"/C/Program Files (x86)/osu!/osu!.cfg",
+		"/C/Users/Mare5/projects/files/settings.dat",
+		"/C/Users/Mare5/Downloads/main.py",
+		"/C/Users/Mare5/projects/files/.git/COMMIT_EDITMSG",
+		"/C/Users/Mare5/projects/files/files/client_secrets.json",
+		"/C/Users/Mare5/projects/random/PySide/newslotsandsignals.py",
+		"/C/Users/Mare5/projects/files/structbackup/Include/abstract.h",
+		"/C/Users/Mare5/Pictures/asdfasd.txt",
+		"/C/Program Files (x86)/Vim/vim74/autoload/pythoncomplete.vim",
+		"/C/Program Files (x86)/Vim/_vimrc~",
+		"/C/Program Files (x86)/Vim/_vimrc",
+		"/C/Program Files (x86)/Vim/vimfiles/colors/monokai.vim",
+		"/C/Users/Mare5/Documents/Visual Studio 2013/Projects/try/try/rosalind_lcsm.txt",
+		"/C/Users/Mare5/Documents/Visual Studio 2013/Projects/rosalind_lcsm.txt",
+		"/C/Users/Mare5/projects/Rosalind/dna_into_rna.py",
+		"/C/Users/Mare5/projects/Rosalind/dna_nucleotides.py",
+		"/C/Users/Mare5/projects/Rosalind/point_mutations.py",
+		"/C/Users/Mare5/projects/Rosalind/rearrange.py",
+		"/C/Users/Mare5/projects/Rosalind/protein.py",
+		"/C/Users/Mare5/projects/Rosalind/signed_perm.py",
+		"/C/Users/Mare5/projects/Rosalind/prot_mass.py",
+		"/C/Users/Mare5/projects/Rosalind/fibd.py",
+		"/C/Users/Mare5/Documents/Visual Studio 2013/Projects/try/try/rosalind_splc.txt",
+		"/C/Users/Mare5/Documents/Visual Studio 2013/Projects/try/try/rosalind_subs.txt",
+		"/C/Users/Mare5/projects/Rosalind/lexv.cpp",
+		"/C/Users/Mare5/projects/Rosalind/lexf.cpp",
+		"/C/Users/Mare5/projects/Rosalind/lexv.py",
+		"/C/Users/Mare5/projects/Reminderer/.git/COMMIT_EDITMSG",
+		"/C/Users/Mare5/projects/Pose viewer/poseviewerMainGui.py",
+		"/C/Users/Mare5/projects/random/C++/Accelerated Programming/ch9_student.h",
+		"/C/Users/Mare5/projects/random/C++/Accelerated Programming/ch6-main.cpp",
+		"/C/Users/Mare5/projects/random/C++/Accelerated Programming/ch6_student_info.h",
+		"/C/Users/Mare5/projects/random/C++/Accelerated Programming/ch6operations.h",
+		"/C/Users/Mare5/projects/Reminderer/.gitignore",
+		"/C/Users/Mare5/projects/random/APIhooking/Api hooking revealed/TestApp/TestApp.cpp"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+			"<project>",
+			"c:\\users\\mare5\\projects\\*,<project>",
+			"c:\\users\\mare5\\projects\\-*.py,<project>",
+			"c:\\users\\mare5\\projects\\-*.py",
+			"c:\\users\\mare5\\projects\\*.py",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"// load the .so",
+			"folder_download_sync",
+			"download_sync_folder",
+			"add_field",
+			"download_folder_builder",
+			"db_create",
+			"success",
+			"entry",
+			"full_download_sync",
+			"self",
+			"        Note:\n            MUST include files(trashed) in fields argument.",
+			"query",
+			"download_new_files",
+			"get_changes",
+			"2",
+			"db_get",
+			"md5",
+			"write_last_change_token",
+			"list_files_in_folder",
+			"download_path_root",
+			"filename",
+			"download",
+			"name",
+			"show_progress_bar",
+			"progress_bar",
+			"dynamic_print",
+			"progress_bar",
+			"CHUNK_SIZE",
+			"name_from_path",
+			"rsplit",
+			"name",
+			"self.get_folders_to_sync",
+			"get_folders_to_sync",
+			"archive.path",
+			"_path",
+			"get_paths_to_sync",
+			"modified_date",
+			"self.google.upload",
+			"get_stored_file_id",
+			"ResumableUploadError",
+			"retry_operation",
+			"ResumableUploadError",
+			"MAX_RETRIES",
+			"num_retries",
+			"NUM_RETRIES",
+			"num_retries",
+			"wait_time",
+			"THREADS",
+			"threads",
+			"new_id",
+			"IntegrityError",
+			"parents",
+			"_determine_update_or_insert",
+			"ASCII_ESC_CODES",
+			"dynamic_print",
+			"max_workers",
+			"backup_dirs",
+			"Backuper",
+			"backuper",
+			"backup_dirs_to_archive",
+			"db",
+			"parents",
+			"log",
+			"paths_to_process",
+			"CLIENT_SECRETS_FILE",
+			"config",
+			"Config",
+			"config",
+			"title",
+			"fields='*'",
+			"get_modified_date",
+			"change_id",
+			"get_change",
+			"token",
+			"get_modified_date",
+			"modifiedDate",
+			"items",
+			"list_all",
+			"title",
+			"write_last_change_token",
+			"fields=None",
+			"\".*Date.*\"",
+			"*Date",
+			"modificationDate",
+			"deleted",
+			"items",
+			"star_page_token",
+			"last_change_id",
+			"change_id",
+			"write_last_change_id",
+			"last_change_id",
+			"get_last_change_id",
+			"start_change_id",
+			"drive_service.changes",
+			"get_changes\\(",
+			"get_changes(",
+			"get_drive_last_removed",
+			"read_paths_to_backup",
+			"credentials",
+			"google",
+			"Google",
+			"google",
+			"        if google is None:\n            google = self.google\n\n",
+			"        if google is not None:\n            google = self.google\n",
+			", google=None",
+			"google=None",
+			"self.google",
+			"mime",
+			"del_removed_from_drive",
+			"dropbox",
+			"Dropbox",
+			"dropbox",
+			"temp_dir",
+			"list_all",
+			"mimetypes",
+			"create_folder",
+			"file_to_drive",
+			"dir_to_drive",
+			"google.upload",
+			"path=",
+			"DriveArchive, path=",
+			"google.upload",
+			"unify_path",
+			"scandir",
+			"Queue",
+			"google",
+			"self.google",
+			"google=None"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"format_seconds",
+			"time_elapsed_timer",
+			"self.mw.",
+			"TimeOptions",
+			"Y",
+			"V",
+			"U",
+			"/",
+			"timeElapsedTimer"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/D/Android/dev/SDL2-2.0.4/android-project/jni/src/Android.mk",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 600,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								407,
+								407
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/D/Android/dev/SDL2-2.0.4/android-project/jni/SDL2_gfx-1.0.1/Android.mk",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 289,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								206,
+								206
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/D/Android/dev/SDL2-2.0.4/android-project/jni/SDL2_image/Android.mk",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4560,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4480,
+								4527
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/D/Android/dev/SDL2-2.0.4/android-project/src/org/libsdl/app/SDLActivity.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 60113,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2510,
+								2510
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 900.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/D/Android/dev/SDL2-2.0.4/android-project/ant.properties",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 715,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								715,
+								715
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/JavaProperties.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/D/Android/dev/SDL2-2.0.4/android-project/src/com/mare5/linpo/LinpoSDL2Activity.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 120,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								93,
+								93
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/D/Android/dev/SDL2-2.0.4/android-project/res/values/strings.xml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 107,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								84,
+								84
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/D/Android/dev/SDL2-2.0.4/android-project/AndroidManifest.xml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2064,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1323,
+								1323
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 90.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/D/Android/dev/SDL2-2.0.4/android-project/jni/Application.mk",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 247,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								153,
+								153
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "linpo-android.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"go",
+				"backuper\\googledrive.py"
+			],
+			[
+				"mai",
+				"main.py"
+			],
+			[
+				"ima",
+				"poseviewer\\imageloader.py"
+			],
+			[
+				"stru",
+				"files\\files\\structurebackup.py"
+			],
+			[
+				"pom",
+				"pomodoro\\pomodoro.py"
+			],
+			[
+				"pose",
+				"Pose viewer\\poseviewer.py"
+			],
+			[
+				"rep",
+				"*REPL* [python]"
+			],
+			[
+				"str",
+				"files\\files\\structurebackup.py"
+			],
+			[
+				"main.",
+				"files\\main.py"
+			],
+			[
+				"pomo",
+				"pomodoro\\pomodoro.py"
+			],
+			[
+				"d",
+				"Deviant Art Downloader\\daGui.py"
+			],
+			[
+				"dev",
+				"Deviant Art Downloader\\deviantartgui.py"
+			],
+			[
+				"gitig",
+				"Pose viewer\\.gitignore"
+			],
+			[
+				"po",
+				"pomodoro\\pomodoro.py"
+			],
+			[
+				"icons_r",
+				"pomodoro\\icons_rc.py"
+			],
+			[
+				"icon",
+				"pomodoro\\icons.qrc"
+			],
+			[
+				"tra",
+				"pomodoro\\TRACKER.txt"
+			],
+			[
+				"pomodo",
+				"pomodoro\\main_pomodoro.py"
+			],
+			[
+				"",
+				"Pose viewer\\poseviewerMainGui.py"
+			],
+			[
+				"main_po",
+				"pomodoro\\main_pomodoro.py"
+			],
+			[
+				"mang",
+				"manga-downloader\\manga_downloader.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\Users\\Mare5\\projects\\backuper\\backuper.sublime-project"
+			],
+			[
+				"pose",
+				"C:\\Users\\Mare5\\projects\\Pose viewer\\poseviewer.sublime-project"
+			],
+			[
+				"pyto",
+				"C:\\Users\\Mare5\\projects\\pytools\\pytools.sublime-project"
+			],
+			[
+				"pos",
+				"C:\\Users\\Mare5\\projects\\Pose viewer\\poseviewer.sublime-project"
+			],
+			[
+				"po",
+				"C:\\Users\\Mare5\\projects\\Pose viewer\\poseviewer.sublime-project"
+			],
+			[
+				"opse",
+				"C:\\Users\\Mare5\\projects\\Pose viewer\\poseviewer.sublime-project"
+			],
+			[
+				"ba",
+				"C:\\Users\\Mare5\\projects\\files\\backuper.sublime-workspace"
+			],
+			[
+				"back",
+				"C:\\Users\\Mare5\\projects\\files\\backuper.sublime-project"
+			],
+			[
+				"hi",
+				"C:\\Users\\Mare5\\projects\\hi10anime\\hi10anime.sublime-project"
+			],
+			[
+				"bak",
+				"C:\\Users\\Mare5\\projects\\files\\backuper.sublime-project"
+			],
+			[
+				"h",
+				"C:\\Users\\Mare5\\projects\\hi10anime\\hi10anime.sublime-project"
+			],
+			[
+				"hii",
+				"C:\\Users\\Mare5\\projects\\hi10anime\\hi10anime.sublime-project"
+			],
+			[
+				"da",
+				"C:\\Users\\Mare5\\projects\\Deviant Art Downloader\\dadownloader.sublime-project"
+			],
+			[
+				"fil",
+				"C:\\Users\\Mare5\\projects\\files\\backuper.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 104.0,
+		"last_filter": "timeela",
+		"selected_items":
+		[
+			[
+				"timeela",
+				"TimeElapsedThread"
+			]
+		],
+		"width": 392.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 254.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

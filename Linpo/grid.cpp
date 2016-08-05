@@ -2,7 +2,7 @@
 #include "grid.h"
 #include "globals.h"
 #include "constants.h"
-#include "sharedfunctions.h"
+#include "shared_functions.h"
 #include "render_functions.h"
 
 

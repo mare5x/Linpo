@@ -3,7 +3,7 @@
 #include <vector>
 #include <SDL.h>
 #include "constants.h"
-#include "texturewrapper.h"
+#include "texture_wrapper.h"
 #include "player.h"
 #include "grid_types.h"
 
@@ -27,8 +27,8 @@ public:
 	std::vector<ScoreBox> get_boxes_around_line(Line &line);  // it is actually const Line &line
 	Line &get_last_line_placed();
 	int get_grid_point_index(int row, int col);
-	const int &get_rows() const { return rows; }
-	const int &get_cols() const { return cols; }
+	const int &get_rows() const { return this->rows; }
+	const int &get_cols() const { return this->cols; }
 	SDL_Point get_point_distance();
 
 	void add_grid_score_boxes(std::vector<ScoreBox> &score_boxes, Player &player);
@@ -61,7 +61,9 @@ private:
 
 	SDL_Rect viewport_rect;
 
-	const int cols, const rows, const n_edges;
+	const int cols;
+	const int rows;
+	const int n_edges;
 	int width, height;
 	int point_radius, line_width;
 

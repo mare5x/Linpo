@@ -1,8 +1,10 @@
-#include "sharedfunctions.h"
+#include "SDL_ttf.h"
+
+#include "shared_functions.h"
 #include "constants.h"
 #include "globals.h"
 #include "grid.h"
-#include "fpstimer.h"
+#include "fps_timer.h"
 #include "linpo.h"
 #include "score_board.h"
 
@@ -13,6 +15,20 @@ bool init()
 	{
 		mlog("Error with SDL_Init: ", SDL_GetError());
 		return false;
+	}
+
+	if (TTF_Init() == -1) {
+		mlog("TTF_Init error: ", TTF_GetError());
+		return false;
+	}
+	else
+	{
+		global_font = TTF_OpenFont("resources/OpenSans-Regular.ttf", 18);
+		if (global_font == NULL)
+		{
+			mlog("TTF_OpenFont error: ", TTF_GetError());
+			return false;
+		}
 	}
 
 	if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
@@ -50,11 +66,15 @@ bool init()
 
 void close()
 {
-	main_renderer = nullptr;
 	SDL_DestroyRenderer(main_renderer);
-
-	main_window = nullptr;
 	SDL_DestroyWindow(main_window);
+	main_renderer = nullptr;
+	main_window = nullptr;
+
+	TTF_CloseFont(global_font);
+	global_font = nullptr;
+
+	TTF_Quit();
 	SDL_Quit();
 }
 
@@ -112,6 +132,8 @@ int main(int argc, char* argv[])
 }
 
 // TODO: options screen
+// TODO: ANDROID!
+//		-> pinch to zoom
 
 // TODO: use std::set for grid_lines
 // TODO: make textures be only of necessary size

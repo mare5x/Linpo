@@ -1,5 +1,4 @@
-#include "fpstimer.h"
-#include "fpstimer.h"
+#include "fps_timer.h"
 
 
 Timer::Timer()

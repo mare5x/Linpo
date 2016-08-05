@@ -1,16 +1,23 @@
-#include "texturewrapper.h"
+#include "texture_wrapper.h"
 
-TextureWrapper::TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access, SDL_Color base_color)
-	: renderer(renderer), width(w), height(h), access(access), base_color(base_color)
+TextureWrapper::TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access, SDL_Color base_color) : 
+	renderer(renderer), width(w), height(h), access(access), base_color(base_color)
 {
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, w, h);
 }
 
+TextureWrapper::TextureWrapper(SDL_Renderer *& renderer) : 
+	renderer(renderer)
+{
+	texture = nullptr;
+	width = 0;
+	height = 0;
+	// private variables are ignored
+}
+
 TextureWrapper::~TextureWrapper()
 {
-	SDL_DestroyTexture(texture);
-	texture = nullptr;
-	renderer = nullptr;
+	free();
 }
 
 void TextureWrapper::resize(int new_width, int new_height)
@@ -51,6 +58,14 @@ void TextureWrapper::clear(const SDL_Color &clear_color)
 	SDL_RenderClear(renderer);
 }
 
+void TextureWrapper::free()
+{
+	SDL_DestroyTexture(texture);
+	texture = nullptr;
+	width = 0;
+	height = 0;
+}
+
 void TextureWrapper::render()
 {
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
@@ -63,5 +78,10 @@ void TextureWrapper::render(int x, int y)
 	dest_rect.y = y;
 	dest_rect.w = width;
 	dest_rect.h = height;
+	SDL_RenderCopy(renderer, texture, NULL, &dest_rect);
+}
+
+void TextureWrapper::render(const SDL_Rect &dest_rect)
+{
 	SDL_RenderCopy(renderer, texture, NULL, &dest_rect);
 }
