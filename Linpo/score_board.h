@@ -13,7 +13,6 @@ class ScoreBoard
 {
 public:
 	ScoreBoard(std::array<Player, N_PLAYERS> &players_array, Grid &game_grid);
-	~ScoreBoard();
 
 	void handle_event(SDL_Event &e);
 	void render();

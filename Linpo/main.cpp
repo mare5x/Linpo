@@ -23,7 +23,7 @@ bool init()
 	}
 	else
 	{
-		global_font = TTF_OpenFont("resources/OpenSans-Regular.ttf", 18);
+		global_font = TTF_OpenFont("resources/OpenSans-Regular.ttf", GLOBAL_FONT_SIZE);
 		if (global_font == NULL)
 		{
 			mlog("TTF_OpenFont error: ", TTF_GetError());

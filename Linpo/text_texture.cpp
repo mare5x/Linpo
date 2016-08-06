@@ -1,12 +1,34 @@
 #include "SDL_ttf.h"
 #include "globals.h"
+#include "constants.h"
 #include "text_texture.h"
 
-void TextTexture::write_text(const std::string & s, const SDL_Color & color)
+TextTexture::TextTexture(SDL_Renderer* &renderer) :
+	TextureWrapper(renderer)
+{
+	text_font = global_font;
+	font_size = GLOBAL_FONT_SIZE;
+}
+
+TextTexture::~TextTexture()
+{
+	if (text_font != nullptr)
+		TTF_CloseFont(text_font);
+}
+
+void TextTexture::write_text(const std::string &s, const SDL_Color &color, const char &font_size)
 {
 	free();
 
-	SDL_Surface* text_surface = TTF_RenderText_Solid(global_font, s.c_str(), color);
+	if (this->font_size != font_size)
+	{
+		if (text_font != nullptr && text_font != global_font)
+			TTF_CloseFont(text_font);
+		text_font = TTF_OpenFont("resources/OpenSans-Regular.ttf", font_size);
+		this->font_size = font_size;
+	}
+
+	SDL_Surface* text_surface = TTF_RenderText_Blended(text_font, s.c_str(), color);
 	if (text_surface != NULL)
 	{
 		texture = SDL_CreateTextureFromSurface(renderer, text_surface);

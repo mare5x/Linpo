@@ -8,7 +8,7 @@ ScoreBoard::ScoreBoard(std::array<Player, N_PLAYERS> &players_array, Grid &game_
 	viewport_rect.x = 0;
 	viewport_rect.y = 0;
 	viewport_rect.w = SCREEN_WIDTH;
-	viewport_rect.h = 20;
+	viewport_rect.h = 0.05 * SCREEN_HEIGHT;
 	
 	_prev_score = 0;
 
@@ -17,10 +17,6 @@ ScoreBoard::ScoreBoard(std::array<Player, N_PLAYERS> &players_array, Grid &game_
 
 	update_scoreboard_textures();
 	update_texture_positions();
-}
-
-ScoreBoard::~ScoreBoard()
-{
 }
 
 void ScoreBoard::handle_event(SDL_Event &e)
@@ -42,8 +38,10 @@ void ScoreBoard::render()
 
 void ScoreBoard::resize()
 {
-	SDL_GetRendererOutputSize(main_renderer, &viewport_rect.w, NULL);
+	SDL_GetRendererOutputSize(main_renderer, &viewport_rect.w, &viewport_rect.h);
+	viewport_rect.h = 0.05 * viewport_rect.h;
 
+	update_scoreboard_textures();
 	update_texture_positions();
 }
 
@@ -53,7 +51,7 @@ void ScoreBoard::update_scoreboard_textures()
 	{
 		std::stringstream s;
 		s << "Player " << i + 1 << ": " << players[i].score;
-		scoreboard_textures[i]->write_text(s.str(), players[i].color);
+		scoreboard_textures[i]->write_text(s.str(), players[i].color, 0.75 * viewport_rect.h);
 	}
 }
 
