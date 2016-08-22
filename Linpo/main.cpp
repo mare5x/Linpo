@@ -1,6 +1,5 @@
 #include "SDL_ttf.h"
 
-#include "shared_functions.h"
 #include "constants.h"
 #include "globals.h"
 #include "grid.h"
@@ -13,33 +12,19 @@ bool init()
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	{
-		mlog("Error with SDL_Init: ", SDL_GetError());
+		SDL_Log("Error with SDL_Init: %s", SDL_GetError());
 		return false;
-	}
-
-	if (TTF_Init() == -1) {
-		mlog("TTF_Init error: ", TTF_GetError());
-		return false;
-	}
-	else
-	{
-		global_font = TTF_OpenFont("resources/OpenSans-Regular.ttf", GLOBAL_FONT_SIZE);
-		if (global_font == NULL)
-		{
-			mlog("TTF_OpenFont error: ", TTF_GetError());
-			return false;
-		}
 	}
 
 	if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
 	{
-		mlog("Warning: Linear texture filtering not enabled!");
+		SDL_Log("Warning: Linear texture filtering not enabled!");
 	}
 
 	main_window = SDL_CreateWindow("Linpo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (main_window == nullptr)
 	{
-		mlog("Error creating main_window: ", SDL_GetError());
+		SDL_Log("Error creating main_window: %s", SDL_GetError());
 		return false;
 	}
 	else
@@ -51,12 +36,26 @@ bool init()
 
 		if (main_renderer == nullptr)
 		{
-			mlog("Error creating main_renderer: ", SDL_GetError());
+			SDL_Log("Error creating main_renderer: %s", SDL_GetError());
 			return false;
 		}
 		else
 		{
 			SDL_SetRenderDrawColor(main_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		}
+	}
+
+	if (TTF_Init() == -1) {
+		SDL_Log("TTF_Init error: %s", TTF_GetError());
+		return false;
+	}
+	else
+	{
+		global_font = TTF_OpenFont("resources/OpenSans-Regular.ttf", calculate_font_size());
+		if (global_font == NULL)
+		{
+			SDL_Log("TTF_OpenFont error: %s", TTF_GetError());
+			return false;
 		}
 	}
 

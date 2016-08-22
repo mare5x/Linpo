@@ -27,8 +27,8 @@ public:
 	void render(const SDL_Rect &dest_rect);
 
 	SDL_Texture* get_texture() { return texture; }
-	int get_width() { return width; }
-	int get_height() { return height; }
+	const int &get_width() const { return width; }
+	const int &get_height() const { return height; }
 protected:
 	SDL_Renderer* &renderer;
 	SDL_Texture* texture;

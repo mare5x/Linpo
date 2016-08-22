@@ -24,3 +24,12 @@ struct ScoreBox
 	char score;
 	Player* owner;
 };
+
+
+inline bool operator==(const Line &lhs, const Line &rhs) {
+	return lhs.owner == rhs.owner && lhs.start == rhs.start && lhs.end == rhs.end;
+}
+
+inline bool operator!=(const Line &lhs, const Line &rhs) {
+	return !(lhs == rhs);
+}

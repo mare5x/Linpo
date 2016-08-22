@@ -793,6 +793,8 @@
 	},
 	"file_history":
 	[
+		"/D/Android/dev/SDL2-2.0.4/android-project/res/layout/main.xml",
+		"/C/Users/Mare5/projects/pixivdl/config",
 		"/D/Android/dev/SDL2-2.0.4/android-project/jni/SDL2_image/Android.mk",
 		"/D/Android/dev/SDL2-2.0.4/android-project/jni/SDL2_gfx-1.0.1/Android.mk",
 		"/D/Android/dev/SDL2-2.0.4/android-project/src/com/tutorial/game/HelloSDL2Activity.java",
@@ -918,9 +920,7 @@
 		"/C/Users/Mare5/projects/Pose viewer/poseviewerMainGui.py",
 		"/C/Users/Mare5/projects/random/C++/Accelerated Programming/ch9_student.h",
 		"/C/Users/Mare5/projects/random/C++/Accelerated Programming/ch6-main.cpp",
-		"/C/Users/Mare5/projects/random/C++/Accelerated Programming/ch6_student_info.h",
-		"/C/Users/Mare5/projects/random/C++/Accelerated Programming/ch6operations.h",
-		"/C/Users/Mare5/projects/Reminderer/.gitignore"
+		"/C/Users/Mare5/projects/random/C++/Accelerated Programming/ch6_student_info.h"
 	],
 	"find":
 	{
@@ -1098,7 +1098,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -1114,8 +1114,8 @@
 						"selection":
 						[
 							[
-								94,
-								94
+								497,
+								497
 							]
 						],
 						"settings":
@@ -1126,7 +1126,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -1151,10 +1151,10 @@
 							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 495.0,
+						"translation.y": 361.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -1181,10 +1181,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 990.0,
+						"translation.y": 1418.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -1240,7 +1240,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -1256,8 +1256,8 @@
 						"selection":
 						[
 							[
-								84,
-								84
+								107,
+								107
 							]
 						],
 						"settings":
@@ -1268,7 +1268,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -1284,8 +1284,8 @@
 						"selection":
 						[
 							[
-								438,
-								438
+								981,
+								999
 							]
 						],
 						"settings":
@@ -1295,10 +1295,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 45.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -1326,7 +1326,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 7,
 					"type": "text"
 				}
 			]
