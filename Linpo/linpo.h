@@ -16,8 +16,6 @@ public:
 
 	void update();
 
-	int calculate_score();
-
 	bool is_game_over();
 
 	Player &get_current_player();

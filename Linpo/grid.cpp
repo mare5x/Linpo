@@ -2,11 +2,11 @@
 #include "grid.h"
 #include "globals.h"
 #include "constants.h"
-#include "shared_functions.h"
 #include "render_functions.h"
 
 
-Grid::Grid(int cols, int rows) : cols(cols), rows(rows), n_edges(2 * rows * cols - rows - cols)
+Grid::Grid(int cols, int rows) : 
+	cols(cols), rows(rows), n_edges(2 * rows * cols - rows - cols)
 {
 	point_radius = 5;
 	line_width = 2 * point_radius;
@@ -15,6 +15,18 @@ Grid::Grid(int cols, int rows) : cols(cols), rows(rows), n_edges(2 * rows * cols
 	grid_texture = new TextureWrapper(main_renderer, viewport_rect.w, viewport_rect.h);
 	hover_line_texture = new TextureWrapper(main_renderer, 0, 0);
 	
+	// initialize score_textures
+	for (int i = 0; i < N_PLAYERS; ++i)
+	{
+		for (int score = 1; score <= 4; ++score)
+		{
+			const int index = (i * 4) + score - 1;
+			const char score_str[2] = { score + '0', '\0' };
+			score_textures[index] = std::make_unique<TextTexture>(main_renderer);
+			score_textures[index]->write_text(score_str, COLORS[i]);
+		}
+	}
+
 	mouse_x = 0;
 	mouse_y = 0;
 	mouse_clicked = false;
@@ -78,14 +90,14 @@ void Grid::update_grid_texture()
 	grid_texture->clear();
 
 	for (const auto &line : grid_lines)
-		render_line(*line.start, *line.end, line_width, line.owner->color);
+		render_line(*line.start, *line.end, line_width, *line.owner->color);
 
 	for (const auto &grid_box_score : grid_score_boxes)
 	{
-		render_box_score(grid_box_score.score, *grid_box_score.top_left, grid_box_score.owner->color);
+		render_box_score(grid_box_score.score, *grid_box_score.top_left, *grid_box_score.owner);
 	}
 
-	render_points(grid_points, point_radius, { 0, 0, 0, 0xFF });
+	render_points(grid_points, point_radius, COLORS[BLACK]);
 
 	if (_show_collision_boxes)
 	{
@@ -107,7 +119,7 @@ void Grid::update_hover_line_texture()
 	else  // horizontal
 		hover_line_texture->resize(get_point_distance().x, line_width);
 
-	auto hover_line_color = hover_line.owner->color;
+	SDL_Color hover_line_color = *hover_line.owner->color;
 	hover_line_color.a = 60;
 	hover_line_texture->clear(hover_line_color);
 
@@ -455,16 +467,19 @@ bool Grid::check_collision(int x, int y, CollisionRect &target_rect)
 	return false;
 }
 
-void Grid::render_box_score(const char score, const SDL_Point &top_left, const SDL_Color &color)
+void Grid::render_box_score(const char score, const SDL_Point &top_left, const Player &player)
 {
-	const char font_width = 8;  // temp
-	auto point_distance = get_point_distance();
+	const auto &point_distance = get_point_distance();
 
-	SDL_Point centered_top_left;
-	centered_top_left.x = top_left.x + (point_distance.x / 2) - (font_width) + point_radius;
-	centered_top_left.y = top_left.y + (point_distance.y / 2) - (font_width) + point_radius;
+	const auto &score_texture = score_textures[(player.id * 4) + score - 1];
 
-	render_char(score + '0', centered_top_left, color);
+	const int &text_width = score_texture->get_width();
+	const int &text_height = score_texture->get_height();
+
+	int x = top_left.x + (point_distance.x / 2) - (text_width / 2);
+	int y = top_left.y + (point_distance.y / 2) - (text_height / 2) - (point_radius / 2);
+	
+	score_texture->render(x, y);
 }
 
 std::vector<SDL_Point> &Grid::get_grid_points()

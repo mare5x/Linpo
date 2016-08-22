@@ -4,7 +4,8 @@
 
 struct Player
 {
+	char id;
 	int score;
-	SDL_Color color;
+	const SDL_Color* color;
 	bool is_ai;
 };

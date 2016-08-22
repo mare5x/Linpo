@@ -7,10 +7,13 @@ Linpo::Linpo(Grid &game_grid) : game_grid(game_grid)
 	ai_logic = AI_ENABLED ? new AI_Logic(game_grid) : nullptr;
 
 	players = {};
-	players[0].color = { 0, 0, 255, 255 };
-	players[1].color = { 255, 0, 0, 255 };
+	for (int i = 0; i < players.size(); ++i)
+	{
+		players[i].color = &COLORS[i];
+		players[i].id = i;
+	}
+
 	players[1].is_ai = AI_ENABLED ? true : false;
-	//players[2].color = { 0, 255, 0, 255 };
 
 	player_index = 0;
 

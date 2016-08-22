@@ -73,9 +73,6 @@
     <ClInclude Include="fps_timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shared_functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="texture_wrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>

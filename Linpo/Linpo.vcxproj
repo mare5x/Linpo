@@ -143,7 +143,6 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="render_functions.h" />
     <ClInclude Include="score_board.h" />
-    <ClInclude Include="shared_functions.h" />
     <ClInclude Include="texture_wrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

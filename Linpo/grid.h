@@ -1,9 +1,12 @@
 #pragma once
 
 #include <vector>
+#include <array>
+#include <memory>
 #include <SDL.h>
 #include "constants.h"
 #include "texture_wrapper.h"
+#include "text_texture.h"
 #include "player.h"
 #include "grid_types.h"
 
@@ -21,7 +24,6 @@ public:
 	void resize_update();
 
 	void render();
-	void render_box_score(const char score, const SDL_Point &top_left, const SDL_Color &color);
 
 	std::vector<SDL_Point> &get_grid_points();
 	std::vector<ScoreBox> get_boxes_around_line(Line &line);  // it is actually const Line &line
@@ -58,6 +60,7 @@ private:
 	ScoreBox make_box(const Line &top_line, const Line &right_line, const Line &bot_line, const Line &left_line, Player &player);
 	bool find_box(const Line* base_line, Line* &top, Line* &right, Line* &bot, Line* &left);
 	int calculate_box_score(const Line &top, const Line &right, const Line &bot, const Line &left, const Player &last_player);
+	void render_box_score(const char score, const SDL_Point &top_left, const Player &player);
 
 	SDL_Rect viewport_rect;
 
@@ -80,5 +83,7 @@ private:
 	std::vector<CollisionRect> grid_collision_rects;
 	std::vector<ScoreBox> grid_score_boxes;
 	
+	std::array<std::unique_ptr<TextTexture>, N_PLAYERS * 4> score_textures;
+
 	TextureWrapper* grid_texture, *hover_line_texture;
 };

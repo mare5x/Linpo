@@ -3,7 +3,8 @@
 #include "render_functions.h"
 
 
-ScoreBoard::ScoreBoard(std::array<Player, N_PLAYERS> &players_array, Grid &game_grid) : players(players_array), game_grid(game_grid)
+ScoreBoard::ScoreBoard(std::array<Player, N_PLAYERS> &players_array, Grid &game_grid) : 
+	players(players_array), game_grid(game_grid)
 {
 	viewport_rect.x = 0;
 	viewport_rect.y = 0;
@@ -51,7 +52,7 @@ void ScoreBoard::update_scoreboard_textures()
 	{
 		std::stringstream s;
 		s << "Player " << i + 1 << ": " << players[i].score;
-		scoreboard_textures[i]->write_text(s.str(), players[i].color, 0.75 * viewport_rect.h);
+		scoreboard_textures[i]->write_text(s.str(), *players[i].color);
 	}
 }
 
