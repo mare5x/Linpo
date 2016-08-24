@@ -1,7 +1,8 @@
 #pragma once
 
 #include "SDL.h"
-#include <vector>
+#include <array>
+#include "constants.h"
 #include "menu_items.h"
 
 
@@ -13,6 +14,8 @@ public:
 	void handle_event(SDL_Event &e);
 	void render();
 
+	MENU_OPTION get_selected_option();
+
 	bool is_visible();
 private:
 	void resize_update();
@@ -20,5 +23,5 @@ private:
 	bool visible;
 	int width, height;
 
-	std::vector<std::unique_ptr<MenuItem>> menu_items;
+	std::array<std::unique_ptr<MenuItem>, (int)MENU_OPTION::_N_OPTIONS - 1> menu_items;  // -1 because of NULL_OPTION
 };

@@ -79,6 +79,25 @@ void close()
 }
 
 
+void handle_option(const MENU_OPTION &option)
+{
+	switch (option)
+	{
+	case MENU_OPTION::NULL_OPTION:
+		break;
+	case MENU_OPTION::RESTART_GAME:
+		SDL_Log("Restart game");
+		break;
+	case MENU_OPTION::N_PLAYER_CHANGE:
+		SDL_Log("n player change");
+		break;
+	case MENU_OPTION::AI_TOGGLE:
+		SDL_Log("ai toggle");
+		break;
+	}
+}
+
+
 int main(int argc, char* argv[])
 {
 	if (init())
@@ -119,8 +138,11 @@ int main(int argc, char* argv[])
 			// Code below
 			if (main_menu.is_visible())
 			{
+				// the viewport needs to be reset
 				SDL_RenderSetViewport(main_renderer, NULL);
 				main_menu.render();
+
+				handle_option(main_menu.get_selected_option());
 			}
 			else {
 				linpo_logic.update();

@@ -17,7 +17,7 @@ const int N_PLAYERS = 2;
 const bool AI_ENABLED = true;
 
 
-enum COLOR_NAMES
+enum COLOR_NAME
 {
 	BLUE,
 	RED,
@@ -27,10 +27,20 @@ enum COLOR_NAMES
 	N_COLORS
 };
 
-const SDL_Color COLORS[COLOR_NAMES::N_COLORS] = {
+const SDL_Color COLORS[COLOR_NAME::N_COLORS] = {
 	{ 0, 0, 255, 255 },		 // BLUE
 	{ 255, 0, 0, 255 },		 // RED
 	{ 0, 255, 0, 255 },		 // GREEN
 	{ 255, 255, 255, 255 },  //	WHITE
 	{ 0, 0, 0, 255 }		 // BLACK
+};
+
+
+enum class MENU_OPTION
+{
+	RESTART_GAME,
+	N_PLAYER_CHANGE,
+	AI_TOGGLE,
+	NULL_OPTION,
+	_N_OPTIONS
 };
