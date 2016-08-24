@@ -6,6 +6,7 @@
 #include "fps_timer.h"
 #include "linpo.h"
 #include "score_board.h"
+#include "main_menu.h"
 
 
 bool init()
@@ -89,6 +90,7 @@ int main(int argc, char* argv[])
 		Timer fps_cap_timer;
 		Linpo linpo_logic(game_grid);
 		ScoreBoard score_board(linpo_logic.get_players(), game_grid);
+		MainMenu main_menu;
 
 		while (!quit)
 		{
@@ -98,8 +100,13 @@ int main(int argc, char* argv[])
 			{
 				do 
 				{
-					game_grid.handle_event(e);
-					score_board.handle_event(e);
+					main_menu.handle_event(e);
+
+					if (!main_menu.is_visible())
+					{
+						game_grid.handle_event(e);
+						score_board.handle_event(e);
+					}
 
 					if (e.type == SDL_QUIT)
 						quit = true;
@@ -110,10 +117,17 @@ int main(int argc, char* argv[])
 			SDL_RenderClear(main_renderer);
 
 			// Code below
-			linpo_logic.update();
-			game_grid.update(linpo_logic.get_current_player());
-			game_grid.render();
-			score_board.render();
+			if (main_menu.is_visible())
+			{
+				SDL_RenderSetViewport(main_renderer, NULL);
+				main_menu.render();
+			}
+			else {
+				linpo_logic.update();
+				game_grid.update(linpo_logic.get_current_player());
+				game_grid.render();
+				score_board.render();
+			}
 
 			SDL_RenderPresent(main_renderer);
 
@@ -137,3 +151,9 @@ int main(int argc, char* argv[])
 // TODO: use std::set for grid_lines
 // TODO: make textures be only of necessary size
 // TODO: textures for everything (? maybe)
+
+// OPTIONS-MENU:
+//	ESC key or button on screen
+//	Reset game
+//	N Players
+//	(Font size)

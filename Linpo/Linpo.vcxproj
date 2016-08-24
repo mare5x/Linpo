@@ -126,6 +126,8 @@
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="linpo.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="main_menu.cpp" />
+    <ClCompile Include="menu_items.cpp" />
     <ClCompile Include="render_functions.cpp" />
     <ClCompile Include="score_board.cpp" />
     <ClCompile Include="texture_wrapper.cpp" />
@@ -134,6 +136,8 @@
   <ItemGroup>
     <ClInclude Include="ai_logic.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="main_menu.h" />
+    <ClInclude Include="menu_items.h" />
     <ClInclude Include="text_texture.h" />
     <ClInclude Include="fps_timer.h" />
     <ClInclude Include="globals.h" />

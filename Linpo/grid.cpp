@@ -53,9 +53,9 @@ Grid::~Grid()
 	delete hover_line_texture;
 }
 
-void Grid::handle_event(SDL_Event&e)
+void Grid::handle_event(SDL_Event &e)
 {
-	if (e.type == SDL_WINDOWEVENT &&e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+	if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 		resize_update();
 	else if (e.type == SDL_MOUSEBUTTONDOWN)
 	{
