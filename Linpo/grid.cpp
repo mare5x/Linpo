@@ -482,6 +482,17 @@ void Grid::render_box_score(const char score, const SDL_Point &top_left, const P
 	score_texture->render(x, y);
 }
 
+void Grid::clear_grid()
+{
+	grid_lines.clear();
+	grid_score_boxes.clear();
+
+	resize_update();
+
+	prev_n_lines = 0;
+	prev_n_boxes = 0;
+}
+
 std::vector<SDL_Point> &Grid::get_grid_points()
 {
 	return grid_points;

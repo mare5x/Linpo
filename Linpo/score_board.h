@@ -17,6 +17,9 @@ public:
 	void handle_event(SDL_Event &e);
 	void render();
 	void resize();
+
+	void clear();
+
 	void update_scoreboard_textures();
 	void update_texture_positions();
 private:

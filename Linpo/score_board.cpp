@@ -46,6 +46,12 @@ void ScoreBoard::resize()
 	update_texture_positions();
 }
 
+void ScoreBoard::clear()
+{
+	_prev_score = 0;
+	resize();
+}
+
 void ScoreBoard::update_scoreboard_textures()
 {
 	for (int i = 0; i < N_PLAYERS; ++i)

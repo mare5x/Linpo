@@ -47,6 +47,18 @@ void Linpo::update()
 	}
 }
 
+void Linpo::reset_game()
+{
+	game_grid.clear_grid();
+
+	player_index = 0;
+	prev_n_lines = 0;
+	prev_n_boxes = 0;
+
+	for (auto &player : players)
+		player.score = 0;
+}
+
 Player &Linpo::get_current_player()
 {
 	return players[player_index];

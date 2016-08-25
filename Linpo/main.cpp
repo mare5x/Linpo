@@ -79,14 +79,16 @@ void close()
 }
 
 
-void handle_option(const MENU_OPTION &option)
+void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoard &score_board)
 {
 	switch (option)
 	{
 	case MENU_OPTION::NULL_OPTION:
 		break;
 	case MENU_OPTION::RESTART_GAME:
-		SDL_Log("Restart game");
+		SDL_Log("Restart game option clicked.");
+		linpo.reset_game();
+		score_board.clear();
 		break;
 	case MENU_OPTION::N_PLAYER_CHANGE:
 		SDL_Log("n player change");
@@ -142,7 +144,7 @@ int main(int argc, char* argv[])
 				SDL_RenderSetViewport(main_renderer, NULL);
 				main_menu.render();
 
-				handle_option(main_menu.get_selected_option());
+				handle_option(main_menu.get_selected_option(), linpo_logic, score_board);
 			}
 			else {
 				linpo_logic.update();

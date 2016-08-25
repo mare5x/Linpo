@@ -25,6 +25,9 @@ public:
 
 	void render();
 
+	/*Clears grid and makes it ready for a new game.*/
+	void clear_grid();
+
 	std::vector<SDL_Point> &get_grid_points();
 	std::vector<ScoreBox> get_boxes_around_line(Line &line);  // it is actually const Line &line
 	Line &get_last_line_placed();

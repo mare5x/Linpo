@@ -16,6 +16,8 @@ public:
 
 	void update();
 
+	void reset_game();
+
 	bool is_game_over();
 
 	Player &get_current_player();
