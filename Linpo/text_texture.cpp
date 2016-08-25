@@ -76,3 +76,8 @@ int calculate_font_size()
 	float dpi_scale_factor = vdpi / TTF_DPI;
 	return dpi_scale_factor * BASE_FONT_SIZE;
 }
+
+void calculate_text_size(const char * text_str, int &w, int &h)
+{
+	TTF_SizeText(global_font, text_str, &w, &h);
+}

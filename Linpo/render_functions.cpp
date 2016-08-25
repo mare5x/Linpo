@@ -41,14 +41,3 @@ void render_points(const std::vector<SDL_Point>& points, int radius, const SDL_C
 		render_point(point, radius, color);
 	}
 }
-
-void render_string(const std::string s, const SDL_Point & top_left, const SDL_Color & color)
-{
-	stringRGBA(main_renderer, top_left.x, top_left.y, s.c_str(), color.r, color.g, color.b, color.a);
-}
-
-void render_char(const char c, const SDL_Point & top_left, const SDL_Color & color)
-{
-	characterRGBA(main_renderer, top_left.x, top_left.y, c, color.r, color.g, color.b, color.a);
-}
-

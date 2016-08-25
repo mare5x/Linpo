@@ -4,15 +4,15 @@
 
 
 MenuItem::MenuItem(std::string name, MENU_OPTION option_type)
-	:texture {std::make_unique<TextTexture>(main_renderer)},
+	:text_texture {std::make_unique<TextTexture>(main_renderer)},
 	option_type{option_type}
 {
-	texture->write_text(name, COLORS[BLACK]);
+	text_texture->write_text(name, COLORS[BLACK]);
 
 	item_rect.x = 0;
 	item_rect.y = 0;
-	item_rect.w = texture->get_width();
-	item_rect.h = texture->get_height();
+	item_rect.w = text_texture->get_width();
+	item_rect.h = text_texture->get_height();
 
 	mouse_clicked = false;
 }
@@ -30,7 +30,7 @@ void MenuItem::render(int x, int y)
 {
 	item_rect.x = x;
 	item_rect.y = y;
-	texture->render(x, y);
+	text_texture->render(x, y);
 }
 
 bool MenuItem::is_clicked()
@@ -60,4 +60,10 @@ int MenuItem::get_width() const
 int MenuItem::get_height() const
 {
 	return item_rect.h;
+}
+
+IncrementerMenuItem::IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min, int max)
+	: MenuItem::MenuItem(name, option_type), min_val{ min }, max_val{ max }
+{
+
 }

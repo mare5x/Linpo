@@ -181,3 +181,10 @@ int main(int argc, char* argv[])
 //	Reset game
 //	N Players
 //	(Font size)
+
+
+// |<--| N_PLAYERS |-->|
+
+// this is a slider ^
+
+// render pause button -> two vertical rects
