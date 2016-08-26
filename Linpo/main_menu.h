@@ -16,6 +16,7 @@ public:
 
 	MENU_OPTION get_selected_option();
 
+	void toggle_visibility();
 	bool is_visible();
 private:
 	void resize_update();

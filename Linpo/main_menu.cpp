@@ -21,15 +21,16 @@ void MainMenu::handle_event(SDL_Event & e)
 	{
 		resize_update();
 	}
-	else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
-	{
-		visible = visible ? false : true;
-	}
 	
 	if (is_visible())
 	{
+		int mouse_x, mouse_y;
+		SDL_GetMouseState(&mouse_x, &mouse_y);
 		for (auto &menu_item : menu_items)
+		{
+			menu_item->handle_hover(mouse_x, mouse_y);
 			menu_item->handle_event(e);
+		}
 	}
 }
 
@@ -55,6 +56,11 @@ MENU_OPTION MainMenu::get_selected_option()
 			return menu_item->get_option_type();
 	}
 	return MENU_OPTION::NULL_OPTION;
+}
+
+void MainMenu::toggle_visibility()
+{
+	visible = visible ? false : true;
 }
 
 bool MainMenu::is_visible()

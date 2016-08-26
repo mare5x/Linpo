@@ -16,7 +16,7 @@ public:
 
 	void handle_event(SDL_Event &e);
 	void render();
-	void resize();
+	void resize_update();
 
 	void clear();
 
