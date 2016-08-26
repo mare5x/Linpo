@@ -1,13 +1,14 @@
 #include "texture_wrapper.h"
 
-TextureWrapper::TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access, SDL_Color base_color) : 
-	renderer(renderer), width(w), height(h), access(access), base_color(base_color)
+TextureWrapper::TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access, SDL_Color background_color) : 
+	renderer(renderer), width(w), height(h), access(access), background_color(background_color)
 {
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, w, h);
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);  // otherwise alpha is ignored!
 }
 
-TextureWrapper::TextureWrapper(SDL_Renderer *& renderer) : 
-	renderer(renderer)
+TextureWrapper::TextureWrapper(SDL_Renderer *& renderer, int access, SDL_Color background_color) 
+	: renderer(renderer), access(access), background_color(background_color)
 {
 	texture = nullptr;
 	width = 0;
@@ -29,6 +30,7 @@ void TextureWrapper::resize(int new_width, int new_height)
 		SDL_DestroyTexture(texture);
 
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, new_width, new_height);
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);  // otherwise alpha is ignored!
 	width = new_width;
 	height = new_height;
 }
@@ -43,17 +45,21 @@ void TextureWrapper::reset_render_target()
 	SDL_SetRenderTarget(renderer, NULL);
 }
 
+void TextureWrapper::set_background_color(const SDL_Color & background_color)
+{
+	this->background_color = background_color;
+}
+
 void TextureWrapper::clear()
 {
 	set_as_render_target();
-	SDL_SetRenderDrawColor(renderer, base_color.r, base_color.g, base_color.b, base_color.a);
+	SDL_SetRenderDrawColor(renderer, background_color.r, background_color.g, background_color.b, background_color.a);
 	SDL_RenderClear(renderer);
 }
 
 void TextureWrapper::clear(const SDL_Color &clear_color)
 {
 	set_as_render_target();
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);  // otherwise alpha is ignored!
 	SDL_SetRenderDrawColor(renderer, clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 	SDL_RenderClear(renderer);
 }

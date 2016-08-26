@@ -23,7 +23,7 @@ ScoreBoard::ScoreBoard(std::array<Player, N_PLAYERS> &players_array, Grid &game_
 void ScoreBoard::handle_event(SDL_Event &e)
 {
 	if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-		resize();
+		resize_update();
 }
 
 void ScoreBoard::render()
@@ -37,7 +37,7 @@ void ScoreBoard::render()
 		scoreboard_texture->render();
 }
 
-void ScoreBoard::resize()
+void ScoreBoard::resize_update()
 {
 	SDL_GetRendererOutputSize(main_renderer, &viewport_rect.w, &viewport_rect.h);
 	viewport_rect.h = 0.05 * viewport_rect.h;
@@ -49,7 +49,7 @@ void ScoreBoard::resize()
 void ScoreBoard::clear()
 {
 	_prev_score = 0;
-	resize();
+	resize_update();
 }
 
 void ScoreBoard::update_scoreboard_textures()

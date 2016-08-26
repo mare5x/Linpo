@@ -113,6 +113,8 @@ int main(int argc, char* argv[])
 		ScoreBoard score_board(linpo_logic.get_players(), game_grid);
 		MainMenu main_menu;
 
+		SDL_SetRenderDrawBlendMode(main_renderer, SDL_BLENDMODE_BLEND);  // otherwise alpha value is ignored when using line and fill!
+
 		while (!quit)
 		{
 			if (!VSYNC_ENABLED) fps_cap_timer.start();
@@ -121,12 +123,26 @@ int main(int argc, char* argv[])
 			{
 				do 
 				{
-					main_menu.handle_event(e);
+					// unconditionally handle resizing event
+					if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+					{
+						main_menu.handle_event(e);
+						game_grid.handle_event(e);
+						score_board.handle_event(e);
+						continue;
+					}
+
+					if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+						main_menu.toggle_visibility();
 
 					if (!main_menu.is_visible())
 					{
 						game_grid.handle_event(e);
 						score_board.handle_event(e);
+					}
+					else
+					{
+						main_menu.handle_event(e);
 					}
 
 					if (e.type == SDL_QUIT)

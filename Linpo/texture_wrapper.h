@@ -6,14 +6,17 @@
 class TextureWrapper
 {
 public:
-	TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access = SDL_TEXTUREACCESS_TARGET, SDL_Color base_color = { 0xFF, 0xFF, 0xFF, 0xFF });
-	TextureWrapper(SDL_Renderer* &renderer);
+	TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access = SDL_TEXTUREACCESS_TARGET, SDL_Color background_color = { 0xFF, 0xFF, 0xFF, 0xFF });
+	TextureWrapper(SDL_Renderer* &renderer, int access = SDL_TEXTUREACCESS_TARGET, SDL_Color background_color = { 0xFF, 0xFF, 0xFF, 0xFF });
 	~TextureWrapper();
 
 	void resize(int new_width, int new_height);
 
 	void set_as_render_target();
 	void reset_render_target();
+
+	/* Sets the background color, which is only applied when using TextureWrapper::clear(). */
+	void set_background_color(const SDL_Color &background_color);
 
 	/* Clears the texture to the base color and sets it as the current rendering target. */
 	void clear();
@@ -34,6 +37,6 @@ protected:
 	SDL_Texture* texture;
 	int width, height;
 private:
-	SDL_Color base_color;
+	SDL_Color background_color;
 	int access;
 };
