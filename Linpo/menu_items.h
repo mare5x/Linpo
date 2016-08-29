@@ -10,20 +10,21 @@
 class MenuItem
 {
 public:
-	MenuItem(std::string name, MENU_OPTION option_type);
+	MenuItem(std::string name, MENU_OPTION option_type = MENU_OPTION::NULL_OPTION);
 
-	void handle_event(SDL_Event &e);
-	void handle_hover(int x, int y);
-	void render(int x, int y);
+	virtual void handle_event(SDL_Event &e);
+	virtual void handle_hover(int x, int y);
+	virtual void render(int x, int y);
+	void render(const SDL_Rect &dest);
 
-	bool is_clicked();
-	bool is_hovered();
-	bool is_hovered(const int &x, const int &y);
+	virtual bool is_clicked();
+	bool is_hovered() const;
+	bool is_hovered(const int &x, const int &y) const;
 
 	MENU_OPTION get_option_type() const;
 
-	virtual int get_width() const;
-	virtual int get_height() const;
+	int get_width() const;
+	int get_height() const;
 protected:
 	virtual void update_full_texture();
 
@@ -39,17 +40,23 @@ protected:
 class IncrementerMenuItem : public MenuItem
 {
 public:
-	IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min = 0, int max = 4);
+	IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min = 2, int max = 4, int cur = 2);
 
 	void handle_event(SDL_Event &e);
+	void handle_hover(int x, int y);
 	void render(int x, int y);
 
-	int get_width() const;
-	int get_height() const;
-protected:
-	int min_val, max_val;
+	bool is_clicked();
 
-	std::unique_ptr<TextureWrapper> full_texture;
+	const int get_cur_val() const;
+protected:
+	void update_full_texture();
+
+	int min_val, max_val, cur_val;
+
+	std::unique_ptr<TextTexture> value_text_tex;
+	std::unique_ptr<MenuItem> decrement_item;
+	std::unique_ptr<MenuItem> increment_item;
 };
 
 class BoolMenuItem : public MenuItem

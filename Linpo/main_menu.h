@@ -15,6 +15,7 @@ public:
 	void render();
 
 	MENU_OPTION get_selected_option();
+	const MenuItem& get_option_item(const MENU_OPTION &option) const;
 
 	void toggle_visibility();
 	bool is_visible();

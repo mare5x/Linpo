@@ -2,11 +2,17 @@
 #include "constants.h"
 #include "text_texture.h"
 
-TextTexture::TextTexture(SDL_Renderer* &renderer) :
-	TextureWrapper(renderer)
+TextTexture::TextTexture(SDL_Renderer* &renderer)
+	:TextureWrapper(renderer)
 {
-	text_font = global_font;
-	font_size = calculate_font_size();
+	init();
+}
+
+TextTexture::TextTexture(SDL_Renderer *& renderer, const std::string & s, const SDL_Color & color)
+	:TextureWrapper(renderer), text(s)
+{
+	init();
+	write_text(s, color);
 }
 
 TextTexture::~TextTexture()
@@ -59,6 +65,13 @@ void TextTexture::set_render_pos(const SDL_Point &top_left)
 void TextTexture::render()
 {
 	TextureWrapper::render(top_left_pos.x, top_left_pos.y);
+}
+
+void TextTexture::init()
+{
+	text_font = global_font;
+	font_size = calculate_font_size();
+	top_left_pos = { 0, 0 };
 }
 
 

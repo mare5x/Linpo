@@ -79,7 +79,7 @@ void close()
 }
 
 
-void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoard &score_board)
+void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoard &score_board, MainMenu &main_menu)
 {
 	switch (option)
 	{
@@ -91,8 +91,12 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoard &score_bo
 		score_board.clear();
 		break;
 	case MENU_OPTION::N_PLAYER_CHANGE:
+	{
 		SDL_Log("n player change");
+		const IncrementerMenuItem& menu_item = static_cast<const IncrementerMenuItem&>(main_menu.get_option_item(MENU_OPTION::N_PLAYER_CHANGE));
+		SDL_Log("n_players: %d", menu_item.get_cur_val());
 		break;
+	}
 	case MENU_OPTION::AI_TOGGLE:
 		SDL_Log("ai toggle");
 		break;
@@ -160,7 +164,7 @@ int main(int argc, char* argv[])
 				SDL_RenderSetViewport(main_renderer, NULL);
 				main_menu.render();
 
-				handle_option(main_menu.get_selected_option(), linpo_logic, score_board);
+				handle_option(main_menu.get_selected_option(), linpo_logic, score_board, main_menu);
 			}
 			else {
 				linpo_logic.update();
@@ -197,10 +201,5 @@ int main(int argc, char* argv[])
 //	Reset game
 //	N Players
 //	(Font size)
-
-
-// |<--| N_PLAYERS |-->|
-
-// this is a slider ^
 
 // render pause button -> two vertical rects

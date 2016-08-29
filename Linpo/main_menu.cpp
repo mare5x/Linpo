@@ -42,7 +42,7 @@ void MainMenu::render()
 
 	// center all menu_items
 	int padding_y = height / menu_items.size() / 2;
-	for (int i = 0; i < menu_items.size(); ++i)
+	for (size_t i = 0; i < menu_items.size(); ++i)
 	{
 		menu_items[i]->render((width / 2) - (menu_items[i]->get_width() / 2), i * (height / menu_items.size()) + padding_y - (menu_items[i]->get_height() / 2));
 	}
@@ -56,6 +56,11 @@ MENU_OPTION MainMenu::get_selected_option()
 			return menu_item->get_option_type();
 	}
 	return MENU_OPTION::NULL_OPTION;
+}
+
+const MenuItem & MainMenu::get_option_item(const MENU_OPTION & option) const
+{
+	return *menu_items[static_cast<int>(option)];
 }
 
 void MainMenu::toggle_visibility()

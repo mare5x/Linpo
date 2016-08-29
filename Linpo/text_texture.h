@@ -12,6 +12,7 @@ public:
 	using TextureWrapper::render;
 
 	TextTexture(SDL_Renderer* &renderer);
+	TextTexture(SDL_Renderer* &renderer, const std::string &s, const SDL_Color &color);
 	~TextTexture();
 
 	void write_text(const std::string &s, const SDL_Color &color);
@@ -21,6 +22,8 @@ public:
 	void set_render_pos(const SDL_Point &top_left);
 	void render();
 private:
+	void init();
+
 	std::string text;
 	SDL_Point top_left_pos;
 	char font_size;
