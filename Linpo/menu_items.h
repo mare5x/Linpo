@@ -7,10 +7,10 @@
 #include "constants.h"
 
 
-class MenuItem
+class AbstractMenuItem
 {
 public:
-	MenuItem(std::string name, MENU_OPTION option_type = MENU_OPTION::NULL_OPTION);
+	AbstractMenuItem(const MENU_OPTION &option_type = MENU_OPTION::NULL_OPTION);
 
 	virtual void handle_event(SDL_Event &e);
 	virtual void handle_hover(int x, int y);
@@ -26,18 +26,30 @@ public:
 	int get_width() const;
 	int get_height() const;
 protected:
-	virtual void update_full_texture();
+	virtual void update_full_texture() = 0;
+
+	/*Resizes item_rect and item_texture to w, h.*/
+	void resize(const int &w, const int &h);
 
 	MENU_OPTION option_type;
 	bool mouse_clicked;
 	bool mouse_hovered;
 	SDL_Rect item_rect;
 
-	std::unique_ptr<TextTexture> text_texture;
 	std::unique_ptr<TextureWrapper> item_texture;
 };
 
-class IncrementerMenuItem : public MenuItem
+class TextMenuItem : public AbstractMenuItem
+{
+public:
+	TextMenuItem(std::string name, const MENU_OPTION &option_type = MENU_OPTION::NULL_OPTION);
+protected:
+	virtual void update_full_texture() override;
+
+	std::unique_ptr<TextTexture> text_texture;
+};
+
+class IncrementerMenuItem : public TextMenuItem
 {
 public:
 	IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min = 2, int max = 4, int cur = 2);
@@ -50,17 +62,23 @@ public:
 
 	const int get_cur_val() const;
 protected:
-	void update_full_texture();
+	void update_full_texture() override;
 
 	int min_val, max_val, cur_val;
 
 	std::unique_ptr<TextTexture> value_text_tex;
-	std::unique_ptr<MenuItem> decrement_item;
-	std::unique_ptr<MenuItem> increment_item;
+	std::unique_ptr<TextMenuItem> decrement_item;
+	std::unique_ptr<TextMenuItem> increment_item;
 };
 
-class BoolMenuItem : public MenuItem
+class BoolMenuItem : public TextMenuItem
 {
 public:
-	BoolMenuItem(std::string name, MENU_OPTION option_type) : MenuItem::MenuItem(name, option_type) { }
+	BoolMenuItem(std::string name, MENU_OPTION option_type) : TextMenuItem::TextMenuItem(name, option_type) { }
+};
+
+class PauseItem : public AbstractMenuItem
+{
+public:
+	PauseItem() {}
 };

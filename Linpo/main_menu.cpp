@@ -7,7 +7,7 @@ MainMenu::MainMenu()
 {
 	visible = false;
 
-	menu_items[(int)MENU_OPTION::RESTART_GAME] = std::make_unique<MenuItem>("Restart game", MENU_OPTION::RESTART_GAME);
+	menu_items[(int)MENU_OPTION::RESTART_GAME] = std::make_unique<TextMenuItem>("Restart game", MENU_OPTION::RESTART_GAME);
 	menu_items[(int)MENU_OPTION::N_PLAYER_CHANGE] = std::make_unique<IncrementerMenuItem>("Number of players:", MENU_OPTION::N_PLAYER_CHANGE);
 	menu_items[(int)MENU_OPTION::AI_TOGGLE] = std::make_unique<BoolMenuItem>("AI player", MENU_OPTION::AI_TOGGLE);
 	// TODO: font size selector
@@ -58,7 +58,7 @@ MENU_OPTION MainMenu::get_selected_option()
 	return MENU_OPTION::NULL_OPTION;
 }
 
-const MenuItem & MainMenu::get_option_item(const MENU_OPTION & option) const
+const AbstractMenuItem & MainMenu::get_option_item(const MENU_OPTION & option) const
 {
 	return *menu_items[static_cast<int>(option)];
 }

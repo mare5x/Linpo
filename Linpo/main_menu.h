@@ -15,7 +15,7 @@ public:
 	void render();
 
 	MENU_OPTION get_selected_option();
-	const MenuItem& get_option_item(const MENU_OPTION &option) const;
+	const AbstractMenuItem& get_option_item(const MENU_OPTION &option) const;
 
 	void toggle_visibility();
 	bool is_visible();
@@ -25,5 +25,5 @@ private:
 	bool visible;
 	int width, height;
 
-	std::array<std::unique_ptr<MenuItem>, (int)MENU_OPTION::_N_OPTIONS - 1> menu_items;  // -1 because of NULL_OPTION
+	std::array<std::unique_ptr<AbstractMenuItem>, (int)MENU_OPTION::_N_OPTIONS - 1> menu_items;  // -1 because of NULL_OPTION
 };

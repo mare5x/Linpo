@@ -3,22 +3,16 @@
 #include "constants.h"
 
 
-MenuItem::MenuItem(std::string name, MENU_OPTION option_type)
-	:text_texture {std::make_unique<TextTexture>(main_renderer, name, COLORS[BLACK])},
-	item_texture{std::make_unique<TextureWrapper>(main_renderer)},
-	option_type{option_type}, mouse_clicked(false), mouse_hovered(false)
+AbstractMenuItem::AbstractMenuItem(const MENU_OPTION &option_type)
+	:item_texture{std::make_unique<TextureWrapper>(main_renderer)},
+	option_type{option_type}, 
+	mouse_clicked(false), 
+	mouse_hovered(false),
+	item_rect{} 
 {
-	item_rect.x = 0;
-	item_rect.y = 0;
-	item_rect.w = text_texture->get_width() + 10;  // add rect padding width and height
-	item_rect.h = text_texture->get_height() + 10;
-
-	item_texture->resize(item_rect.w, item_rect.h);
-
-	update_full_texture();  // initializes it
 }
 
-void MenuItem::handle_event(SDL_Event & e)
+void AbstractMenuItem::handle_event(SDL_Event & e)
 {
 	if (e.type == SDL_MOUSEBUTTONDOWN)
 	{
@@ -27,7 +21,7 @@ void MenuItem::handle_event(SDL_Event & e)
 	}
 }
 
-void MenuItem::render(int x, int y)
+void AbstractMenuItem::render(int x, int y)
 {
 	item_rect.x = x;
 	item_rect.y = y;
@@ -35,7 +29,7 @@ void MenuItem::render(int x, int y)
 	item_texture->render(x, y);
 }
 
-void MenuItem::render(const SDL_Rect & dest)
+void AbstractMenuItem::render(const SDL_Rect & dest)
 {
 	item_rect.x = dest.x;
 	item_rect.y = dest.y;
@@ -43,7 +37,14 @@ void MenuItem::render(const SDL_Rect & dest)
 	item_texture->render(dest);
 }
 
-bool MenuItem::is_clicked()
+void AbstractMenuItem::resize(const int & w, const int & h)
+{
+	item_rect.w = w;
+	item_rect.h = h;
+	item_texture->resize(item_rect.w, item_rect.h);
+}
+
+bool AbstractMenuItem::is_clicked()
 {
 	if (mouse_clicked)
 	{
@@ -57,14 +58,14 @@ bool MenuItem::is_clicked()
 	return false;
 }
 
-bool MenuItem::is_hovered() const
+bool AbstractMenuItem::is_hovered() const
 {
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 	return is_hovered(x, y);
 }
 
-bool MenuItem::is_hovered(const int &x, const int &y) const
+bool AbstractMenuItem::is_hovered(const int &x, const int &y) const
 {
 	SDL_Point mouse_pos = { x, y };
 	if (SDL_PointInRect(&mouse_pos, &item_rect))
@@ -73,22 +74,22 @@ bool MenuItem::is_hovered(const int &x, const int &y) const
 		return false;
 }
 
-MENU_OPTION MenuItem::get_option_type() const
+MENU_OPTION AbstractMenuItem::get_option_type() const
 {
 	return option_type;
 }
 
-int MenuItem::get_width() const
+int AbstractMenuItem::get_width() const
 {
 	return item_rect.w;
 }
 
-int MenuItem::get_height() const
+int AbstractMenuItem::get_height() const
 {
 	return item_rect.h;
 }
 
-void MenuItem::handle_hover(int x, int y)
+void AbstractMenuItem::handle_hover(int x, int y)
 {
 	// only update textures if the hover state just changed
 	if (is_hovered(x, y))
@@ -109,12 +110,22 @@ void MenuItem::handle_hover(int x, int y)
 	}
 }
 
-void MenuItem::update_full_texture()
+
+TextMenuItem::TextMenuItem(std::string name, const MENU_OPTION & option_type)
+	:AbstractMenuItem::AbstractMenuItem(option_type), 
+	text_texture(std::make_unique<TextTexture>(main_renderer, name, COLORS[BLACK]))
+{
+	resize(text_texture->get_width() + 10, text_texture->get_height() + 10);
+
+	update_full_texture();
+}
+
+void TextMenuItem::update_full_texture()
 {
 	if (mouse_hovered)
-		item_texture->clear( { 255, 0, 0, 100 } );  // opaque red background
+		item_texture->clear({ 255, 0, 0, 100 });  // opaque red background
 	else
-		item_texture->clear( { 255, 0, 0, 50 } );
+		item_texture->clear({ 255, 0, 0, 50 });
 
 	text_texture->set_render_pos({ 5, 5 });
 	text_texture->render();
@@ -126,11 +137,13 @@ void MenuItem::update_full_texture()
 	item_texture->reset_render_target();
 }
 
+
 IncrementerMenuItem::IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min, int max, int cur)
-	:MenuItem::MenuItem(name, option_type), min_val{ min }, max_val{ max }, cur_val(cur),
+	:TextMenuItem::TextMenuItem(name, option_type), 
+	min_val{ min }, max_val{ max }, cur_val(cur),
 	value_text_tex(std::make_unique<TextTexture>(main_renderer, std::to_string(cur), COLORS[BLACK])),
-	decrement_item(std::make_unique<MenuItem>("<", option_type)),
-	increment_item(std::make_unique<MenuItem>(">", option_type))
+	decrement_item(std::make_unique<TextMenuItem>("<", option_type)),
+	increment_item(std::make_unique<TextMenuItem>(">", option_type))
 {
 	item_rect.w = text_texture->get_width() + decrement_item->get_width() + value_text_tex->get_width() + decrement_item->get_width() + 10;
 
@@ -153,7 +166,7 @@ void IncrementerMenuItem::handle_hover(int x, int y)
 
 void IncrementerMenuItem::render(int x, int y)
 {
-	MenuItem::render(x, y);
+	AbstractMenuItem::render(x, y);
 
 	SDL_Rect dec_rect;
 	dec_rect.w = decrement_item->get_width() * 0.9;
