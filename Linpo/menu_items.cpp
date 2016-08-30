@@ -1,6 +1,7 @@
 #include "menu_items.h"
 #include "globals.h"
 #include "constants.h"
+#include "render_functions.h"
 
 
 AbstractMenuItem::AbstractMenuItem(const MENU_OPTION &option_type)
@@ -218,3 +219,42 @@ void IncrementerMenuItem::update_full_texture()
 
 	item_texture->reset_render_target();
 }
+
+
+PauseItem::PauseItem(const int w, const int h)
+	:AbstractMenuItem::AbstractMenuItem(MENU_OPTION::PAUSE)
+{
+	// a 64 by 64 button by default
+	resize(w, h);
+	update_full_texture();
+}
+
+void PauseItem::update_full_texture()
+{
+	item_texture->clear({ 255, 0, 0, 50 });
+
+	SDL_Rect rect;
+	rect.x = get_width() * 0.04 + 1;  // + 1 because the border takes 1 pixel
+	rect.y = get_height() * 0.04 + 1;
+	rect.w = get_width() * 0.38;
+	rect.h = get_height() * 0.92;
+	
+	if (mouse_hovered)
+		render_rect(rect, { 255, 0, 0, 200 });
+	else
+		render_rect(rect, { 255, 0, 0, 100 });
+
+	rect.x = rect.x + rect.w + (get_width() * 0.16);
+
+	if (mouse_hovered)
+		render_rect(rect, { 255, 0, 0, 200 });
+	else
+		render_rect(rect, { 255, 0, 0, 100 });
+
+	// draw border
+	SDL_SetRenderDrawColor(main_renderer, 255, 0, 0, 255);
+	SDL_RenderDrawRect(main_renderer, NULL);
+
+	item_texture->reset_render_target();
+}
+

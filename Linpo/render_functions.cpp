@@ -25,7 +25,7 @@ void render_line(const SDL_Point & start, const SDL_Point & end, int width, cons
 		draw_rect.h = end.y - start.y;
 	}
 
-	SDL_SetRenderDrawColor(main_renderer, color.r, color.g, color.b, color.a);
+	set_render_draw_color(color);
 	SDL_RenderFillRect(main_renderer, &draw_rect);
 }
 
@@ -40,4 +40,15 @@ void render_points(const std::vector<SDL_Point>& points, int radius, const SDL_C
 	{
 		render_point(point, radius, color);
 	}
+}
+
+void render_rect(const SDL_Rect & rect, const SDL_Color & color)
+{
+	set_render_draw_color(color);
+	SDL_RenderFillRect(main_renderer, &rect);
+}
+
+void set_render_draw_color(const SDL_Color &color)
+{
+	SDL_SetRenderDrawColor(main_renderer, color.r, color.g, color.b, color.a);
 }

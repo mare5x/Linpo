@@ -80,5 +80,7 @@ public:
 class PauseItem : public AbstractMenuItem
 {
 public:
-	PauseItem() {}
+	PauseItem(const int w = 64, const int h = 64);
+protected:
+	void update_full_texture() override;
 };

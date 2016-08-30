@@ -100,6 +100,9 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoard &score_bo
 	case MENU_OPTION::AI_TOGGLE:
 		SDL_Log("ai toggle");
 		break;
+	case MENU_OPTION::PAUSE:
+		SDL_Log("pause button");
+		break;
 	}
 }
 
@@ -198,6 +201,7 @@ int main(int argc, char* argv[])
 
 // OPTIONS-MENU:
 //	ESC key or button on screen
+//  board size
 //	Reset game
 //	N Players
 //	(Font size)
