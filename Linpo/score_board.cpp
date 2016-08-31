@@ -3,16 +3,12 @@
 #include "render_functions.h"
 
 
-ScoreBoard::ScoreBoard(std::array<Player, N_PLAYERS> &players_array, Grid &game_grid) : 
-	players(players_array), game_grid(game_grid)
+ScoreBoard::ScoreBoard(std::array<Player, N_PLAYERS> &players_array, Grid &game_grid)
+	:viewport_rect{ 0, 0, SCREEN_WIDTH, static_cast<int>(0.05 * SCREEN_HEIGHT) },
+	_prev_score{ 0 },
+	game_grid(game_grid), 
+	players(players_array)
 {
-	viewport_rect.x = 0;
-	viewport_rect.y = 0;
-	viewport_rect.w = SCREEN_WIDTH;
-	viewport_rect.h = 0.05 * SCREEN_HEIGHT;
-	
-	_prev_score = 0;
-
 	for (int i = 0; i < N_PLAYERS; ++i)
 		scoreboard_textures[i] = std::make_unique<TextTexture>(main_renderer);
 
@@ -69,8 +65,47 @@ void ScoreBoard::update_texture_positions()
 		int text_h = scoreboard_textures[i]->get_height();
 		int text_w = scoreboard_textures[i]->get_width();
 		SDL_Point top_left_render_pos;
-		top_left_render_pos.x = (viewport_rect.w / N_PLAYERS / 2) + (i * (viewport_rect.w / N_PLAYERS)) - (text_w / 2);
-		top_left_render_pos.y = (viewport_rect.h / 2) - (text_h / 2);
+		top_left_render_pos.x = (get_width() / N_PLAYERS / 2) + (i * (get_width() / N_PLAYERS)) - (text_w / 2);
+		top_left_render_pos.y = (get_height() / 2) - (text_h / 2);
 		scoreboard_textures[i]->set_render_pos(top_left_render_pos);
 	}
+}
+
+const int ScoreBoard::get_width() const
+{
+	return viewport_rect.w;
+}
+
+const int ScoreBoard::get_height() const
+{
+	return viewport_rect.h;
+}
+
+ScoreBoardWPauseItem::ScoreBoardWPauseItem(std::array<Player, N_PLAYERS>& players_array, Grid & game_grid)
+	:ScoreBoard::ScoreBoard(players_array, game_grid),
+	pause_item(std::make_unique<PauseItem>())
+{
+	update_texture_positions();
+}
+
+void ScoreBoardWPauseItem::handle_event(SDL_Event & e)
+{
+	ScoreBoard::handle_event(e);
+	pause_item->handle_event(e);
+}
+
+void ScoreBoardWPauseItem::render()
+{
+	ScoreBoard::render();
+	pause_item->render(get_width(), (get_height() - pause_item->get_height()) / 2);
+}
+
+bool ScoreBoardWPauseItem::item_clicked()
+{
+	return pause_item->is_clicked();
+}
+
+const int ScoreBoardWPauseItem::get_width() const
+{
+	return ScoreBoard::get_width() * 0.8;
 }

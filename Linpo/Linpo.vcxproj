@@ -138,6 +138,7 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="main_menu.h" />
     <ClInclude Include="menu_items.h" />
+    <ClInclude Include="mouse_state.h" />
     <ClInclude Include="text_texture.h" />
     <ClInclude Include="fps_timer.h" />
     <ClInclude Include="globals.h" />

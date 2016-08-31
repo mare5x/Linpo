@@ -9,13 +9,13 @@
 #include "text_texture.h"
 #include "player.h"
 #include "grid_types.h"
+#include "mouse_state.h"
 
 
 class Grid
 {
 public:
 	Grid(int cols, int rows);
-	~Grid();
 
 	void handle_event(SDL_Event &e);
 
@@ -47,7 +47,7 @@ private:
 	void handle_mouse_click(Player &player);
 	void handle_mouse_hover(Player &player);
 
-	bool check_collision(int x, int y, CollisionRect &target_rect);
+	bool check_collision(const SDL_Point &point, CollisionRect &target_rect);
 
 	void update_textures();
 	void update_grid_texture();
@@ -58,7 +58,7 @@ private:
 
 	void update_grid_points();
 	void update_grid_collision_rects();
-	bool make_collision_line(Line &new_line, int x, int y, Player &player);
+	bool make_collision_line(Line &new_line, const SDL_Point &pos, Player &player);
 
 	ScoreBox make_box(const Line &top_line, const Line &right_line, const Line &bot_line, const Line &left_line, Player &player);
 	bool find_box(const Line* base_line, Line* &top, Line* &right, Line* &bot, Line* &left);
@@ -70,11 +70,9 @@ private:
 	const int cols;
 	const int rows;
 	const int n_edges;
-	int width, height;
 	int point_radius, line_width;
 
-	int mouse_x, mouse_y;
-	bool mouse_clicked;
+	MouseState mouse_state;
 
 	bool _show_collision_boxes;
 
@@ -88,5 +86,5 @@ private:
 	
 	std::array<std::unique_ptr<TextTexture>, N_PLAYERS * 4> score_textures;
 
-	TextureWrapper* grid_texture, *hover_line_texture;
+	std::unique_ptr<TextureWrapper> grid_texture, hover_line_texture;
 };

@@ -91,5 +91,8 @@
     <ClInclude Include="menu_items.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mouse_state.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

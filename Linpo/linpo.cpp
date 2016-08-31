@@ -2,11 +2,14 @@
 #include "linpo.h"
 
 
-Linpo::Linpo(Grid &game_grid) : game_grid(game_grid)
+Linpo::Linpo(Grid &game_grid)
+	:game_grid(game_grid),
+	ai_logic(AI_ENABLED ? std::make_unique<AI_Logic>(game_grid) : nullptr),
+	players{},
+	player_index(0),
+	prev_n_lines(0),
+	prev_n_boxes(0)
 {
-	ai_logic = AI_ENABLED ? new AI_Logic(game_grid) : nullptr;
-
-	players = {};
 	for (int i = 0; i < players.size(); ++i)
 	{
 		players[i].color = &COLORS[i];
@@ -14,17 +17,6 @@ Linpo::Linpo(Grid &game_grid) : game_grid(game_grid)
 	}
 
 	players[1].is_ai = AI_ENABLED ? true : false;
-
-	player_index = 0;
-
-	prev_n_lines = 0;
-	prev_n_boxes = 0;
-}
-
-Linpo::~Linpo()
-{
-	delete ai_logic;
-	ai_logic = nullptr;
 }
 
 void Linpo::update()
@@ -71,9 +63,7 @@ std::array<Player, N_PLAYERS>& Linpo::get_players()
 
 bool Linpo::is_ai_turn()
 {
-	if (get_current_player().is_ai)
-		return true;
-	return false;
+	return get_current_player().is_ai;
 }
 
 bool Linpo::is_game_over()

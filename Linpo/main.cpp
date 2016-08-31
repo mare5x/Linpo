@@ -79,7 +79,7 @@ void close()
 }
 
 
-void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoard &score_board, MainMenu &main_menu)
+void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem &score_board, MainMenu &main_menu)
 {
 	switch (option)
 	{
@@ -102,6 +102,7 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoard &score_bo
 		break;
 	case MENU_OPTION::PAUSE:
 		SDL_Log("pause button");
+		main_menu.toggle_visibility();
 		break;
 	}
 }
@@ -117,7 +118,7 @@ int main(int argc, char* argv[])
 		Grid game_grid(10, 10);
 		Timer fps_cap_timer;
 		Linpo linpo_logic(game_grid);
-		ScoreBoard score_board(linpo_logic.get_players(), game_grid);
+		ScoreBoardWPauseItem score_board(linpo_logic.get_players(), game_grid);
 		MainMenu main_menu;
 
 		SDL_SetRenderDrawBlendMode(main_renderer, SDL_BLENDMODE_BLEND);  // otherwise alpha value is ignored when using line and fill!
@@ -139,7 +140,7 @@ int main(int argc, char* argv[])
 						continue;
 					}
 
-					if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+					if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE || score_board.item_clicked())
 						main_menu.toggle_visibility();
 
 					if (!main_menu.is_visible())

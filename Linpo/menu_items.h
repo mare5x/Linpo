@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "text_texture.h"
 #include "constants.h"
+#include "mouse_state.h"
 
 
 class AbstractMenuItem
@@ -13,30 +14,31 @@ public:
 	AbstractMenuItem(const MENU_OPTION &option_type = MENU_OPTION::NULL_OPTION);
 
 	virtual void handle_event(SDL_Event &e);
-	virtual void handle_hover(int x, int y);
 	virtual void render(int x, int y);
 	void render(const SDL_Rect &dest);
 
-	virtual bool is_clicked();
 	bool is_hovered() const;
-	bool is_hovered(const int &x, const int &y) const;
+	virtual bool is_clicked();
 
 	MENU_OPTION get_option_type() const;
 
 	int get_width() const;
 	int get_height() const;
 protected:
+	virtual void handle_hover();
 	virtual void update_full_texture() = 0;
 
 	/*Resizes item_rect and item_texture to w, h.*/
 	void resize(const int &w, const int &h);
 
-	MENU_OPTION option_type;
-	bool mouse_clicked;
-	bool mouse_hovered;
 	SDL_Rect item_rect;
-
 	std::unique_ptr<TextureWrapper> item_texture;
+private:
+	bool is_item_hovered() const;
+
+	MENU_OPTION option_type;
+	MouseState mouse_state;
+	bool item_hovered;
 };
 
 class TextMenuItem : public AbstractMenuItem
@@ -54,14 +56,14 @@ class IncrementerMenuItem : public TextMenuItem
 public:
 	IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min = 2, int max = 4, int cur = 2);
 
-	void handle_event(SDL_Event &e);
-	void handle_hover(int x, int y);
-	void render(int x, int y);
+	void handle_event(SDL_Event &e) override;
+	void render(int x, int y) override;
 
-	bool is_clicked();
+	bool is_clicked() override;
 
 	const int get_cur_val() const;
 protected:
+	void handle_hover() override;
 	void update_full_texture() override;
 
 	int min_val, max_val, cur_val;

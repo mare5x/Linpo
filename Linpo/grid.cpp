@@ -5,15 +5,23 @@
 #include "render_functions.h"
 
 
-Grid::Grid(int cols, int rows) : 
-	cols(cols), rows(rows), n_edges(2 * rows * cols - rows - cols)
+Grid::Grid(int cols, int rows)
+	:viewport_rect{ 0, static_cast<int>(0.05 * SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT - viewport_rect.y },
+	cols(cols),
+	rows(rows),
+	n_edges(2 * rows * cols - rows - cols),
+	point_radius(5),
+	line_width(2 * point_radius),
+	mouse_state{},
+	_show_collision_boxes(false),
+	hover_line{},
+	prev_hover_line{},
+	prev_n_lines(0),
+	prev_n_boxes(0),
+	grid_texture(std::make_unique<TextureWrapper>(main_renderer)),
+	hover_line_texture(std::make_unique<TextureWrapper>(main_renderer))
 {
-	point_radius = 5;
-	line_width = 2 * point_radius;
-
-	// it'll get properly resized in resize_update()
-	grid_texture = new TextureWrapper(main_renderer, viewport_rect.w, viewport_rect.h);
-	hover_line_texture = new TextureWrapper(main_renderer, 0, 0);
+	// grid and hover line textures will get properly resized later
 	
 	// initialize score_textures
 	for (int i = 0; i < N_PLAYERS; ++i)
@@ -27,17 +35,6 @@ Grid::Grid(int cols, int rows) :
 		}
 	}
 
-	mouse_x = 0;
-	mouse_y = 0;
-	mouse_clicked = false;
-
-	_show_collision_boxes = false;
-
-	hover_line = Line();
-	prev_hover_line = Line();
-	prev_n_lines = 0;
-	prev_n_boxes = 0;
-
 	int n_points = rows * cols;
 	int n_boxes = (rows - 1) * (cols - 1);
 	grid_points.reserve(n_points);
@@ -47,12 +44,6 @@ Grid::Grid(int cols, int rows) :
 	resize_update();
 }
 
-Grid::~Grid()
-{
-	delete grid_texture;
-	delete hover_line_texture;
-}
-
 void Grid::handle_event(SDL_Event &e)
 {
 	if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
@@ -60,7 +51,7 @@ void Grid::handle_event(SDL_Event &e)
 	else if (e.type == SDL_MOUSEBUTTONDOWN)
 	{
 		if (e.button.button == SDL_BUTTON_LEFT)
-			mouse_clicked = true;
+			mouse_state.clicked = true;
 	}
 }
 
@@ -216,12 +207,10 @@ void Grid::update_grid_collision_rects()
 
 void Grid::resize_update()
 {
-	SDL_GetRendererOutputSize(main_renderer, &this->width, &this->height);
+	SDL_GetRendererOutputSize(main_renderer, &viewport_rect.w, &viewport_rect.h);
 
-	viewport_rect.x = 0;
-	viewport_rect.y = 20;
-	viewport_rect.w = width;
-	viewport_rect.h = height - viewport_rect.y;
+	viewport_rect.y = 0.05 * viewport_rect.h;
+	viewport_rect.h -= viewport_rect.y;
 
 	grid_texture->resize(viewport_rect.w, viewport_rect.h);
 
@@ -234,16 +223,17 @@ void Grid::resize_update()
 
 void Grid::update(Player &player)
 {
-	SDL_GetMouseState(&mouse_x, &mouse_y);
-
-	handle_mouse_hover(player);
-	
-	if (mouse_clicked)
+	SDL_GetMouseState(&mouse_state.pos.x, &mouse_state.pos.y);
+	if (SDL_PointInRect(&mouse_state.pos, &viewport_rect))
 	{
-		handle_mouse_click(player);
-		mouse_clicked = false;
+		handle_mouse_hover(player);
+	
+		if (mouse_state.clicked)
+		{
+			handle_mouse_click(player);
+		}
 	}
-
+	mouse_state.clicked = false;  // reset clicked state every update call
 	update_textures();
 }
 
@@ -252,7 +242,8 @@ void Grid::handle_mouse_click(Player &player)
 	if (!is_line_taken(hover_line))
 	{
 		// mouse hover always happens before a click, so no need for anything else
-		set_grid_line(hover_line);
+		if (hover_line.owner != nullptr)
+			set_grid_line(hover_line);
 
 		auto boxes = get_boxes_around_line(grid_lines.back());
 
@@ -263,17 +254,17 @@ void Grid::handle_mouse_click(Player &player)
 void Grid::handle_mouse_hover(Player &player)
 {
 	Line new_line;
-	if (make_collision_line(new_line, mouse_x, mouse_y, player))
+	if (make_collision_line(new_line, mouse_state.pos, player))
 	{
 		if (new_line != hover_line)
 			hover_line = new_line;
 	}
 }
 
-bool Grid::make_collision_line(Line &new_line, int x, int y, Player &player)
+bool Grid::make_collision_line(Line &new_line, const SDL_Point &pos, Player &player)
 {
 	CollisionRect target_rect;
-	if (check_collision(x, y, target_rect))
+	if (check_collision(pos, target_rect))
 	{
 		new_line.start = target_rect.point_a;
 		new_line.end = target_rect.point_b;
@@ -453,12 +444,11 @@ int Grid::calculate_box_score(const Line & top, const Line & right, const Line &
 	return score;
 }
 
-bool Grid::check_collision(int x, int y, CollisionRect &target_rect)
+bool Grid::check_collision(const SDL_Point &point, CollisionRect &target_rect)
 {
-	SDL_Point mouse_point = { x, y };
 	for (auto &grid_collision_rect : grid_collision_rects)
 	{
-		if (SDL_PointInRect(&mouse_point, &grid_collision_rect.collision_rect) == SDL_TRUE)
+		if (SDL_PointInRect(&point, &grid_collision_rect.collision_rect) == SDL_TRUE)
 		{
 			target_rect = grid_collision_rect;
 			return true;

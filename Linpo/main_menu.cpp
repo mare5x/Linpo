@@ -4,6 +4,9 @@
 
 
 MainMenu::MainMenu()
+	:visible(false),
+	width(SCREEN_WIDTH),
+	height(SCREEN_HEIGHT)
 {
 	visible = false;
 
@@ -25,13 +28,8 @@ void MainMenu::handle_event(SDL_Event & e)
 	
 	if (is_visible())
 	{
-		int mouse_x, mouse_y;
-		SDL_GetMouseState(&mouse_x, &mouse_y);
 		for (auto &menu_item : menu_items)
-		{
-			menu_item->handle_hover(mouse_x, mouse_y);
 			menu_item->handle_event(e);
-		}
 	}
 }
 

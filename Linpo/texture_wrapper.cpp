@@ -1,20 +1,24 @@
 #include "texture_wrapper.h"
 
-TextureWrapper::TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access, SDL_Color background_color) : 
-	renderer(renderer), width(w), height(h), access(access), background_color(background_color)
+TextureWrapper::TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access, SDL_Color background_color)
+	:renderer(renderer),
+	width(w), 
+	height(h), 
+	access(access), 
+	background_color(background_color)
 {
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, w, h);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);  // otherwise alpha is ignored!
 }
 
 TextureWrapper::TextureWrapper(SDL_Renderer *& renderer, int access, SDL_Color background_color) 
-	: renderer(renderer), access(access), background_color(background_color)
-{
-	texture = nullptr;
-	width = 0;
-	height = 0;
-	// private variables are ignored
-}
+	:renderer(renderer),
+	texture{nullptr},
+	width(0),
+	height(0),
+	access(access), 
+	background_color(background_color)
+{ }
 
 TextureWrapper::~TextureWrapper()
 {

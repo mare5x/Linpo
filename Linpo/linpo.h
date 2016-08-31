@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <SDL.h>
 #include "player.h"
 #include "grid.h"
@@ -12,7 +13,6 @@ class Linpo
 {
 public:
 	Linpo(Grid &game_grid);
-	~Linpo();
 
 	void update();
 
@@ -26,11 +26,9 @@ private:
 	bool is_ai_turn();
 
 	Grid &game_grid;
+	std::unique_ptr<AI_Logic> ai_logic;
 
 	std::array<Player, N_PLAYERS> players;
 	int player_index;
-
-	AI_Logic* ai_logic;
-
 	int prev_n_lines, prev_n_boxes;
 };

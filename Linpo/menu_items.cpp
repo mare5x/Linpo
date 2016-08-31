@@ -5,20 +5,25 @@
 
 
 AbstractMenuItem::AbstractMenuItem(const MENU_OPTION &option_type)
-	:item_texture{std::make_unique<TextureWrapper>(main_renderer)},
-	option_type{option_type}, 
-	mouse_clicked(false), 
-	mouse_hovered(false),
-	item_rect{} 
-{
-}
+	:item_rect{},
+	item_texture{std::make_unique<TextureWrapper>(main_renderer)},
+	option_type{option_type},
+	mouse_state{},
+	item_hovered(false)
+{ }
 
 void AbstractMenuItem::handle_event(SDL_Event & e)
 {
-	if (e.type == SDL_MOUSEBUTTONDOWN)
+	switch (e.type)
 	{
+	case SDL_MOUSEBUTTONDOWN:
 		if (e.button.button == SDL_BUTTON_LEFT)
-			mouse_clicked = true;
+			mouse_state.clicked = true;
+		break;
+	case SDL_MOUSEMOTION:
+		mouse_state.pos = { e.motion.x, e.motion.y };
+		handle_hover();
+		break;
 	}
 }
 
@@ -45,31 +50,26 @@ void AbstractMenuItem::resize(const int & w, const int & h)
 	item_texture->resize(item_rect.w, item_rect.h);
 }
 
+bool AbstractMenuItem::is_hovered() const
+{
+	return item_hovered;
+}
+
 bool AbstractMenuItem::is_clicked()
 {
-	if (mouse_clicked)
+	if (mouse_state.clicked)
 	{
-		mouse_clicked = false;
+		mouse_state.clicked = false;
 
-		SDL_Point mouse_pos;
-		SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
-		if (SDL_PointInRect(&mouse_pos, &item_rect))
+		if (SDL_PointInRect(&mouse_state.pos, &item_rect))
 			return true;
 	}
 	return false;
 }
 
-bool AbstractMenuItem::is_hovered() const
+bool AbstractMenuItem::is_item_hovered() const
 {
-	int x, y;
-	SDL_GetMouseState(&x, &y);
-	return is_hovered(x, y);
-}
-
-bool AbstractMenuItem::is_hovered(const int &x, const int &y) const
-{
-	SDL_Point mouse_pos = { x, y };
-	if (SDL_PointInRect(&mouse_pos, &item_rect))
+	if (SDL_PointInRect(&mouse_state.pos, &item_rect))
 		return true;
 	else
 		return false;
@@ -90,22 +90,22 @@ int AbstractMenuItem::get_height() const
 	return item_rect.h;
 }
 
-void AbstractMenuItem::handle_hover(int x, int y)
+void AbstractMenuItem::handle_hover()
 {
 	// only update textures if the hover state just changed
-	if (is_hovered(x, y))
+	if (is_item_hovered())
 	{
-		if (!mouse_hovered)
+		if (!item_hovered)
 		{
-			mouse_hovered = true;
+			item_hovered = true;
 			update_full_texture();
 		}
 	}
 	else
 	{
-		if (mouse_hovered)
+		if (item_hovered)
 		{
-			mouse_hovered = false;
+			item_hovered = false;
 			update_full_texture();
 		}
 	}
@@ -123,7 +123,7 @@ TextMenuItem::TextMenuItem(std::string name, const MENU_OPTION & option_type)
 
 void TextMenuItem::update_full_texture()
 {
-	if (mouse_hovered)
+	if (is_hovered())
 		item_texture->clear({ 255, 0, 0, 100 });  // opaque red background
 	else
 		item_texture->clear({ 255, 0, 0, 50 });
@@ -159,11 +159,7 @@ void IncrementerMenuItem::handle_event(SDL_Event & e)
 	increment_item->handle_event(e);
 }
 
-void IncrementerMenuItem::handle_hover(int x, int y)
-{ 
-	decrement_item->handle_hover(x, y);
-	increment_item->handle_hover(x, y);
-}
+void IncrementerMenuItem::handle_hover() { }
 
 void IncrementerMenuItem::render(int x, int y)
 {
@@ -239,14 +235,14 @@ void PauseItem::update_full_texture()
 	rect.w = get_width() * 0.38;
 	rect.h = get_height() * 0.92;
 	
-	if (mouse_hovered)
+	if (is_hovered())
 		render_rect(rect, { 255, 0, 0, 200 });
 	else
 		render_rect(rect, { 255, 0, 0, 100 });
 
 	rect.x = rect.x + rect.w + (get_width() * 0.16);
 
-	if (mouse_hovered)
+	if (is_hovered())
 		render_rect(rect, { 255, 0, 0, 200 });
 	else
 		render_rect(rect, { 255, 0, 0, 100 });
