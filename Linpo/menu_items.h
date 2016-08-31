@@ -22,6 +22,9 @@ public:
 
 	MENU_OPTION get_option_type() const;
 
+	int get_texture_width() const;
+	int get_texture_height() const;
+
 	int get_width() const;
 	int get_height() const;
 protected:

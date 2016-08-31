@@ -97,7 +97,12 @@ void ScoreBoardWPauseItem::handle_event(SDL_Event & e)
 void ScoreBoardWPauseItem::render()
 {
 	ScoreBoard::render();
-	pause_item->render(get_width(), (get_height() - pause_item->get_height()) / 2);
+	SDL_Rect dest_rect;
+	dest_rect.x = get_width();
+	dest_rect.y = 0;
+	dest_rect.w = get_height();
+	dest_rect.h = get_height();
+	pause_item->render(dest_rect);
 }
 
 bool ScoreBoardWPauseItem::item_clicked()
@@ -107,5 +112,5 @@ bool ScoreBoardWPauseItem::item_clicked()
 
 const int ScoreBoardWPauseItem::get_width() const
 {
-	return ScoreBoard::get_width() * 0.8;
+	return ScoreBoard::get_width() - 2 * get_height();
 }

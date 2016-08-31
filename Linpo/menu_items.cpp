@@ -1,3 +1,4 @@
+#include <string>
 #include "menu_items.h"
 #include "globals.h"
 #include "constants.h"
@@ -37,8 +38,7 @@ void AbstractMenuItem::render(int x, int y)
 
 void AbstractMenuItem::render(const SDL_Rect & dest)
 {
-	item_rect.x = dest.x;
-	item_rect.y = dest.y;
+	item_rect = dest;
 
 	item_texture->render(dest);
 }
@@ -78,6 +78,16 @@ bool AbstractMenuItem::is_item_hovered() const
 MENU_OPTION AbstractMenuItem::get_option_type() const
 {
 	return option_type;
+}
+
+int AbstractMenuItem::get_texture_width() const
+{
+	return item_texture->get_width();
+}
+
+int AbstractMenuItem::get_texture_height() const
+{
+	return item_texture->get_height();
 }
 
 int AbstractMenuItem::get_width() const
@@ -166,13 +176,13 @@ void IncrementerMenuItem::render(int x, int y)
 	AbstractMenuItem::render(x, y);
 
 	SDL_Rect dec_rect;
-	dec_rect.w = decrement_item->get_width() * 0.9;
-	dec_rect.h = decrement_item->get_height() * 0.9;
-	dec_rect.x = x + 10 + text_texture->get_width() + ((decrement_item->get_width() - dec_rect.w) / 2);
-	dec_rect.y = y + ((decrement_item->get_height() - dec_rect.h) / 2);
+	dec_rect.w = decrement_item->get_texture_width() * 0.9;
+	dec_rect.h = decrement_item->get_texture_height() * 0.9;
+	dec_rect.x = x + 10 + text_texture->get_width() + ((decrement_item->get_texture_width() - dec_rect.w) / 2);
+	dec_rect.y = y + ((decrement_item->get_texture_height() - dec_rect.h) / 2);
 	decrement_item->render(dec_rect);
 
-	dec_rect.x += decrement_item->get_width() + value_text_tex->get_width();
+	dec_rect.x += decrement_item->get_texture_width() + value_text_tex->get_width();
 	increment_item->render(dec_rect);
 }
 
@@ -207,7 +217,7 @@ void IncrementerMenuItem::update_full_texture()
 	text_texture->render(5, 5);
 
 	value_text_tex->write_text(std::to_string(cur_val), COLORS[BLACK]);
-	value_text_tex->render(5 + text_texture->get_width() + 5 + decrement_item->get_width(), 5);
+	value_text_tex->render(5 + text_texture->get_width() + 5 + decrement_item->get_texture_width(), 5);
 
 	// draw border
 	SDL_SetRenderDrawColor(main_renderer, 255, 0, 0, 255);
@@ -230,17 +240,17 @@ void PauseItem::update_full_texture()
 	item_texture->clear({ 255, 0, 0, 50 });
 
 	SDL_Rect rect;
-	rect.x = get_width() * 0.04 + 1;  // + 1 because the border takes 1 pixel
-	rect.y = get_height() * 0.04 + 1;
-	rect.w = get_width() * 0.38;
-	rect.h = get_height() * 0.92;
+	rect.x = get_texture_width() * 0.04 + 1;  // + 1 because the border takes 1 pixel
+	rect.y = get_texture_height() * 0.04 + 1;
+	rect.w = get_texture_width() * 0.38;
+	rect.h = get_texture_height() * 0.92;
 	
 	if (is_hovered())
 		render_rect(rect, { 255, 0, 0, 200 });
 	else
 		render_rect(rect, { 255, 0, 0, 100 });
 
-	rect.x = rect.x + rect.w + (get_width() * 0.16);
+	rect.x = rect.x + rect.w + (get_texture_width() * 0.16);
 
 	if (is_hovered())
 		render_rect(rect, { 255, 0, 0, 200 });
