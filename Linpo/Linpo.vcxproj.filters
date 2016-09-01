@@ -94,5 +94,8 @@
     <ClInclude Include="mouse_state.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="android-patch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

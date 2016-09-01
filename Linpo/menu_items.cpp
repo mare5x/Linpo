@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "constants.h"
 #include "render_functions.h"
+#include "android-patch.h"
 
 
 AbstractMenuItem::AbstractMenuItem(const MENU_OPTION &option_type)
@@ -152,7 +153,7 @@ void TextMenuItem::update_full_texture()
 IncrementerMenuItem::IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min, int max, int cur)
 	:TextMenuItem::TextMenuItem(name, option_type), 
 	min_val{ min }, max_val{ max }, cur_val(cur),
-	value_text_tex(std::make_unique<TextTexture>(main_renderer, std::to_string(cur), COLORS[BLACK])),
+	value_text_tex(std::make_unique<TextTexture>(main_renderer, patch::to_string(cur), COLORS[BLACK])),
 	decrement_item(std::make_unique<TextMenuItem>("<", option_type)),
 	increment_item(std::make_unique<TextMenuItem>(">", option_type))
 {
@@ -216,7 +217,7 @@ void IncrementerMenuItem::update_full_texture()
 
 	text_texture->render(5, 5);
 
-	value_text_tex->write_text(std::to_string(cur_val), COLORS[BLACK]);
+	value_text_tex->write_text(patch::to_string(cur_val), COLORS[BLACK]);
 	value_text_tex->render(5 + text_texture->get_width() + 5 + decrement_item->get_texture_width(), 5);
 
 	// draw border

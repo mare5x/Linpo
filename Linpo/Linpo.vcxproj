@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ai_logic.h" />
+    <ClInclude Include="android-patch.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="main_menu.h" />
     <ClInclude Include="menu_items.h" />
