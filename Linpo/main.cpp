@@ -192,6 +192,8 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+// mouse events on buttonup not down for better android experience
+
 // TODO: options screen
 // TODO: ANDROID!
 //		-> pinch to zoom

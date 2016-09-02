@@ -57,6 +57,7 @@ void Grid::handle_event(SDL_Event &e)
 
 void Grid::render()
 {
+	// VIEWPORT CHANGES THE ORIGIN (0, 0)! BE CAREFUL!
 	SDL_RenderSetViewport(main_renderer, &viewport_rect);
 
 	grid_texture->render();
@@ -66,6 +67,10 @@ void Grid::render()
 			hover_line_texture->render(hover_line.start->x, hover_line.start->y - line_width / 2);
 		else
 			hover_line_texture->render(hover_line.start->x - line_width / 2, hover_line.start->y + point_radius / 2);
+
+	// (for debugging purposes below)
+	//render_point(mouse_state.pos, point_radius, COLORS[RED]);
+	//SDL_RenderDrawRect(main_renderer, NULL);
 }
 
 void Grid::update_textures()
@@ -92,7 +97,7 @@ void Grid::update_grid_texture()
 
 	if (_show_collision_boxes)
 	{
-		SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 0xff);
+		set_render_draw_color(COLORS[BLACK]);
 		for (const auto &rect : grid_collision_rects)
 			SDL_RenderDrawRect(main_renderer, &rect.collision_rect);
 	}
@@ -224,8 +229,14 @@ void Grid::resize_update()
 void Grid::update(Player &player)
 {
 	SDL_GetMouseState(&mouse_state.pos.x, &mouse_state.pos.y);
+	// "global" detection, later local
 	if (SDL_PointInRect(&mouse_state.pos, &viewport_rect))
 	{
+		// necessary to undo the viewport offset on mouse position since other mouse
+		// functions are "global" and all grid coordinates are local to the current viewport (origin is at (x,y) of viewport_rect)
+		mouse_state.pos.x -= viewport_rect.x;
+		mouse_state.pos.y -= viewport_rect.y;
+
 		handle_mouse_hover(player);
 	
 		if (mouse_state.clicked)
@@ -446,7 +457,7 @@ int Grid::calculate_box_score(const Line & top, const Line & right, const Line &
 
 bool Grid::check_collision(const SDL_Point &point, CollisionRect &target_rect)
 {
-	for (auto &grid_collision_rect : grid_collision_rects)
+	for (const auto &grid_collision_rect : grid_collision_rects)
 	{
 		if (SDL_PointInRect(&point, &grid_collision_rect.collision_rect) == SDL_TRUE)
 		{
