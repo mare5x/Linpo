@@ -23,6 +23,10 @@ public:
 	/* Clears the texture to the clear_color and sets it as the current rendering target. */
 	void clear(const SDL_Color &clear_color);
 
+	/* Scales the texture's alpha value based on the initial background_color's alpha value. 
+	   alpha is a float between [0, 1]. Basically sets the textures opacity.*/
+	void set_alpha_mod(const float alpha);
+
 	void free();
 
 	void render();
@@ -39,4 +43,5 @@ protected:
 private:
 	SDL_Color background_color;
 	int access;
+	Uint8 alpha_mod;
 };

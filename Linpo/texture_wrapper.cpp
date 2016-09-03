@@ -5,7 +5,8 @@ TextureWrapper::TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access
 	width(w), 
 	height(h), 
 	access(access), 
-	background_color(background_color)
+	background_color(background_color),
+	alpha_mod(255)
 {
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, w, h);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);  // otherwise alpha is ignored!
@@ -17,7 +18,8 @@ TextureWrapper::TextureWrapper(SDL_Renderer *& renderer, int access, SDL_Color b
 	width(0),
 	height(0),
 	access(access), 
-	background_color(background_color)
+	background_color(background_color),
+	alpha_mod(255)
 { }
 
 TextureWrapper::~TextureWrapper()
@@ -35,6 +37,7 @@ void TextureWrapper::resize(int new_width, int new_height)
 
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, new_width, new_height);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);  // otherwise alpha is ignored!
+	SDL_SetTextureAlphaMod(texture, alpha_mod);
 	width = new_width;
 	height = new_height;
 }
@@ -66,6 +69,12 @@ void TextureWrapper::clear(const SDL_Color &clear_color)
 	set_as_render_target();
 	SDL_SetRenderDrawColor(renderer, clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 	SDL_RenderClear(renderer);
+}
+
+void TextureWrapper::set_alpha_mod(const float alpha)
+{
+	alpha_mod = alpha * background_color.a;
+	SDL_SetTextureAlphaMod(texture, alpha_mod);
 }
 
 void TextureWrapper::free()
