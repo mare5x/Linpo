@@ -3,7 +3,7 @@
 #include <array>
 #include <memory>
 #include <SDL.h>
-#include "player.h"
+#include "player_array.h"
 #include "grid.h"
 #include "constants.h"
 #include "ai_logic.h"
@@ -19,11 +19,12 @@ public:
 	void reset_game();
 
 	void set_ai_enabled(bool decision);
+	void set_player_number(int number);
 
 	bool is_game_over();
 
 	Player &get_current_player();
-	std::array<Player, N_PLAYERS> &get_players();
+	PlayerArray &get_player_array();
 private:
 	bool is_ai_turn();
 	void enable_ai(bool decision);
@@ -31,7 +32,7 @@ private:
 	Grid &game_grid;
 	std::unique_ptr<AI_Logic> ai_logic;
 
-	std::array<Player, N_PLAYERS> players;
+	PlayerArray players;
 	bool ai_enabled;
 	int player_index;
 	int prev_n_lines, prev_n_boxes;

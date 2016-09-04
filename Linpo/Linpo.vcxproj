@@ -128,6 +128,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_menu.cpp" />
     <ClCompile Include="menu_items.cpp" />
+    <ClCompile Include="player_array.cpp" />
     <ClCompile Include="render_functions.cpp" />
     <ClCompile Include="score_board.cpp" />
     <ClCompile Include="texture_wrapper.cpp" />
@@ -146,7 +147,7 @@
     <ClInclude Include="grid.h" />
     <ClInclude Include="grid_types.h" />
     <ClInclude Include="linpo.h" />
-    <ClInclude Include="player.h" />
+    <ClInclude Include="player_array.h" />
     <ClInclude Include="render_functions.h" />
     <ClInclude Include="score_board.h" />
     <ClInclude Include="texture_wrapper.h" />

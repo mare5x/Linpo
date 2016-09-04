@@ -14,6 +14,8 @@ const int TICKS_PER_FRAME = 1000 / FPS_CAP;
 const bool VSYNC_ENABLED = false;
 
 const int N_PLAYERS = 2;
+const int MAX_PLAYERS = 4;
+const int MIN_PLAYERS = 2;
 const bool AI_ENABLED = true;
 
 
@@ -22,6 +24,7 @@ enum COLOR_NAME
 	BLUE,
 	RED,
 	GREEN,
+	ORANGE,
 	WHITE,
 	BLACK,
 	N_COLORS
@@ -31,6 +34,7 @@ const SDL_Color COLORS[COLOR_NAME::N_COLORS] = {
 	{ 0, 0, 255, 255 },		 // BLUE
 	{ 255, 0, 0, 255 },		 // RED
 	{ 0, 255, 0, 255 },		 // GREEN
+	{ 255, 140, 0, 255 },	 // ORANGE
 	{ 255, 255, 255, 255 },  //	WHITE
 	{ 0, 0, 0, 255 }		 // BLACK
 };

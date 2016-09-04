@@ -1,6 +1,6 @@
 #pragma once
 
-#include "player.h"
+#include "player_array.h"
 #include "grid.h"
 
 

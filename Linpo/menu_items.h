@@ -60,7 +60,7 @@ protected:
 class IncrementerMenuItem : public TextMenuItem
 {
 public:
-	IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min = 2, int max = 4, int cur = 2);
+	IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min = MIN_PLAYERS, int max = MAX_PLAYERS, int cur = N_PLAYERS);
 
 	void handle_event(SDL_Event &e) override;
 	void render(int x, int y) override;

@@ -94,7 +94,8 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem
 	{
 		SDL_Log("n player change");
 		const IncrementerMenuItem& menu_item = static_cast<const IncrementerMenuItem&>(main_menu.get_option_item(MENU_OPTION::N_PLAYER_CHANGE));
-		SDL_Log("n_players: %d", menu_item.get_cur_val());
+		linpo.set_player_number(menu_item.get_cur_val());
+		score_board.clear();
 		break;
 	}
 	case MENU_OPTION::AI_TOGGLE:
@@ -122,7 +123,7 @@ int main(int argc, char* argv[])
 		Grid game_grid(10, 10);
 		Timer fps_cap_timer;
 		Linpo linpo_logic(game_grid);
-		ScoreBoardWPauseItem score_board(linpo_logic.get_players(), game_grid);
+		ScoreBoardWPauseItem score_board(linpo_logic.get_player_array(), game_grid);
 		MainMenu main_menu;
 
 		SDL_SetRenderDrawBlendMode(main_renderer, SDL_BLENDMODE_BLEND);  // otherwise alpha value is ignored when using line and fill!
@@ -195,6 +196,8 @@ int main(int argc, char* argv[])
 	close();
 	return 0;
 }
+
+// BETTER AI (smarter and less cpu)
 
 // mouse events on buttonup not down for better android experience
 // global mouse_state?

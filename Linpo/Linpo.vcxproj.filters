@@ -47,6 +47,9 @@
     <ClCompile Include="menu_items.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="player_array.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globals.h">
@@ -59,9 +62,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="linpo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="score_board.h">
@@ -95,6 +95,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="android-patch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="player_array.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

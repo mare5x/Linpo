@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <array>
-#include "player.h"
+#include "player_array.h"
 #include "constants.h"
 #include "globals.h"
 #include "text_texture.h"
@@ -13,7 +13,7 @@
 class ScoreBoard
 {
 public:
-	ScoreBoard(std::array<Player, N_PLAYERS> &players_array, Grid &game_grid);
+	ScoreBoard(PlayerArray &players_array, Grid &game_grid);
 
 	virtual void handle_event(SDL_Event &e);
 	virtual void render();
@@ -31,15 +31,15 @@ private:
 	int _prev_score;
 
 	Grid &game_grid;
-	std::array<Player, N_PLAYERS> &players;
+	PlayerArray &players;
 
-	std::array<std::unique_ptr<TextTexture>, N_PLAYERS> scoreboard_textures;
+	std::array<std::unique_ptr<TextTexture>, MAX_PLAYERS> scoreboard_textures;
 };
 
 class ScoreBoardWPauseItem : public ScoreBoard
 {
 public:
-	ScoreBoardWPauseItem(std::array<Player, N_PLAYERS> &players_array, Grid &game_grid);
+	ScoreBoardWPauseItem(PlayerArray &players_array, Grid &game_grid);
 
 	void handle_event(SDL_Event &e);
 	void render();

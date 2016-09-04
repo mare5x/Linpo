@@ -523,7 +523,7 @@
 			"file": "/D/Android/dev/SDL2-2.0.4/android-project/jni/src/Android.mk",
 			"settings":
 			{
-				"buffer_size": 692,
+				"buffer_size": 713,
 				"line_ending": "Unix"
 			}
 		},
@@ -1107,15 +1107,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 692,
+						"buffer_size": 713,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								434,
-								434
+								575,
+								575
 							]
 						],
 						"settings":

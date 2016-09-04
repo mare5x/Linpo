@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SDL.h"
-#include "player.h"
+#include "player_array.h"
 
 
 struct Line

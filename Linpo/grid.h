@@ -7,7 +7,7 @@
 #include "constants.h"
 #include "texture_wrapper.h"
 #include "text_texture.h"
-#include "player.h"
+#include "player_array.h"
 #include "grid_types.h"
 #include "mouse_state.h"
 

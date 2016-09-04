@@ -10,13 +10,7 @@ Linpo::Linpo(Grid &game_grid)
 	player_index(0),
 	prev_n_lines(0),
 	prev_n_boxes(0)
-{
-	for (int i = 0; i < players.size(); ++i)
-	{
-		players[i].color = &COLORS[i];
-		players[i].id = i;
-	}
-	
+{	
 	enable_ai(ai_enabled);
 }
 
@@ -35,7 +29,7 @@ void Linpo::update()
 		if (!game_grid.score_changed(prev_n_boxes))
 		{
 			// next player's turn, since a move was made and the player didn't fill up a box
-			player_index = (player_index + 1) % N_PLAYERS;
+			player_index = (player_index + 1) % players.size();
 		}
 	}
 }
@@ -61,6 +55,13 @@ void Linpo::set_ai_enabled(bool decision)
 	}
 }
 
+void Linpo::set_player_number(int number)
+{
+	players.set_players(number);
+	reset_game();
+	enable_ai(ai_enabled);
+}
+
 void Linpo::enable_ai(bool decision)
 {
 	for (int i = 1; i < players.size(); ++i)
@@ -72,7 +73,7 @@ Player &Linpo::get_current_player()
 	return players[player_index];
 }
 
-std::array<Player, N_PLAYERS>& Linpo::get_players()
+PlayerArray& Linpo::get_player_array()
 {
 	return players;
 }
