@@ -27,6 +27,8 @@ public:
 	   alpha is a float between [0, 1]. Basically sets the textures opacity.*/
 	void set_alpha_mod(const float alpha);
 
+	void set_color_mod(Uint8 r, Uint8 g, Uint8 b);
+
 	void free();
 
 	void render();

@@ -77,6 +77,11 @@ void TextureWrapper::set_alpha_mod(const float alpha)
 	SDL_SetTextureAlphaMod(texture, alpha_mod);
 }
 
+void TextureWrapper::set_color_mod(Uint8 r, Uint8 g, Uint8 b)
+{
+	SDL_SetTextureColorMod(texture, r, g, b);
+}
+
 void TextureWrapper::free()
 {
 	SDL_DestroyTexture(texture);

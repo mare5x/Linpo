@@ -87,7 +87,7 @@ private:
 	std::vector<CollisionRect> grid_collision_rects;
 	std::vector<ScoreBox> grid_score_boxes;
 	
-	std::array<std::unique_ptr<TextTexture>, N_PLAYERS * 4> score_textures;
+	std::array<std::unique_ptr<TextTexture>, 4> score_textures;
 
 	std::unique_ptr<TextureWrapper> grid_texture, hover_line_texture;
 };

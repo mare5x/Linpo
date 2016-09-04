@@ -24,15 +24,11 @@ Grid::Grid(int cols, int rows)
 	// grid and hover line textures will get properly resized later
 	
 	// initialize score_textures
-	for (int i = 0; i < N_PLAYERS; ++i)
+	for (int score = 0; score < 4; ++score)
 	{
-		for (int score = 1; score <= 4; ++score)
-		{
-			const int index = (i * 4) + score - 1;
-			const char score_str[2] = { score + '0', '\0' };
-			score_textures[index] = std::make_unique<TextTexture>(main_renderer);
-			score_textures[index]->write_text(score_str, COLORS[i]);
-		}
+		const char score_str[2] = { score + 1 + '0', '\0' };
+		score_textures[score] = std::make_unique<TextTexture>(main_renderer);
+		score_textures[score]->write_text(score_str, COLORS[WHITE]);
 	}
 
 	int n_points = rows * cols;
@@ -493,7 +489,7 @@ void Grid::render_box_score(const char score, const SDL_Point &top_left, const P
 {
 	const auto &point_distance = get_point_distance();
 
-	const auto &score_texture = score_textures[(player.id * 4) + score - 1];
+	const auto &score_texture = score_textures[score - 1];
 
 	const int &text_width = score_texture->get_width();
 	const int &text_height = score_texture->get_height();
@@ -501,6 +497,7 @@ void Grid::render_box_score(const char score, const SDL_Point &top_left, const P
 	int x = top_left.x + (point_distance.x / 2) - (text_width / 2);
 	int y = top_left.y + (point_distance.y / 2) - (text_height / 2) - (point_radius / 2);
 	
+	score_texture->set_color_mod(player.color->r, player.color->g, player.color->b);
 	score_texture->render(x, y);
 }
 
