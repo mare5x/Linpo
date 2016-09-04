@@ -5,5 +5,5 @@
 struct MouseState
 {
 	SDL_Point pos;
-	bool clicked;
+	bool pressed;
 };

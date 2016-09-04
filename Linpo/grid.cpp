@@ -51,7 +51,17 @@ void Grid::handle_event(SDL_Event &e)
 	else if (e.type == SDL_MOUSEBUTTONDOWN)
 	{
 		if (e.button.button == SDL_BUTTON_LEFT)
-			mouse_state.clicked = true;
+			if (SDL_PointInRect(&mouse_state.pos, &viewport_rect))
+				mouse_state.pressed = true;
+	}
+	else if (e.type == SDL_MOUSEBUTTONUP)
+	{
+		if (e.button.button == SDL_BUTTON_LEFT)
+		{
+			if (mouse_state.pressed)
+				mouse_clicked = true;
+			mouse_state.pressed = false;
+		}
 	}
 }
 
@@ -239,12 +249,12 @@ void Grid::update(Player &player)
 
 		handle_mouse_hover(player);
 	
-		if (mouse_state.clicked)
+		if (mouse_clicked)
 		{
 			handle_mouse_click(player);
 		}
 	}
-	mouse_state.clicked = false;  // reset clicked state every update call
+	mouse_clicked = false;  // reset mouse_clicked since it has already been handled
 	update_textures();
 }
 
@@ -465,6 +475,14 @@ bool Grid::check_collision(const SDL_Point &point, CollisionRect &target_rect)
 			return true;
 		}
 	}
+	return false;
+}
+
+bool Grid::check_collision(const SDL_Point & point) const
+{
+	for (const auto &grid_collision_rect : grid_collision_rects)
+		if (SDL_PointInRect(&point, &grid_collision_rect.collision_rect))
+			return true;
 	return false;
 }
 

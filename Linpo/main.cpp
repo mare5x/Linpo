@@ -98,8 +98,12 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem
 		break;
 	}
 	case MENU_OPTION::AI_TOGGLE:
+	{
 		SDL_Log("ai toggle");
+		const BoolMenuItem& menu_item = static_cast<const BoolMenuItem&>(main_menu.get_option_item(MENU_OPTION::AI_TOGGLE));
+		SDL_Log("bool: %d", menu_item.get_cur_val());
 		break;
+	}
 	case MENU_OPTION::PAUSE:
 		SDL_Log("pause button");
 		main_menu.toggle_visibility();
@@ -140,9 +144,6 @@ int main(int argc, char* argv[])
 						continue;
 					}
 
-					if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE || score_board.item_clicked())
-						main_menu.toggle_visibility();
-
 					if (!main_menu.is_visible())
 					{
 						game_grid.handle_event(e);
@@ -152,6 +153,9 @@ int main(int argc, char* argv[])
 					{
 						main_menu.handle_event(e);
 					}
+
+					if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE || score_board.item_clicked())
+						main_menu.toggle_visibility();
 
 					if (e.type == SDL_QUIT)
 						quit = true;
@@ -193,6 +197,7 @@ int main(int argc, char* argv[])
 }
 
 // mouse events on buttonup not down for better android experience
+// global mouse_state?
 
 // TODO: options screen
 // TODO: ANDROID!

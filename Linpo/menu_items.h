@@ -18,7 +18,7 @@ public:
 	void render(const SDL_Rect &dest);
 
 	bool is_hovered() const;
-	virtual bool is_clicked();
+	virtual bool was_clicked();
 
 	MENU_OPTION get_option_type() const;
 
@@ -29,6 +29,7 @@ public:
 	int get_height() const;
 protected:
 	virtual void handle_hover();
+	virtual void handle_item_click() {}
 	virtual void update_full_texture() = 0;
 
 	/*Resizes item_rect and item_texture to w, h.*/
@@ -37,11 +38,13 @@ protected:
 	SDL_Rect item_rect;
 	std::unique_ptr<TextureWrapper> item_texture;
 private:
+	void handle_mouse_click();
 	bool is_item_hovered() const;
 
 	MENU_OPTION option_type;
 	MouseState mouse_state;
 	bool item_hovered;
+	bool item_clicked;
 };
 
 class TextMenuItem : public AbstractMenuItem
@@ -62,7 +65,7 @@ public:
 	void handle_event(SDL_Event &e) override;
 	void render(int x, int y) override;
 
-	bool is_clicked() override;
+	bool was_clicked() override;
 
 	const int get_cur_val() const;
 protected:
@@ -79,7 +82,17 @@ protected:
 class BoolMenuItem : public TextMenuItem
 {
 public:
-	BoolMenuItem(std::string name, MENU_OPTION option_type) : TextMenuItem::TextMenuItem(name, option_type) { }
+	BoolMenuItem(std::string name, MENU_OPTION option_type);
+
+	bool get_cur_val() const;
+protected:
+	void handle_item_click() override;
+private:
+	void update_full_texture() override;
+
+	bool bool_val;
+
+	std::unique_ptr<TextTexture> bool_text;
 };
 
 class PauseItem : public AbstractMenuItem

@@ -107,7 +107,7 @@ void ScoreBoardWPauseItem::render()
 
 bool ScoreBoardWPauseItem::item_clicked()
 {
-	return pause_item->is_clicked();
+	return pause_item->was_clicked();
 }
 
 const int ScoreBoardWPauseItem::get_width() const

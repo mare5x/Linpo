@@ -11,7 +11,8 @@ AbstractMenuItem::AbstractMenuItem(const MENU_OPTION &option_type)
 	item_texture{std::make_unique<TextureWrapper>(main_renderer)},
 	option_type{option_type},
 	mouse_state{},
-	item_hovered(false)
+	item_hovered(false),
+	item_clicked(false)
 { }
 
 void AbstractMenuItem::handle_event(SDL_Event & e)
@@ -20,8 +21,20 @@ void AbstractMenuItem::handle_event(SDL_Event & e)
 	{
 	case SDL_MOUSEBUTTONDOWN:
 		if (e.button.button == SDL_BUTTON_LEFT)
-			mouse_state.clicked = true;
+			if (is_item_hovered())
+				mouse_state.pressed = true;
 		break;
+	case SDL_MOUSEBUTTONUP:
+		if (e.button.button == SDL_BUTTON_LEFT)
+		{
+			if (mouse_state.pressed)
+				handle_mouse_click();
+
+			mouse_state.pressed = false;
+
+			if (item_clicked)
+				handle_item_click();
+		}
 	case SDL_MOUSEMOTION:
 		mouse_state.pos = { e.motion.x, e.motion.y };
 		handle_hover();
@@ -56,16 +69,11 @@ bool AbstractMenuItem::is_hovered() const
 	return item_hovered;
 }
 
-bool AbstractMenuItem::is_clicked()
+bool AbstractMenuItem::was_clicked()
 {
-	if (mouse_state.clicked)
-	{
-		mouse_state.clicked = false;
-
-		if (SDL_PointInRect(&mouse_state.pos, &item_rect))
-			return true;
-	}
-	return false;
+	bool ret = item_clicked;
+	item_clicked = false;
+	return ret;
 }
 
 bool AbstractMenuItem::is_item_hovered() const
@@ -120,6 +128,14 @@ void AbstractMenuItem::handle_hover()
 			update_full_texture();
 		}
 	}
+}
+
+void AbstractMenuItem::handle_mouse_click()
+{
+	if (SDL_PointInRect(&mouse_state.pos, &item_rect))
+		item_clicked = true;
+	else
+		item_clicked = false;
 }
 
 
@@ -187,15 +203,15 @@ void IncrementerMenuItem::render(int x, int y)
 	increment_item->render(dec_rect);
 }
 
-bool IncrementerMenuItem::is_clicked()
+bool IncrementerMenuItem::was_clicked()
 {
 	bool ret = false;
-	if (decrement_item->is_clicked())
+	if (decrement_item->was_clicked())
 	{
 		cur_val = cur_val <= min_val ? min_val : cur_val - 1;
 		ret = true;
 	}
-	else if (increment_item->is_clicked())
+	else if (increment_item->was_clicked())
 	{
 		cur_val = cur_val >= max_val ? max_val : cur_val + 1;
 		ret = true;
@@ -265,3 +281,38 @@ void PauseItem::update_full_texture()
 	item_texture->reset_render_target();
 }
 
+BoolMenuItem::BoolMenuItem(std::string name, MENU_OPTION option_type)
+	:TextMenuItem::TextMenuItem(name, option_type),
+	bool_val(false),
+	bool_text(std::make_unique<TextTexture>(main_renderer, "disabled", COLORS[BLACK]))
+{
+	resize(text_texture->get_width() + bool_text->get_width() + 10, bool_text->get_height() + 10);
+	update_full_texture();
+}
+
+bool BoolMenuItem::get_cur_val() const
+{
+	return bool_val;
+}
+
+void BoolMenuItem::handle_item_click()
+{
+	bool_val = !bool_val;
+	if (bool_val)
+		bool_text->write_text("enabled", COLORS[BLACK]);
+	else
+		bool_text->write_text("disabled", COLORS[BLACK]);
+	
+	update_full_texture();
+}
+
+void BoolMenuItem::update_full_texture()
+{
+	TextMenuItem::update_full_texture();
+
+	item_texture->set_as_render_target();
+
+	bool_text->render(text_texture->get_width() + 5, 5);
+
+	item_texture->reset_render_target();
+}

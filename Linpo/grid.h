@@ -48,6 +48,7 @@ private:
 	void handle_mouse_hover(Player &player);
 
 	bool check_collision(const SDL_Point &point, CollisionRect &target_rect);
+	bool check_collision(const SDL_Point &point) const;
 
 	void update_textures();
 	void update_grid_texture();
@@ -73,6 +74,7 @@ private:
 	int point_radius, line_width;
 
 	MouseState mouse_state;
+	bool mouse_clicked;
 
 	bool _show_collision_boxes;
 
