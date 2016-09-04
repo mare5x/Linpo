@@ -76,6 +76,7 @@ private:
 	MouseState mouse_state;
 	bool mouse_clicked;
 
+	// debuggin variables
 	bool _show_collision_boxes;
 
 	Line hover_line, prev_hover_line;

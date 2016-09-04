@@ -4,8 +4,9 @@
 
 Linpo::Linpo(Grid &game_grid)
 	:game_grid(game_grid),
-	ai_logic(AI_ENABLED ? std::make_unique<AI_Logic>(game_grid) : nullptr),
+	ai_logic(std::make_unique<AI_Logic>(game_grid)),
 	players{},
+	ai_enabled(AI_ENABLED),
 	player_index(0),
 	prev_n_lines(0),
 	prev_n_boxes(0)
@@ -15,8 +16,8 @@ Linpo::Linpo(Grid &game_grid)
 		players[i].color = &COLORS[i];
 		players[i].id = i;
 	}
-
-	players[1].is_ai = AI_ENABLED ? true : false;
+	
+	enable_ai(ai_enabled);
 }
 
 void Linpo::update()
@@ -24,7 +25,7 @@ void Linpo::update()
 	if (is_game_over())
 		return;
 
-	if (ai_logic != nullptr && is_ai_turn())
+	if (is_ai_turn())
 	{
 		ai_logic->make_move(get_current_player());
 	}
@@ -49,6 +50,21 @@ void Linpo::reset_game()
 
 	for (auto &player : players)
 		player.score = 0;
+}
+
+void Linpo::set_ai_enabled(bool decision)
+{
+	if (decision != ai_enabled)
+	{
+		ai_enabled = decision;
+		enable_ai(decision);
+	}
+}
+
+void Linpo::enable_ai(bool decision)
+{
+	for (int i = 1; i < players.size(); ++i)
+		players[i].is_ai = decision;
 }
 
 Player &Linpo::get_current_player()

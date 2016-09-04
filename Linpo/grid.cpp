@@ -46,16 +46,21 @@ Grid::Grid(int cols, int rows)
 
 void Grid::handle_event(SDL_Event &e)
 {
-	if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-		resize_update();
-	else if (e.type == SDL_MOUSEBUTTONDOWN)
+	switch (e.type)
 	{
+	case SDL_WINDOWEVENT:
+		if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+			resize_update();
+		break;
+	case SDL_MOUSEMOTION:
+		SDL_GetMouseState(&mouse_state.pos.x, &mouse_state.pos.y);
+		break;
+	case SDL_MOUSEBUTTONDOWN:
 		if (e.button.button == SDL_BUTTON_LEFT)
 			if (SDL_PointInRect(&mouse_state.pos, &viewport_rect))
 				mouse_state.pressed = true;
-	}
-	else if (e.type == SDL_MOUSEBUTTONUP)
-	{
+		break;
+	case SDL_MOUSEBUTTONUP:
 		if (e.button.button == SDL_BUTTON_LEFT)
 		{
 			if (mouse_state.pressed)
@@ -238,15 +243,9 @@ void Grid::resize_update()
 
 void Grid::update(Player &player)
 {
-	SDL_GetMouseState(&mouse_state.pos.x, &mouse_state.pos.y);
-	// "global" detection, later local
+	// "global" mouse detection, later local
 	if (SDL_PointInRect(&mouse_state.pos, &viewport_rect))
 	{
-		// necessary to undo the viewport offset on mouse position since other mouse
-		// functions are "global" and all grid coordinates are local to the current viewport (origin is at (x,y) of viewport_rect)
-		mouse_state.pos.x -= viewport_rect.x;
-		mouse_state.pos.y -= viewport_rect.y;
-
 		handle_mouse_hover(player);
 	
 		if (mouse_clicked)
@@ -274,8 +273,12 @@ void Grid::handle_mouse_click(Player &player)
 
 void Grid::handle_mouse_hover(Player &player)
 {
+	// necessary to undo the viewport offset on the mouse position since it's global,
+	// and all grid coordinates are local to the current viewport (origin is at (x,y) of viewport_rect)
+
 	Line new_line;
-	if (make_collision_line(new_line, mouse_state.pos, player))
+	SDL_Point local_mouse = { mouse_state.pos.x - viewport_rect.x, mouse_state.pos.y - viewport_rect.y };
+	if (make_collision_line(new_line, local_mouse, player))
 	{
 		if (new_line != hover_line)
 			hover_line = new_line;

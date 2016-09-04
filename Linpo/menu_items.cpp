@@ -283,8 +283,8 @@ void PauseItem::update_full_texture()
 
 BoolMenuItem::BoolMenuItem(std::string name, MENU_OPTION option_type)
 	:TextMenuItem::TextMenuItem(name, option_type),
-	bool_val(false),
-	bool_text(std::make_unique<TextTexture>(main_renderer, "disabled", COLORS[BLACK]))
+	bool_val(AI_ENABLED),
+	bool_text(std::make_unique<TextTexture>(main_renderer, AI_ENABLED ? "enabled" : "disabled", COLORS[BLACK]))
 {
 	resize(text_texture->get_width() + bool_text->get_width() + 10, bool_text->get_height() + 10);
 	update_full_texture();

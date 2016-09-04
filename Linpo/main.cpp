@@ -101,7 +101,7 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem
 	{
 		SDL_Log("ai toggle");
 		const BoolMenuItem& menu_item = static_cast<const BoolMenuItem&>(main_menu.get_option_item(MENU_OPTION::AI_TOGGLE));
-		SDL_Log("bool: %d", menu_item.get_cur_val());
+		linpo.set_ai_enabled(menu_item.get_cur_val());
 		break;
 	}
 	case MENU_OPTION::PAUSE:
@@ -198,6 +198,9 @@ int main(int argc, char* argv[])
 
 // mouse events on buttonup not down for better android experience
 // global mouse_state?
+
+// logical resolution?
+// scaling instead of resizing?
 
 // TODO: options screen
 // TODO: ANDROID!
