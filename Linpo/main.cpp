@@ -155,7 +155,9 @@ int main(int argc, char* argv[])
 						main_menu.handle_event(e);
 					}
 
-					if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE || score_board.item_clicked())
+					if (e.type == SDL_KEYDOWN && 
+					   (e.key.keysym.sym == SDLK_ESCAPE || e.key.keysym.sym == SDLK_AC_BACK) ||
+					   score_board.item_clicked())
 						main_menu.toggle_visibility();
 
 					if (e.type == SDL_QUIT)
