@@ -16,10 +16,11 @@ public:
 
 	void update();
 
-	void reset_game();
+	void reset_game(bool clear_grid = true);
 
 	void set_ai_enabled(bool decision);
 	void set_player_number(int number);
+	void set_grid_size(int size);
 
 	bool is_game_over();
 

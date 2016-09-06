@@ -13,6 +13,8 @@ const int TICKS_PER_FRAME = 1000 / FPS_CAP;
 
 const bool VSYNC_ENABLED = false;
 
+const int DEFAULT_GRID_SIZE = 8;
+
 const int N_PLAYERS = 2;
 const int MAX_PLAYERS = 4;
 const int MIN_PLAYERS = 2;

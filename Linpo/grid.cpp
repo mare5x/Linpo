@@ -512,6 +512,22 @@ void Grid::clear_grid()
 	prev_n_boxes = 0;
 }
 
+void Grid::set_grid_size(int rows, int cols)
+{
+	this->rows = rows;
+	this->cols = cols;
+	n_edges = 2 * rows * cols - rows - cols;
+
+	int n_points = rows * cols;
+	int n_boxes = (rows - 1) * (cols - 1);
+	grid_points.resize(n_points);
+	grid_collision_rects.resize(n_edges);
+	grid_lines.resize(n_edges);
+	grid_score_boxes.resize(n_boxes);
+
+	clear_grid();
+}
+
 std::vector<SDL_Point> &Grid::get_grid_points()
 {
 	return grid_points;

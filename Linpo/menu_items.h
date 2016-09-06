@@ -84,7 +84,7 @@ protected:
 class GridSizeMenuItem : public IncrementerMenuItem
 {
 public:
-	GridSizeMenuItem(const std::string &name, const MENU_OPTION &option_type, int min = 3, int max = 20, int cur = 8);
+	GridSizeMenuItem(const std::string &name, const MENU_OPTION &option_type, int min = 3, int max = 20, int cur = DEFAULT_GRID_SIZE);
 protected:
 	void update_full_texture() override;
 	void adjust_item_size() override;

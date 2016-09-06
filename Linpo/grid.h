@@ -27,6 +27,7 @@ public:
 
 	/*Clears grid and makes it ready for a new game.*/
 	void clear_grid();
+	void set_grid_size(int rows, int cols);
 
 	std::vector<SDL_Point> &get_grid_points();
 	std::vector<ScoreBox> get_boxes_around_line(Line &line);  // it is actually const Line &line
@@ -68,9 +69,7 @@ private:
 
 	SDL_Rect viewport_rect;
 
-	const int cols;
-	const int rows;
-	const int n_edges;
+	int cols, rows, n_edges;
 	int point_radius, line_width;
 
 	MouseState mouse_state;

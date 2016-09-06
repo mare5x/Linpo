@@ -98,6 +98,14 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem
 		score_board.clear();
 		break;
 	}
+	case MENU_OPTION::GRID_SIZE:
+	{
+		SDL_Log("grid size change");
+		const GridSizeMenuItem& menu_item = static_cast<const GridSizeMenuItem&>(main_menu.get_option_item(MENU_OPTION::GRID_SIZE));
+		linpo.set_grid_size(menu_item.get_cur_val());
+		score_board.clear();
+		break;
+	}
 	case MENU_OPTION::AI_TOGGLE:
 	{
 		SDL_Log("ai toggle");
@@ -120,7 +128,7 @@ int main(int argc, char* argv[])
 		bool quit = false;
 		SDL_Event e;
 
-		Grid game_grid(10, 10);
+		Grid game_grid(DEFAULT_GRID_SIZE, DEFAULT_GRID_SIZE);
 		Timer fps_cap_timer;
 		Linpo linpo_logic(game_grid);
 		ScoreBoardWPauseItem score_board(linpo_logic.get_player_array(), game_grid);
@@ -209,7 +217,6 @@ int main(int argc, char* argv[])
 // logical resolution?
 // scaling instead of resizing?
 
-// TODO: options screen
 // TODO: ANDROID!
 //		-> pinch to zoom
 

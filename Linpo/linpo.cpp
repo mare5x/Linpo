@@ -34,9 +34,10 @@ void Linpo::update()
 	}
 }
 
-void Linpo::reset_game()
+void Linpo::reset_game(bool clear_grid)
 {
-	game_grid.clear_grid();
+	if (clear_grid)
+		game_grid.clear_grid();
 
 	player_index = 0;
 	prev_n_lines = 0;
@@ -60,6 +61,12 @@ void Linpo::set_player_number(int number)
 	players.set_players(number);
 	reset_game();
 	enable_ai(ai_enabled);
+}
+
+void Linpo::set_grid_size(int size)
+{
+	game_grid.set_grid_size(size, size);
+	reset_game(false);
 }
 
 void Linpo::enable_ai(bool decision)
