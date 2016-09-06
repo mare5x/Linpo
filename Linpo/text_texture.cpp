@@ -43,7 +43,7 @@ void TextTexture::write_text(const std::string &s, const SDL_Color &color)
 
 void TextTexture::get_text_size(int &w, int &h)
 {
-	TTF_SizeText(global_font, text.c_str(), &w, &h);
+	TTF_SizeText(text_font, text.c_str(), &w, &h);
 }
 
 void TextTexture::set_font_size(const int font_size)
@@ -90,7 +90,7 @@ int calculate_font_size()
 	return dpi_scale_factor * BASE_FONT_SIZE;
 }
 
-void calculate_text_size(const char * text_str, int &w, int &h)
+void calculate_text_size(const char * text_str, int* w, int* h)
 {
-	TTF_SizeText(global_font, text_str, &w, &h);
+	TTF_SizeText(global_font, text_str, w, h);
 }

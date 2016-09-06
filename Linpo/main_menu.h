@@ -25,5 +25,5 @@ private:
 	bool visible;
 	int width, height;
 
-	std::array<std::unique_ptr<AbstractMenuItem>, (int)MENU_OPTION::_N_MENU_OPTIONS> menu_items;  // -1 because of NULL_OPTION
+	std::array<std::unique_ptr<AbstractMenuItem>, (int)MENU_OPTION::_N_MENU_OPTIONS> menu_items;
 };

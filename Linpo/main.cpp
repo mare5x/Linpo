@@ -201,6 +201,8 @@ int main(int argc, char* argv[])
 
 // BETTER AI (smarter and less cpu)
 
+// options: make a slider?
+
 // mouse events on buttonup not down for better android experience
 // global mouse_state?
 

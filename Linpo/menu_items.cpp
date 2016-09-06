@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "render_functions.h"
 #include "android-patch.h"
+#include <sstream>
 
 
 AbstractMenuItem::AbstractMenuItem(const MENU_OPTION &option_type)
@@ -139,7 +140,7 @@ void AbstractMenuItem::handle_mouse_click()
 }
 
 
-TextMenuItem::TextMenuItem(std::string name, const MENU_OPTION & option_type)
+TextMenuItem::TextMenuItem(const std::string &name, const MENU_OPTION &option_type)
 	:AbstractMenuItem::AbstractMenuItem(option_type), 
 	text_texture(std::make_unique<TextTexture>(main_renderer, name, COLORS[BLACK]))
 {
@@ -166,17 +167,14 @@ void TextMenuItem::update_full_texture()
 }
 
 
-IncrementerMenuItem::IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min, int max, int cur)
+IncrementerMenuItem::IncrementerMenuItem(const std::string &name, const MENU_OPTION &option_type, int min, int max, int cur)
 	:TextMenuItem::TextMenuItem(name, option_type), 
 	min_val{ min }, max_val{ max }, cur_val(cur),
 	value_text_tex(std::make_unique<TextTexture>(main_renderer, patch::to_string(cur), COLORS[BLACK])),
 	decrement_item(std::make_unique<TextMenuItem>("<", option_type)),
 	increment_item(std::make_unique<TextMenuItem>(">", option_type))
 {
-	item_rect.w = text_texture->get_width() + decrement_item->get_width() + value_text_tex->get_width() + decrement_item->get_width() + 10;
-
-	item_texture->resize(item_rect.w, item_rect.h);
-
+	adjust_item_size();
 	update_full_texture();  // initializes it
 }
 
@@ -199,7 +197,7 @@ void IncrementerMenuItem::render(int x, int y)
 	dec_rect.y = y + ((decrement_item->get_texture_height() - dec_rect.h) / 2);
 	decrement_item->render(dec_rect);
 
-	dec_rect.x += decrement_item->get_texture_width() + value_text_tex->get_width();
+	dec_rect.x = x + get_width() - increment_item->get_width() - 2;
 	increment_item->render(dec_rect);
 }
 
@@ -217,7 +215,10 @@ bool IncrementerMenuItem::was_clicked()
 		ret = true;
 	}
 
-	if (ret) update_full_texture();
+	if (ret)
+	{
+		update_full_texture();
+	}
 
 	return ret;
 }
@@ -243,36 +244,34 @@ void IncrementerMenuItem::update_full_texture()
 	item_texture->reset_render_target();
 }
 
-
-PauseItem::PauseItem(const int w, const int h)
-	:AbstractMenuItem::AbstractMenuItem(MENU_OPTION::PAUSE)
+void IncrementerMenuItem::adjust_item_size()
 {
-	// a 64 by 64 button by default
-	resize(w, h);
-	update_full_texture();
+	int value_tex_size;
+	calculate_text_size(patch::to_string(max_val).c_str(), &value_tex_size, NULL);
+	item_rect.w = text_texture->get_width() + decrement_item->get_width() + value_tex_size + increment_item->get_width() + 10;
+
+	item_texture->resize(item_rect.w, item_rect.h);
 }
 
-void PauseItem::update_full_texture()
+
+GridSizeMenuItem::GridSizeMenuItem(const std::string & name, const MENU_OPTION & option_type, int min, int max, int cur)
+	:IncrementerMenuItem::IncrementerMenuItem(name, option_type, min, max, cur)
+{
+	update_value_text();
+	adjust_item_size();
+	update_full_texture();  // initializes it
+}
+
+void GridSizeMenuItem::update_full_texture()
 {
 	item_texture->clear({ 255, 0, 0, 50 });
 
-	SDL_Rect rect;
-	rect.x = get_texture_width() * 0.04 + 1;  // + 1 because the border takes 1 pixel
-	rect.y = get_texture_height() * 0.04 + 1;
-	rect.w = get_texture_width() * 0.38;
-	rect.h = get_texture_height() * 0.92;
-	
-	if (is_hovered())
-		render_rect(rect, { 255, 0, 0, 200 });
-	else
-		render_rect(rect, { 255, 0, 0, 100 });
+	text_texture->render(5, 5);
 
-	rect.x = rect.x + rect.w + (get_texture_width() * 0.16);
-
-	if (is_hovered())
-		render_rect(rect, { 255, 0, 0, 200 });
-	else
-		render_rect(rect, { 255, 0, 0, 100 });
+	update_value_text();
+	int left = 5 + text_texture->get_width() + 5 + decrement_item->get_texture_width();
+	int right = get_width() - 2 - increment_item->get_texture_width();
+	value_text_tex->render((left + right - value_text_tex->get_width()) / 2, 5);
 
 	// draw border
 	SDL_SetRenderDrawColor(main_renderer, 255, 0, 0, 255);
@@ -281,7 +280,27 @@ void PauseItem::update_full_texture()
 	item_texture->reset_render_target();
 }
 
-BoolMenuItem::BoolMenuItem(std::string name, MENU_OPTION option_type)
+void GridSizeMenuItem::adjust_item_size()
+{
+	std::ostringstream stream;
+	stream << max_val << " X " << max_val;
+
+	int value_tex_size;
+	calculate_text_size(stream.str().c_str(), &value_tex_size, NULL);
+	item_rect.w = text_texture->get_width() + decrement_item->get_width() + value_tex_size + increment_item->get_width() + 10;
+
+	item_texture->resize(item_rect.w, item_rect.h);
+}
+
+void GridSizeMenuItem::update_value_text()
+{
+	std::ostringstream stream;
+	stream << cur_val << " X " << cur_val;
+	value_text_tex->write_text(stream.str(), COLORS[BLACK]);
+}
+
+
+BoolMenuItem::BoolMenuItem(const std::string &name, const MENU_OPTION &option_type)
 	:TextMenuItem::TextMenuItem(name, option_type),
 	bool_val(AI_ENABLED),
 	bool_text(std::make_unique<TextTexture>(main_renderer, AI_ENABLED ? "enabled" : "disabled", COLORS[BLACK]))
@@ -313,6 +332,44 @@ void BoolMenuItem::update_full_texture()
 	item_texture->set_as_render_target();
 
 	bool_text->render(text_texture->get_width() + 5, 5);
+
+	item_texture->reset_render_target();
+}
+
+
+PauseItem::PauseItem(const int w, const int h)
+	:AbstractMenuItem::AbstractMenuItem(MENU_OPTION::PAUSE)
+{
+	// a 64 by 64 button by default
+	resize(w, h);
+	update_full_texture();
+}
+
+void PauseItem::update_full_texture()
+{
+	item_texture->clear({ 255, 0, 0, 50 });
+
+	SDL_Rect rect;
+	rect.x = get_texture_width() * 0.04 + 1;  // + 1 because the border takes 1 pixel
+	rect.y = get_texture_height() * 0.04 + 1;
+	rect.w = get_texture_width() * 0.38;
+	rect.h = get_texture_height() * 0.92;
+
+	if (is_hovered())
+		render_rect(rect, { 255, 0, 0, 200 });
+	else
+		render_rect(rect, { 255, 0, 0, 100 });
+
+	rect.x = rect.x + rect.w + (get_texture_width() * 0.16);
+
+	if (is_hovered())
+		render_rect(rect, { 255, 0, 0, 200 });
+	else
+		render_rect(rect, { 255, 0, 0, 100 });
+
+	// draw border
+	SDL_SetRenderDrawColor(main_renderer, 255, 0, 0, 255);
+	SDL_RenderDrawRect(main_renderer, NULL);
 
 	item_texture->reset_render_target();
 }

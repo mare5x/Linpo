@@ -50,7 +50,7 @@ private:
 class TextMenuItem : public AbstractMenuItem
 {
 public:
-	TextMenuItem(std::string name, const MENU_OPTION &option_type = MENU_OPTION::NULL_OPTION);
+	TextMenuItem(const std::string& name, const MENU_OPTION &option_type = MENU_OPTION::NULL_OPTION);
 protected:
 	virtual void update_full_texture() override;
 
@@ -60,7 +60,7 @@ protected:
 class IncrementerMenuItem : public TextMenuItem
 {
 public:
-	IncrementerMenuItem(std::string name, MENU_OPTION option_type, int min = MIN_PLAYERS, int max = MAX_PLAYERS, int cur = N_PLAYERS);
+	IncrementerMenuItem(const std::string& name, const MENU_OPTION &option_type, int min = MIN_PLAYERS, int max = MAX_PLAYERS, int cur = N_PLAYERS);
 
 	void handle_event(SDL_Event &e) override;
 	void render(int x, int y) override;
@@ -72,6 +72,8 @@ protected:
 	void handle_hover() override;
 	void update_full_texture() override;
 
+	virtual void adjust_item_size();
+
 	int min_val, max_val, cur_val;
 
 	std::unique_ptr<TextTexture> value_text_tex;
@@ -79,10 +81,21 @@ protected:
 	std::unique_ptr<TextMenuItem> increment_item;
 };
 
+class GridSizeMenuItem : public IncrementerMenuItem
+{
+public:
+	GridSizeMenuItem(const std::string &name, const MENU_OPTION &option_type, int min = 3, int max = 20, int cur = 8);
+protected:
+	void update_full_texture() override;
+	void adjust_item_size() override;
+private:
+	void update_value_text();
+};
+
 class BoolMenuItem : public TextMenuItem
 {
 public:
-	BoolMenuItem(std::string name, MENU_OPTION option_type);
+	BoolMenuItem(const std::string &name, const MENU_OPTION &option_type);
 
 	bool get_cur_val() const;
 protected:

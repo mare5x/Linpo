@@ -33,4 +33,4 @@ private:
 
 int calculate_font_size();
 
-void calculate_text_size(const char* text_str, int &w, int &h);
+void calculate_text_size(const char* text_str, int* w, int* h);
