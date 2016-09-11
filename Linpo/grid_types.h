@@ -4,11 +4,14 @@
 #include "player_array.h"
 
 
-struct Line
+class Line
 {
+public:
 	SDL_Point* start;
 	SDL_Point* end;
 	Player* owner;
+	
+	bool has_owner() const { return owner != nullptr; }
 };
 
 struct CollisionRect

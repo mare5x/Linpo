@@ -35,8 +35,10 @@ Grid::Grid(int cols, int rows)
 	int n_boxes = (rows - 1) * (cols - 1);
 	grid_points.reserve(n_points);
 	grid_collision_rects.reserve(n_edges);
-	grid_lines.reserve(n_edges);
 	grid_score_boxes.reserve(n_boxes);
+
+	init_grid_lines();
+
 	resize_update();
 }
 
@@ -73,7 +75,7 @@ void Grid::render()
 
 	grid_texture->render();
 
-	if (hover_line.owner != nullptr && !is_line_taken(hover_line))
+	if (hover_line.has_owner())
 		if (hover_line.start->y == hover_line.end->y)  // horizontal
 			hover_line_texture->render(hover_line.start->x, hover_line.start->y - line_width / 2);
 		else
@@ -97,7 +99,8 @@ void Grid::update_grid_texture()
 	grid_texture->clear();
 
 	for (const auto &line : grid_lines)
-		render_line(*line.start, *line.end, line_width, *line.owner->color);
+		if (line.has_owner())
+			render_line(*line.start, *line.end, line_width, *line.owner->color);
 
 	for (const auto &grid_box_score : grid_score_boxes)
 	{
@@ -118,7 +121,7 @@ void Grid::update_grid_texture()
 
 void Grid::update_hover_line_texture()
 {
-	if (hover_line.owner == nullptr)
+	if (!hover_line.has_owner())
 		return;
 
 	if (hover_line.start->x == hover_line.end->x)  // is vertical
@@ -135,7 +138,7 @@ void Grid::update_hover_line_texture()
 
 bool Grid::hover_line_update_pending()
 {
-	bool ret_val = prev_hover_line != hover_line && !is_line_taken(hover_line);
+	bool ret_val = prev_hover_line != hover_line && hover_line.has_owner();
 	prev_hover_line = hover_line;
 	return ret_val;
 }
@@ -161,6 +164,45 @@ void Grid::update_grid_points()
 	}
 }
 
+void Grid::init_grid_lines()
+{
+	update_grid_points();
+
+	grid_lines.clear();
+	grid_lines.reserve(n_edges);
+
+	taken_grid_lines = std::vector<bool>(n_edges, false);
+
+	for (int row = 0; row < rows; ++row)
+	{
+		for (int col = 0; col < cols; ++col)
+		{
+			//const auto base_index = get_grid_line_index(row, col);
+
+			// horizontal line
+			if (col + 1 < cols)
+			{
+				Line h_line;
+				int start_index = get_grid_point_index(row, col);
+				h_line.start = &grid_points[start_index];
+				h_line.end = &grid_points[start_index + 1];
+				h_line.owner = nullptr;
+				grid_lines.push_back(h_line);
+			}
+
+			// vertical line
+			if (row + 1 < rows)
+			{
+				Line v_line;
+				v_line.start = &grid_points[get_grid_point_index(row, col)];
+				v_line.end = &grid_points[get_grid_point_index(row + 1, col)];
+				v_line.owner = nullptr;
+				grid_lines.push_back(v_line);
+			}
+		}
+	}
+}
+
 void Grid::add_grid_score_boxes(std::vector<ScoreBox>& score_boxes, Player &player)
 {
 	for (auto &box : score_boxes) 
@@ -170,9 +212,12 @@ void Grid::add_grid_score_boxes(std::vector<ScoreBox>& score_boxes, Player &play
 	};
 }
 
-void Grid::set_grid_line(Line line)
+void Grid::set_grid_line(int index, Player &owner)
 {
-	grid_lines.push_back(line);
+	grid_lines[index].owner = &owner;
+	taken_grid_lines[index] = true;
+
+	//add_grid_score_boxes(get_boxes_around_line(index, owner), owner);
 }
 
 void Grid::update_grid_collision_rects()
@@ -255,21 +300,25 @@ void Grid::update(Player &player)
 
 void Grid::handle_mouse_click(Player &player)
 {
-	if (!is_line_taken(hover_line))
+	if (hover_line.has_owner())
 	{
 		// mouse hover always happens before a click, so no need for anything else
-		if (hover_line.owner != nullptr)
-			set_grid_line(hover_line);
+		
+		int hover_line_index = get_grid_line_index(hover_line);
+		if (!taken_grid_lines[hover_line_index])
+		{
+			set_grid_line(hover_line_index, player);
 
-		auto boxes = get_boxes_around_line(grid_lines.back());
+			auto boxes = get_boxes_around_line(hover_line_index, player);
 
-		add_grid_score_boxes(boxes, player);
+			add_grid_score_boxes(boxes, player);
+		}
 	}
 }
 
 void Grid::handle_mouse_hover(Player &player)
 {
-	// necessary to undo the viewport offset on the mouse position since it's global,
+	// Note: necessary to undo the viewport offset on the mouse position since it's global,
 	// and all grid coordinates are local to the current viewport (origin is at (x,y) of viewport_rect)
 
 	Line new_line;
@@ -294,173 +343,145 @@ bool Grid::make_collision_line(Line &new_line, const SDL_Point &pos, Player &pla
 	return false;
 }
 
-bool Grid::is_line_taken(Line &line)
-{
-	auto it = std::find_if(grid_lines.begin(), grid_lines.end(), 
-		[&line](const Line &grid_line) -> bool { return (grid_line.start == line.start && grid_line.end == line.end) || (grid_line.end == line.start && grid_line.start == line.end); });
-
-	if (it != grid_lines.end())
-		return true;
-	return false;
-}
-
 bool Grid::is_grid_full()
 {
-	return grid_lines.size() >= n_edges;
+	for (const auto val : taken_grid_lines)
+		if (!val) return false;
+	return true;
 }
 
 int Grid::get_grid_point_index(int row, int col)
 {
 	if (row < rows && col < cols)
-		return (row * cols) + col;
+		return (row * rows) + col;
 	return -1;
 }
 
-ScoreBox Grid::make_box(const Line & top_line, const Line & right_line, const Line & bot_line, const Line & left_line, Player & player)
+std::array<int, 2> Grid::get_grid_line_index(int row, int col)
+{
+	std::array<int, 2> lines;
+
+	// bottom row has only vertical lines
+	int base = row + 1 < rows ? row * get_lines_in_row() + (2 * col) : row * get_lines_in_row() + col;
+
+	lines[0] = col + 1 < cols ? base : -1;	// horizontal
+
+	// the last row doesn't have any vertical lines
+	if (row + 1 < rows)
+	{
+		if (col + 1 < cols)  // vertical
+			lines[1] = base + 1;
+		else
+			lines[1] = base;
+	}
+	else
+		lines[1] = -1;
+
+	return lines;
+}
+
+int Grid::get_grid_line_index(const Line & line)
+{
+	auto point_distance = get_point_distance();
+	int row = (line.start->y - grid_points[0].y) / point_distance.y;
+	int col = (line.start->x - grid_points[0].x) / point_distance.x;
+
+	auto indices = get_grid_line_index(row, col);
+
+	if (line.start->y == line.end->y)  // line is horizontal
+		return indices[0];
+	else
+		return indices[1];
+}
+
+bool Grid::is_valid_top_line_index(int index) const
+{
+	int l_row = get_lines_in_row();
+	return index >= 0 && index < (l_row * (rows - 1)) && index % l_row != (l_row - 1);
+}
+
+bool Grid::is_valid_box_indices(const std::array<int, 4>& box_indices) const
+{
+	if (!is_valid_top_line_index(box_indices[0]))
+		return false;
+
+	for (auto index : box_indices)
+		if (!taken_grid_lines[index]) 
+			return false;
+	return true;
+}
+
+std::array<int, 4> Grid::get_box_indices(int top_index) const
+{
+	int row = top_index / get_lines_in_row();
+	int col = top_index / get_lines_in_col();
+	if (row + 1 < rows)
+	{
+		
+	}
+	return {
+		top_index,																					// top
+		top_index + 1,																				// left
+		top_index + get_lines_in_row(),																// bottom
+		(top_index % get_lines_in_row() == get_lines_in_row() - 3 ? top_index + 2 : top_index + 3)  // right
+		// right line can have 2 different offsets depending on whether top_index is the last such index in a row
+	};
+}
+
+ScoreBox Grid::make_box(const std::array<int, 4>& box_indices, Player & player) const
 {
 	ScoreBox new_box;
-	new_box.top_left = left_line.start;
-	new_box.score = calculate_box_score(top_line, right_line, bot_line, left_line, player);
+	new_box.top_left = grid_lines[box_indices[0]].start;
+	new_box.score = calculate_box_score(box_indices, player);
 	new_box.owner = &player;
 
 	return new_box;
 }
 
-// returns a ScoreBox vector of size [0, 2] of the adjoining two (or one) boxes,
-// if those boxes are full (lines on all 4 sides)
-std::vector<ScoreBox> Grid::get_boxes_around_line(Line &line)
+std::vector<ScoreBox> Grid::get_boxes_around_line(int line_index, Player &owner) const
 {
 	std::vector<ScoreBox> boxes;
+	const Line &line = grid_lines[line_index];
+
+	//if (!taken_grid_lines[line_index]) return boxes;  // leave it commented so the AI can test all possibilites
+
 	if (line.start->x == line.end->x)  // if vertical line: check left and right
 	{
 		// find the left box
-		{
-			Line* l_top = nullptr, *l_bot = nullptr, *l_left = nullptr;
-			Line* l_right = &line;
-			if (find_box(l_right, l_top, l_right, l_bot, l_left))
-			{
-				ScoreBox left_box = make_box(*l_top, *l_right, *l_bot, *l_left, *line.owner);
-				boxes.push_back(left_box);
-			}
-		}
+		int top_index = line_index - 3;
+		auto indices = get_box_indices(top_index);
+		if (is_valid_box_indices(indices))
+			boxes.push_back(make_box(indices, owner));
 
 		// find the right box
-		{
-			Line* l_top = nullptr, *l_bot = nullptr, *l_right = nullptr;
-			Line* l_left = &line;
-			if (find_box(l_left, l_top, l_right, l_bot, l_left))
-			{
-				ScoreBox right_box = make_box(*l_top, *l_right, *l_bot, *l_left, *line.owner);
-				boxes.push_back(right_box);
-			}
-		}
+		top_index = line_index - 1;
+		indices = get_box_indices(top_index);
+		if (is_valid_box_indices(indices))
+			boxes.push_back(make_box(indices, owner));
 	}
 	else  // if horizontal line: check top and bottom
 	{
 		// find the box on top
-		{
-			Line* l_top = nullptr, *l_right = nullptr, *l_left = nullptr;
-			Line* l_bot = &line;
-			if (find_box(l_bot, l_top, l_right, l_bot, l_left))
-			{
-				ScoreBox top_box = make_box(*l_top, *l_right, *l_bot, *l_left, *line.owner);
-				boxes.push_back(top_box);
-			}
-		}
+		int top_index = line_index - ((2 * cols) - 1);
+		auto indices = get_box_indices(top_index);
+		if (is_valid_box_indices(indices))
+			boxes.push_back(make_box(indices, owner));
 
 		// find the bot box
-		{
-			Line* l_right = nullptr, *l_left = nullptr, *l_bot = nullptr;
-			Line* l_top = &line;
-			if (find_box(l_top, l_top, l_right, l_bot, l_left))
-			{
-				ScoreBox bot_box = make_box(*l_top, *l_right, *l_bot, *l_left, *line.owner);
-				boxes.push_back(bot_box);
-			}
-		}
+		top_index = line_index;
+		indices = get_box_indices(top_index);
+		if (is_valid_box_indices(indices))
+			boxes.push_back(make_box(indices, owner));
 	}
 	return boxes;
 }
 
-bool Grid::find_box(const Line* base_line, Line* &top, Line* &right, Line* &bot, Line* &left)
-{
-	auto point_distance = get_point_distance();
-	if (base_line != nullptr)
-	{
-		// check bounds
-		if (base_line == right && right->start->x - point_distance.x < grid_points[0].x)
-			return false;
-		else if (base_line == left && left->start->x + point_distance.x > grid_points[cols - 1].x)
-			return false;
-		else if (base_line == top && top->start->y + point_distance.y > grid_points.back().y)
-			return false;
-		else if (base_line == bot && bot->start->y - point_distance.y < grid_points[0].y)
-			return false;
-
-		for (auto &grid_line : grid_lines)
-		{
-			if (base_line->start == grid_line.start && base_line->end == grid_line.end)
-				continue;
-
-			if (top != nullptr && right != nullptr && bot != nullptr && left != nullptr)
-				return true;
-
-			if (base_line == left)
-			{
-				if (top == nullptr && left->start == grid_line.start)
-					top = &grid_line;
-				else if (bot == nullptr && left->end == grid_line.start && left->end->y == grid_line.end->y)
-					bot = &grid_line;
-				else if (right == nullptr && left->start->x + point_distance.x == grid_line.start->x && left->start->y == grid_line.start->y && grid_line.start->x == grid_line.end->x)
-					right = &grid_line;
-			}
-			else if (base_line == right)
-			{
-				if (top == nullptr && right->start == grid_line.end && right->start->y == grid_line.start->y)
-					top = &grid_line;
-				else if (bot == nullptr && right->end == grid_line.end)
-					bot = &grid_line;
-				else if (left == nullptr && right->start->x - point_distance.x == grid_line.start->x && right->start->y == grid_line.start->y && grid_line.start->x == grid_line.end->x)
-					left = &grid_line;
-			}
-			else if (base_line == top)
-			{
-				if (right == nullptr && top->end == grid_line.start && grid_line.start->x == grid_line.end->x)
-					right = &grid_line;
-				else if (left == nullptr && top->start == grid_line.start)
-					left = &grid_line;
-				else if (bot == nullptr && top->start->y + point_distance.y == grid_line.start->y && top->start->x == grid_line.start->x && grid_line.start->y == grid_line.end->y)
-					bot = &grid_line;
-			}
-			else if (base_line == bot)
-			{
-				if (right == nullptr && bot->end == grid_line.end)
-					right = &grid_line;
-				else if (left == nullptr && bot->start == grid_line.end && grid_line.start->x == grid_line.end->x)
-					left = &grid_line;
-				else if (top == nullptr && bot->start->y - point_distance.y == grid_line.start->y && bot->start->x == grid_line.start->x && grid_line.start->y == grid_line.end->y)
-					top = &grid_line;
-			}
-		}
-	}
-
-	if (top != nullptr && right != nullptr && bot != nullptr && left != nullptr)
-		return true;
-
-	return false;
-}
-
-int Grid::calculate_box_score(const Line & top, const Line & right, const Line & bot, const Line & left, const Player &last_player)
+int Grid::calculate_box_score(const std::array<int, 4> &line_indices, const Player &last_player) const
 {
 	int score = 0;
-	if (top.owner == &last_player)
-		++score;
-	if (right.owner == &last_player)
-		++score;
-	if (bot.owner == &last_player)
-		++score;
-	if (left.owner == &last_player)
-		++score;
+	for (const auto index : line_indices)
+		if (grid_lines[index].owner == &last_player)
+			++score;
 	return score;
 }
 
@@ -503,7 +524,7 @@ void Grid::render_box_score(const char score, const SDL_Point &top_left, const P
 
 void Grid::clear_grid()
 {
-	grid_lines.clear();
+	init_grid_lines();
 	grid_score_boxes.clear();
 
 	resize_update();
@@ -522,27 +543,20 @@ void Grid::set_grid_size(int rows, int cols)
 	int n_boxes = (rows - 1) * (cols - 1);
 	grid_points.resize(n_points);
 	grid_collision_rects.resize(n_edges);
-	grid_lines.resize(n_edges);
 	grid_score_boxes.resize(n_boxes);
 
 	clear_grid();
 }
 
-std::vector<SDL_Point> &Grid::get_grid_points()
-{
-	return grid_points;
-}
-
-Line &Grid::get_last_line_placed()
-{
-	return grid_lines.back();
-}
-
 bool Grid::new_line_placed(int &prev_lines)
 {
-	if (grid_lines.size() > prev_lines)
+	int count = 0;
+	for (const auto &val : taken_grid_lines)
+		if (val) ++count;
+
+	if (count > prev_lines)
 	{
-		prev_lines = grid_lines.size();
+		prev_lines = count;
 		return true;
 	}
 	return false;
@@ -558,7 +572,7 @@ bool Grid::score_changed(int &prev_boxes)
 	return false;
 }
 
-SDL_Point Grid::get_point_distance()
+SDL_Point Grid::get_point_distance() const
 {
 	SDL_Point point_distance = { 0, 0 };
 	point_distance.x = (grid_points[1].x - grid_points[0].x);
