@@ -18,6 +18,7 @@ Grid::Grid(int cols, int rows)
 	prev_hover_line{},
 	prev_n_lines(0),
 	prev_n_boxes(0),
+	lines_placed(0),
 	grid_texture(std::make_unique<TextureWrapper>(main_renderer)),
 	hover_line_texture(std::make_unique<TextureWrapper>(main_renderer))
 {
@@ -168,8 +169,7 @@ void Grid::init_grid_lines()
 {
 	update_grid_points();
 
-	grid_lines.clear();
-	grid_lines.reserve(n_edges);
+	grid_lines.resize(n_edges);
 
 	taken_grid_lines = std::vector<bool>(n_edges, false);
 
@@ -177,27 +177,25 @@ void Grid::init_grid_lines()
 	{
 		for (int col = 0; col < cols; ++col)
 		{
-			//const auto base_index = get_grid_line_index(row, col);
+			const auto line_index = get_grid_line_index(row, col);
 
 			// horizontal line
-			if (col + 1 < cols)
+			if (line_index[0] != -1)
 			{
-				Line h_line;
+				Line& h_line = grid_lines[line_index[0]];
 				int start_index = get_grid_point_index(row, col);
 				h_line.start = &grid_points[start_index];
 				h_line.end = &grid_points[start_index + 1];
 				h_line.owner = nullptr;
-				grid_lines.push_back(h_line);
 			}
 
 			// vertical line
-			if (row + 1 < rows)
+			if (line_index[1] != -1)
 			{
-				Line v_line;
+				Line& v_line = grid_lines[line_index[1]];
 				v_line.start = &grid_points[get_grid_point_index(row, col)];
 				v_line.end = &grid_points[get_grid_point_index(row + 1, col)];
 				v_line.owner = nullptr;
-				grid_lines.push_back(v_line);
 			}
 		}
 	}
@@ -216,8 +214,15 @@ void Grid::set_grid_line(int index, Player &owner)
 {
 	grid_lines[index].owner = &owner;
 	taken_grid_lines[index] = true;
-
+	++lines_placed;
 	//add_grid_score_boxes(get_boxes_around_line(index, owner), owner);
+}
+
+void Grid::remove_grid_line(int index)
+{
+	grid_lines[index].owner = nullptr;
+	taken_grid_lines[index] = false;
+	--lines_placed;
 }
 
 void Grid::update_grid_collision_rects()
@@ -361,21 +366,9 @@ std::array<int, 2> Grid::get_grid_line_index(int row, int col)
 {
 	std::array<int, 2> lines;
 
-	// bottom row has only vertical lines
-	int base = row + 1 < rows ? row * get_lines_in_row() + (2 * col) : row * get_lines_in_row() + col;
-
-	lines[0] = col + 1 < cols ? base : -1;	// horizontal
-
-	// the last row doesn't have any vertical lines
-	if (row + 1 < rows)
-	{
-		if (col + 1 < cols)  // vertical
-			lines[1] = base + 1;
-		else
-			lines[1] = base;
-	}
-	else
-		lines[1] = -1;
+	int base = row * get_lines_in_row() + col;
+	lines[0] = col + 1 < cols ? base : -1;						// horizontal
+	lines[1] = row + 1 < rows ? base + (cols - 1) : -1;			// vertical
 
 	return lines;
 }
@@ -406,25 +399,20 @@ bool Grid::is_valid_box_indices(const std::array<int, 4>& box_indices) const
 		return false;
 
 	for (auto index : box_indices)
+	{
 		if (!taken_grid_lines[index]) 
 			return false;
+	}
 	return true;
 }
 
 std::array<int, 4> Grid::get_box_indices(int top_index) const
 {
-	int row = top_index / get_lines_in_row();
-	int col = top_index / get_lines_in_col();
-	if (row + 1 < rows)
-	{
-		
-	}
 	return {
-		top_index,																					// top
-		top_index + 1,																				// left
-		top_index + get_lines_in_row(),																// bottom
-		(top_index % get_lines_in_row() == get_lines_in_row() - 3 ? top_index + 2 : top_index + 3)  // right
-		// right line can have 2 different offsets depending on whether top_index is the last such index in a row
+		top_index,								// top
+		top_index + (cols - 1),					// left
+		top_index + get_lines_in_row(),			// bottom
+		top_index + cols						// right
 	};
 }
 
@@ -445,33 +433,49 @@ std::vector<ScoreBox> Grid::get_boxes_around_line(int line_index, Player &owner)
 
 	//if (!taken_grid_lines[line_index]) return boxes;  // leave it commented so the AI can test all possibilites
 
+	int top_index;
+	std::array<int, 4> indices;
 	if (line.start->x == line.end->x)  // if vertical line: check left and right
 	{
+		int line_index_col = get_grid_line_index_col(line_index);
 		// find the left box
-		int top_index = line_index - 3;
-		auto indices = get_box_indices(top_index);
-		if (is_valid_box_indices(indices))
-			boxes.push_back(make_box(indices, owner));
+		if (line_index_col > 0)
+		{
+			top_index = line_index - cols;
+			indices = get_box_indices(top_index);
+			if (is_valid_box_indices(indices))
+				boxes.push_back(make_box(indices, owner));
+		}
 
 		// find the right box
-		top_index = line_index - 1;
-		indices = get_box_indices(top_index);
-		if (is_valid_box_indices(indices))
-			boxes.push_back(make_box(indices, owner));
+		if (line_index_col < cols - 1)
+		{
+			top_index = (line_index - cols) + 1;
+			indices = get_box_indices(top_index);
+			if (is_valid_box_indices(indices))
+				boxes.push_back(make_box(indices, owner));
+		}
 	}
 	else  // if horizontal line: check top and bottom
 	{
+		int line_index_row = get_grid_line_index_row(line_index);
 		// find the box on top
-		int top_index = line_index - ((2 * cols) - 1);
-		auto indices = get_box_indices(top_index);
-		if (is_valid_box_indices(indices))
-			boxes.push_back(make_box(indices, owner));
-
+		if (line_index_row > 0)
+		{
+			top_index = line_index - get_lines_in_row();
+			indices = get_box_indices(top_index);
+			if (is_valid_box_indices(indices))
+				boxes.push_back(make_box(indices, owner));
+		}
+		
 		// find the bot box
-		top_index = line_index;
-		indices = get_box_indices(top_index);
-		if (is_valid_box_indices(indices))
-			boxes.push_back(make_box(indices, owner));
+		if (line_index_row < rows - 1)
+		{
+			top_index = line_index;
+			indices = get_box_indices(top_index);
+			if (is_valid_box_indices(indices))
+				boxes.push_back(make_box(indices, owner));
+		}
 	}
 	return boxes;
 }
@@ -480,7 +484,7 @@ int Grid::calculate_box_score(const std::array<int, 4> &line_indices, const Play
 {
 	int score = 0;
 	for (const auto index : line_indices)
-		if (grid_lines[index].owner == &last_player)
+		if (grid_lines[index].owner->id == last_player.id)
 			++score;
 	return score;
 }
@@ -531,6 +535,7 @@ void Grid::clear_grid()
 
 	prev_n_lines = 0;
 	prev_n_boxes = 0;
+	lines_placed = 0;
 }
 
 void Grid::set_grid_size(int rows, int cols)
@@ -550,13 +555,9 @@ void Grid::set_grid_size(int rows, int cols)
 
 bool Grid::new_line_placed(int &prev_lines)
 {
-	int count = 0;
-	for (const auto &val : taken_grid_lines)
-		if (val) ++count;
-
-	if (count > prev_lines)
+	if (lines_placed > prev_lines)
 	{
-		prev_lines = count;
+		prev_lines = lines_placed;
 		return true;
 	}
 	return false;

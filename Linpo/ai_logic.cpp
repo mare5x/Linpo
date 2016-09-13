@@ -4,58 +4,67 @@
 
 void AI_Logic::make_move(Player &player)
 {
-	Line new_line;
-	std::vector<ScoreBox> score_boxes;
-	make_greedy_line(new_line, score_boxes, player);
-	if (new_line.owner != nullptr)
-		game_grid.set_grid_line(new_line);
-	// else game is over and do nothing
-
-	game_grid.add_grid_score_boxes(score_boxes, player);
+	make_greedy_line(player);
 }
 
-
-void AI_Logic::make_greedy_line(Line &new_line, std::vector<ScoreBox> &score_boxes, Player &player)
+void AI_Logic::make_greedy_line(Player &player)
 {
 	// big O(rows * cols) AKA shit
 
-	auto &grid_points = game_grid.get_grid_points();
-	int max_score = -1;
-	for (int row = 0; row < game_grid.get_rows(); ++row)
+	auto &taken_grid_lines = game_grid.get_taken_grid_lines();
+
+	int index = -1;
+	std::vector<ScoreBox> new_filled_boxes;
+	for (int i = 0; i < taken_grid_lines.size(); ++i)
 	{
-		for (int col = 0; col < game_grid.get_cols(); ++col)
+		if (!taken_grid_lines[i])
 		{
-			for (int end_line_decision = 0; end_line_decision < 2; ++end_line_decision)
+			game_grid.set_grid_line(i, player);
+			new_filled_boxes = game_grid.get_boxes_around_line(i, player);
+			game_grid.remove_grid_line(i);
+
+			// stop on first box found, since the next move is then anyways yours
+			if (!new_filled_boxes.empty())
 			{
-				if (end_line_decision == 0 && col + 1 >= game_grid.get_cols()) continue;
-				else if (end_line_decision == 1 && row + 1 >= game_grid.get_rows()) continue;
-
-				std::vector<ScoreBox> boxes;
-				int line_points = 0;
-
-				Line iter_line;
-				iter_line.owner = &player;
-				iter_line.start = &grid_points[game_grid.get_grid_point_index(row, col)];
-
-				// 0 == right, 1 == bottom
-				if (end_line_decision == 0 && col + 1 < game_grid.get_cols())
-					iter_line.end = &grid_points[game_grid.get_grid_point_index(row, col + 1)];
-				else 
-					iter_line.end = &grid_points[game_grid.get_grid_point_index(row + 1, col)];
-
-				if (!game_grid.is_line_taken(iter_line))
-				{
-					boxes = game_grid.get_boxes_around_line(iter_line);
-					for (const auto &score_box : boxes) { line_points += score_box.score; }
-
-					if (line_points > max_score)
-					{
-						max_score = line_points;
-						new_line = iter_line;
-						score_boxes = boxes;
-					}
-				}
+				index = i;
+				break;
 			}
 		}
 	}
+
+	if (index == -1)
+		index = get_rand_index();
+
+	if (index >= 0)
+	{
+		game_grid.set_grid_line(index, player);
+		game_grid.add_grid_score_boxes(new_filled_boxes, player);
+	}
+	// else game is over and do nothing
+}
+
+int AI_Logic::get_rand_index() const
+{
+	// Reservoir sampling algorithm (kind of ...)
+
+	const auto &taken_grid_lines = game_grid.get_taken_grid_lines();
+	int index = -1;
+	int n_free_lines = 0;
+	for (auto i = 0; i < taken_grid_lines.size(); ++i)
+	{
+		if (!taken_grid_lines[i])
+		{
+			n_free_lines++;
+			if (index == -1)
+			{
+				index = i;
+				continue;
+			}
+			// random number with decreasing probability to change the current index
+			if (rand() % n_free_lines == 0)
+				index = i;
+		}
+	}
+
+	return index;
 }

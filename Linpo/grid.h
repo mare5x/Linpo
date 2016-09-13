@@ -40,8 +40,9 @@ public:
 
 	/* Note: [0] = horizontal, [1] = vertical line and -1 if either line doesn't exist at (row, col). */
 	std::array<int, 2> get_grid_line_index(int row, int col);
-
 	int get_grid_line_index(const Line &line);
+	int get_grid_line_index_row(int index) const { return index / (get_lines_in_row()); }
+	int get_grid_line_index_col(int index) const { return index % get_lines_in_row() >= (cols - 1) ? index % get_lines_in_row() - (cols - 1) : index % get_lines_in_row(); }
 
 	/* Returns true if the line at index.row < rows - 1 && index.col < cols - 1. */
 	bool is_valid_top_line_index(int index) const;
@@ -52,11 +53,7 @@ public:
 	/* Returns an array of box indices in the following order: top, left, bottom, right. */
 	std::array<int, 4> get_box_indices(int top_index) const;
 
-	/* Note: last row has "n_rows" lines. */
-	int get_lines_in_row() const { return (2 * cols) - 1; }
-
-	/* Note: last col has "n_cols" lines. */
-	int get_lines_in_col() const { return (2 * rows) - 1; }
+	int get_lines_in_row() const { return 2 * cols - 1; }
 
 	//bool is_line_taken(const Line &line) const;
 
@@ -67,6 +64,8 @@ public:
 	void add_grid_score_boxes(std::vector<ScoreBox> &score_boxes, Player &player);
 
 	void set_grid_line(int index, Player &owner);
+	void remove_grid_line(int index);
+
 	bool is_grid_full();
 	bool new_line_placed(int &prev_lines);
 	bool score_changed(int &prev_boxes);
@@ -107,6 +106,7 @@ private:
 
 	Line hover_line, prev_hover_line;
 	int prev_n_lines, prev_n_boxes;
+	int lines_placed;
 
 	std::vector<SDL_Point> grid_points;
 	std::vector<Line> grid_lines;
