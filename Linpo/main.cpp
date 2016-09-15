@@ -208,6 +208,8 @@ int main(int argc, char* argv[])
 }
 
 // BETTER AI (smarter and less cpu)
+// better resizing for all resolutions ...
+// color schemes (black theme)
 
 // options: make a slider?
 

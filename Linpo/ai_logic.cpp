@@ -61,6 +61,7 @@ int AI_Logic::get_rand_index() const
 				continue;
 			}
 			// random number with decreasing probability to change the current index
+			// 1 / n_free_lines
 			if (rand() % n_free_lines == 0)
 				index = i;
 		}

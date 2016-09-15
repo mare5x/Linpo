@@ -35,7 +35,6 @@ Grid::Grid(int cols, int rows)
 	int n_points = rows * cols;
 	int n_boxes = (rows - 1) * (cols - 1);
 	grid_points.reserve(n_points);
-	grid_collision_rects.reserve(n_edges);
 	grid_score_boxes.reserve(n_boxes);
 
 	init_grid_lines();
@@ -170,20 +169,22 @@ void Grid::init_grid_lines()
 	update_grid_points();
 
 	grid_lines.resize(n_edges);
+	grid_lines.shrink_to_fit();
 
 	taken_grid_lines = std::vector<bool>(n_edges, false);
+	taken_grid_lines.shrink_to_fit();
 
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int col = 0; col < cols; ++col)
 		{
 			const auto line_index = get_grid_line_index(row, col);
+			int start_index = get_grid_point_index(row, col);
 
 			// horizontal line
 			if (line_index[0] != -1)
 			{
 				Line& h_line = grid_lines[line_index[0]];
-				int start_index = get_grid_point_index(row, col);
 				h_line.start = &grid_points[start_index];
 				h_line.end = &grid_points[start_index + 1];
 				h_line.owner = nullptr;
@@ -193,7 +194,7 @@ void Grid::init_grid_lines()
 			if (line_index[1] != -1)
 			{
 				Line& v_line = grid_lines[line_index[1]];
-				v_line.start = &grid_points[get_grid_point_index(row, col)];
+				v_line.start = &grid_points[start_index];
 				v_line.end = &grid_points[get_grid_point_index(row + 1, col)];
 				v_line.owner = nullptr;
 			}
@@ -228,16 +229,18 @@ void Grid::remove_grid_line(int index)
 void Grid::update_grid_collision_rects()
 {
 	SDL_Point point_distance = get_point_distance();
-	grid_collision_rects.clear();
+	grid_collision_rects.resize(n_edges);
+	grid_collision_rects.shrink_to_fit();
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int col = 0; col < cols; ++col)
 		{
+			const auto line_index = get_grid_line_index(row, col);
 			int a_index = get_grid_point_index(row, col);
 			SDL_Point point_a = grid_points[a_index];
 
 			// make a collision_rect for the x direction
-			if (col < cols - 1)
+			if (line_index[0] != -1)
 			{
 				SDL_Rect collision_rect;
 				collision_rect.x = point_a.x + (0.025 * point_distance.x) + point_radius;
@@ -245,15 +248,14 @@ void Grid::update_grid_collision_rects()
 				collision_rect.w = point_distance.x * 0.95 - point_radius;
 				collision_rect.h = point_distance.y * 0.5;
 				
-				CollisionRect rect;
+				CollisionRect &rect = grid_collision_rects[line_index[0]];
 				rect.collision_rect = collision_rect;
 				rect.point_a = &grid_points[a_index];
 				rect.point_b = &grid_points[a_index + 1];
-				grid_collision_rects.push_back(rect);
 			}
 
 			// make a collision_rect for the y direction
-			if (row < rows - 1)
+			if (line_index[1] != -1)
 			{
 				SDL_Rect collision_rect;
 				collision_rect.x = point_a.x - (0.25 * point_distance.x);
@@ -261,11 +263,10 @@ void Grid::update_grid_collision_rects()
 				collision_rect.w = point_distance.x * 0.5;
 				collision_rect.h = point_distance.y * 0.95 - point_radius;
 
-				CollisionRect rect;
+				CollisionRect &rect = grid_collision_rects[line_index[1]];
 				rect.collision_rect = collision_rect;
 				rect.point_a = &grid_points[a_index];
-				rect.point_b = &grid_points[a_index + cols];
-				grid_collision_rects.push_back(rect);
+				rect.point_b = &grid_points[get_grid_point_index(row + 1, col)];
 			}
 		}
 	}
@@ -337,32 +338,28 @@ void Grid::handle_mouse_hover(Player &player)
 
 bool Grid::make_collision_line(Line &new_line, const SDL_Point &pos, Player &player)
 {
-	CollisionRect target_rect;
-	if (check_collision(pos, target_rect))
+	auto line_index = check_collision(pos);
+	if (line_index != -1)
 	{
-		new_line.start = target_rect.point_a;
-		new_line.end = target_rect.point_b;
+		new_line = grid_lines[line_index];
 		new_line.owner = &player;
-		return true;
 	}
-	return false;
+	return line_index != -1;
 }
 
 bool Grid::is_grid_full()
 {
-	for (const auto val : taken_grid_lines)
-		if (!val) return false;
-	return true;
+	return lines_placed == n_edges;
 }
 
-int Grid::get_grid_point_index(int row, int col)
+int Grid::get_grid_point_index(int row, int col) const
 {
 	if (row < rows && col < cols)
 		return (row * rows) + col;
 	return -1;
 }
 
-std::array<int, 2> Grid::get_grid_line_index(int row, int col)
+std::array<int, 2> Grid::get_grid_line_index(int row, int col) const
 {
 	std::array<int, 2> lines;
 
@@ -373,13 +370,29 @@ std::array<int, 2> Grid::get_grid_line_index(int row, int col)
 	return lines;
 }
 
-int Grid::get_grid_line_index(const Line & line)
+std::array<int, 4> Grid::get_grid_line_index(const SDL_Point & point) const
 {
 	auto point_distance = get_point_distance();
-	int row = (line.start->y - grid_points[0].y) / point_distance.y;
-	int col = (line.start->x - grid_points[0].x) / point_distance.x;
+	int row = std::round((point.y - grid_points[0].y) / (float)point_distance.y);
+	int col = std::round((point.x - grid_points[0].x) / (float)point_distance.x);
 
-	auto indices = get_grid_line_index(row, col);
+	if (row >= 0 && row < rows && col >= 0 && col < cols)
+	{
+		std::array<int, 4> indices;
+		auto indices1 = get_grid_line_index(row, col);
+		indices[0] = indices1[0];																				 // right horizontal
+		indices[1] = indices1[1];																				 // down vertical
+		indices[2] = indices[0] != -1 ? indices[0] - 1 : get_grid_line_index(row, col - 1)[0];					 // left horizontal
+		indices[3] = indices[1] != -1 ? indices[1] - get_lines_in_row() : get_grid_line_index(row - 1, col)[1];  // up vertical
+		return indices;
+	}
+	else
+		return{ -1, -1, -1, -1 };
+}
+
+int Grid::get_grid_line_index(const Line & line) const
+{
+	auto indices = get_grid_line_index(*line.start);
 
 	if (line.start->y == line.end->y)  // line is horizontal
 		return indices[0];
@@ -489,25 +502,16 @@ int Grid::calculate_box_score(const std::array<int, 4> &line_indices, const Play
 	return score;
 }
 
-bool Grid::check_collision(const SDL_Point &point, CollisionRect &target_rect)
+int Grid::check_collision(const SDL_Point & point) const
 {
-	for (const auto &grid_collision_rect : grid_collision_rects)
+	auto indices = get_grid_line_index(point);
+	for (int i = 0; i < indices.size(); ++i)
 	{
-		if (SDL_PointInRect(&point, &grid_collision_rect.collision_rect) == SDL_TRUE)
-		{
-			target_rect = grid_collision_rect;
-			return true;
-		}
+		int index = indices[i];
+		if (index >= 0 && SDL_PointInRect(&point, &grid_collision_rects[index].collision_rect))
+			return index;
 	}
-	return false;
-}
-
-bool Grid::check_collision(const SDL_Point & point) const
-{
-	for (const auto &grid_collision_rect : grid_collision_rects)
-		if (SDL_PointInRect(&point, &grid_collision_rect.collision_rect))
-			return true;
-	return false;
+	return -1;
 }
 
 void Grid::render_box_score(const char score, const SDL_Point &top_left, const Player &player)

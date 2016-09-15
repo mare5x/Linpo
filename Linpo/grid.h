@@ -36,11 +36,15 @@ public:
 	   if those boxes are full (lines on all 4 sides). */
 	std::vector<ScoreBox> get_boxes_around_line(int line_index, Player &owner) const;
 
-	int get_grid_point_index(int row, int col);
+	int get_grid_point_index(int row, int col) const;
 
 	/* Note: [0] = horizontal, [1] = vertical line and -1 if either line doesn't exist at (row, col). */
-	std::array<int, 2> get_grid_line_index(int row, int col);
-	int get_grid_line_index(const Line &line);
+	std::array<int, 2> get_grid_line_index(int row, int col) const;
+	/* There are 4 possible line indices around a given point. 
+	   [0] = right horizontal, [1] = down vertical, [2] = left horizontal, [3] = up vertical. 
+	   If any index isn't valid, it is -1. */
+	std::array<int, 4> get_grid_line_index(const SDL_Point &point) const;
+	int get_grid_line_index(const Line &line) const;
 	int get_grid_line_index_row(int index) const { return index / (get_lines_in_row()); }
 	int get_grid_line_index_col(int index) const { return index % get_lines_in_row() >= (cols - 1) ? index % get_lines_in_row() - (cols - 1) : index % get_lines_in_row(); }
 
@@ -73,8 +77,7 @@ private:
 	void handle_mouse_click(Player &player);
 	void handle_mouse_hover(Player &player);
 
-	bool check_collision(const SDL_Point &point, CollisionRect &target_rect);
-	bool check_collision(const SDL_Point &point) const;
+	int check_collision(const SDL_Point &point) const;
 
 	void update_textures();
 	void update_grid_texture();
