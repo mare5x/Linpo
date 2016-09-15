@@ -14,12 +14,7 @@ public:
 	bool has_owner() const { return owner != nullptr; }
 };
 
-struct CollisionRect
-{
-	SDL_Rect collision_rect;
-	SDL_Point* point_a;
-	SDL_Point* point_b;
-};
+typedef SDL_Rect CollisionRect;
 
 struct ScoreBox
 {

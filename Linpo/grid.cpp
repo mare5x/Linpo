@@ -113,7 +113,7 @@ void Grid::update_grid_texture()
 	{
 		set_render_draw_color(COLORS[BLACK]);
 		for (const auto &rect : grid_collision_rects)
-			SDL_RenderDrawRect(main_renderer, &rect.collision_rect);
+			SDL_RenderDrawRect(main_renderer, &rect);
 	}
 
 	grid_texture->reset_render_target();
@@ -242,31 +242,21 @@ void Grid::update_grid_collision_rects()
 			// make a collision_rect for the x direction
 			if (line_index[0] != -1)
 			{
-				SDL_Rect collision_rect;
-				collision_rect.x = point_a.x + (0.025 * point_distance.x) + point_radius;
-				collision_rect.y = point_a.y - (0.25 * point_distance.y);
-				collision_rect.w = point_distance.x * 0.95 - point_radius;
-				collision_rect.h = point_distance.y * 0.5;
-				
 				CollisionRect &rect = grid_collision_rects[line_index[0]];
-				rect.collision_rect = collision_rect;
-				rect.point_a = &grid_points[a_index];
-				rect.point_b = &grid_points[a_index + 1];
+				rect.x = point_a.x + (0.025 * point_distance.x) + point_radius;
+				rect.y = point_a.y - (0.25 * point_distance.y);
+				rect.w = point_distance.x * 0.95 - point_radius;
+				rect.h = point_distance.y * 0.5;
 			}
 
 			// make a collision_rect for the y direction
 			if (line_index[1] != -1)
 			{
-				SDL_Rect collision_rect;
-				collision_rect.x = point_a.x - (0.25 * point_distance.x);
-				collision_rect.y = point_a.y + (0.025 * point_distance.y) + point_radius;
-				collision_rect.w = point_distance.x * 0.5;
-				collision_rect.h = point_distance.y * 0.95 - point_radius;
-
 				CollisionRect &rect = grid_collision_rects[line_index[1]];
-				rect.collision_rect = collision_rect;
-				rect.point_a = &grid_points[a_index];
-				rect.point_b = &grid_points[get_grid_point_index(row + 1, col)];
+				rect.x = point_a.x - (0.25 * point_distance.x);
+				rect.y = point_a.y + (0.025 * point_distance.y) + point_radius;
+				rect.w = point_distance.x * 0.5;
+				rect.h = point_distance.y * 0.95 - point_radius;
 			}
 		}
 	}
@@ -508,7 +498,7 @@ int Grid::check_collision(const SDL_Point & point) const
 	for (int i = 0; i < indices.size(); ++i)
 	{
 		int index = indices[i];
-		if (index >= 0 && SDL_PointInRect(&point, &grid_collision_rects[index].collision_rect))
+		if (index >= 0 && SDL_PointInRect(&point, &grid_collision_rects[index]))
 			return index;
 	}
 	return -1;
