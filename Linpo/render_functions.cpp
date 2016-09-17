@@ -2,11 +2,6 @@
 #include "globals.h"
 
 
-//void render_line(const SDL_Point & start, const SDL_Point & end, int width, const SDL_Color & color)
-//{
-//	thickLineRGBA(main_renderer, start.x, start.y, end.x, end.y, width, color.r, color.g, color.b, color.a);
-//}
-
 void render_line(const SDL_Point & start, const SDL_Point & end, int width, const SDL_Color & color)
 {
 	SDL_Rect draw_rect;
@@ -29,16 +24,57 @@ void render_line(const SDL_Point & start, const SDL_Point & end, int width, cons
 	SDL_RenderFillRect(main_renderer, &draw_rect);
 }
 
-void render_point(const SDL_Point & point, int radius, const SDL_Color & color)
+void render_circle(const SDL_Point & center, int radius, const SDL_Color & color)
 {
-	filledCircleRGBA(main_renderer, point.x, point.y, radius, color.r, color.g, color.b, color.a);
+	set_render_draw_color(color);
+
+	int x = radius;
+	int y = 0;
+	int err = 0;
+
+	while (x >= y)
+	{
+		SDL_RenderDrawPoint(main_renderer, center.x + x, center.y + y);
+		SDL_RenderDrawPoint(main_renderer, center.x + y, center.y + x);
+		SDL_RenderDrawPoint(main_renderer, center.x - y, center.y + x);
+		SDL_RenderDrawPoint(main_renderer, center.x - x, center.y + y);
+		SDL_RenderDrawPoint(main_renderer, center.x - x, center.y - y);
+		SDL_RenderDrawPoint(main_renderer, center.x - y, center.y - x);
+		SDL_RenderDrawPoint(main_renderer, center.x + y, center.y - x);
+		SDL_RenderDrawPoint(main_renderer, center.x + x, center.y - y);
+
+		y += 1;
+		err += 1 + 2 * y;
+		if (2 * (err - x) + 1 > 0)
+		{
+			x -= 1;
+			err += 1 - 2 * x;
+		}
+	}
 }
 
-void render_points(const std::vector<SDL_Point>& points, int radius, const SDL_Color & color)
+void render_circle_filled(const SDL_Point & center, int radius, const SDL_Color & color)
+{
+	set_render_draw_color(color);
+
+	int x = 0;
+	for (int y = 0; y <= radius; y++)
+	{
+		x = sqrt(radius * radius - y * y);
+
+		if (x <= radius)
+		{
+			SDL_RenderDrawLine(main_renderer, center.x - x, center.y + y, center.x + x, center.y + y);
+			SDL_RenderDrawLine(main_renderer, center.x - x, center.y - y, center.x + x, center.y - y);
+		}
+	}
+}
+
+void render_circles_filled(const std::vector<SDL_Point>& points, int radius, const SDL_Color & color)
 {
 	for (auto const &point : points)
 	{
-		render_point(point, radius, color);
+		render_circle_filled(point, radius, color);
 	}
 }
 
@@ -48,7 +84,7 @@ void render_rect(const SDL_Rect & rect, const SDL_Color & color)
 	SDL_RenderFillRect(main_renderer, &rect);
 }
 
-void set_render_draw_color(const SDL_Color &color)
+inline void set_render_draw_color(const SDL_Color &color)
 {
 	SDL_SetRenderDrawColor(main_renderer, color.r, color.g, color.b, color.a);
 }

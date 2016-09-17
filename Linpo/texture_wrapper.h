@@ -7,6 +7,7 @@ class TextureWrapper
 {
 public:
 	TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access = SDL_TEXTUREACCESS_TARGET, SDL_Color background_color = { 0xFF, 0xFF, 0xFF, 0xFF });
+	TextureWrapper(SDL_Renderer* &renderer, const char* file_path, int access = SDL_TEXTUREACCESS_TARGET, SDL_Color background_color = { 0xFF, 0xFF, 0xFF, 0xFF });
 	TextureWrapper(SDL_Renderer* &renderer, int access = SDL_TEXTUREACCESS_TARGET, SDL_Color background_color = { 0xFF, 0xFF, 0xFF, 0xFF });
 	~TextureWrapper();
 
@@ -28,6 +29,8 @@ public:
 	void set_alpha_mod(const float alpha);
 
 	void set_color_mod(Uint8 r, Uint8 g, Uint8 b);
+
+	void load_from_file(const char* path);
 
 	void free();
 

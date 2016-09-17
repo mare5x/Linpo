@@ -12,6 +12,18 @@ TextureWrapper::TextureWrapper(SDL_Renderer* &renderer, int w, int h, int access
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);  // otherwise alpha is ignored!
 }
 
+TextureWrapper::TextureWrapper(SDL_Renderer *& renderer, const char * file_path, int access, SDL_Color background_color)
+	:renderer(renderer),
+	texture(nullptr),
+	width(0),
+	height(0),
+	background_color(background_color),
+	access(access),
+	alpha_mod(255)
+{
+	load_from_file(file_path);
+}
+
 TextureWrapper::TextureWrapper(SDL_Renderer *& renderer, int access, SDL_Color background_color) 
 	:renderer(renderer),
 	texture{nullptr},
@@ -80,6 +92,27 @@ void TextureWrapper::set_alpha_mod(const float alpha)
 void TextureWrapper::set_color_mod(Uint8 r, Uint8 g, Uint8 b)
 {
 	SDL_SetTextureColorMod(texture, r, g, b);
+}
+
+void TextureWrapper::load_from_file(const char * path)
+{
+	if (texture != nullptr)
+		free();
+
+	SDL_Surface* bmp_surface = SDL_LoadBMP(path);
+	if (bmp_surface != NULL)
+	{
+		// Set black as the color key -> black backgrounds are transparent.
+		SDL_SetColorKey(bmp_surface, 1, SDL_MapRGB(bmp_surface->format, 0, 0, 0));
+		texture = SDL_CreateTextureFromSurface(renderer, bmp_surface);
+		if (texture != NULL)
+		{
+			width = bmp_surface->w;
+			height = bmp_surface->h;
+		}
+
+		SDL_FreeSurface(bmp_surface);
+	}
 }
 
 void TextureWrapper::free()

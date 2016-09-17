@@ -10,8 +10,8 @@ Grid::Grid(int cols, int rows)
 	cols(cols),
 	rows(rows),
 	n_edges(2 * rows * cols - rows - cols),
-	point_radius(5),
-	line_width(2 * point_radius),
+	point_width(10),
+	line_width(point_width),
 	mouse_state{},
 	_show_collision_boxes(false),
 	hover_line{},
@@ -20,10 +20,15 @@ Grid::Grid(int cols, int rows)
 	prev_n_boxes(0),
 	lines_placed(0),
 	grid_texture(std::make_unique<TextureWrapper>(main_renderer)),
-	hover_line_texture(std::make_unique<TextureWrapper>(main_renderer))
+	grid_points_texture(std::make_unique<TextTexture>(main_renderer)),
+	hover_line_texture(std::make_unique<TextureWrapper>(main_renderer)),
+	point_texture(std::make_unique<TextureWrapper>(main_renderer, "resources/whitedot.bmp"))
 {
 	// grid and hover line textures will get properly resized later
 	
+	// set the color of the grid points
+	point_texture->set_color_mod(0, 0, 0);
+
 	// initialize score_textures
 	for (int score = 0; score < 4; ++score)
 	{
@@ -74,15 +79,16 @@ void Grid::render()
 	SDL_RenderSetViewport(main_renderer, &viewport_rect);
 
 	grid_texture->render();
+	grid_points_texture->render();
 
 	if (hover_line.has_owner())
 		if (hover_line.start->y == hover_line.end->y)  // horizontal
 			hover_line_texture->render(hover_line.start->x, hover_line.start->y - line_width / 2);
 		else
-			hover_line_texture->render(hover_line.start->x - line_width / 2, hover_line.start->y + point_radius / 2);
+			hover_line_texture->render(hover_line.start->x - line_width / 2, hover_line.start->y + point_width / 4);
 
 	// (for debugging purposes below)
-	//render_point(mouse_state.pos, point_radius, COLORS[RED]);
+	//render_circle_filled(mouse_state.pos, point_width, COLORS[RED]);
 	//SDL_RenderDrawRect(main_renderer, NULL);
 }
 
@@ -92,6 +98,21 @@ void Grid::update_textures()
 		update_grid_texture();
 	if (hover_line_update_pending())
 		update_hover_line_texture();
+}
+
+void Grid::update_grid_points_texture()
+{
+	// set the background of the texture to be transparent
+	grid_points_texture->clear({ 0xff, 0xff, 0xff, 0 });
+
+	for (const auto &grid_point : grid_points)
+	{
+		SDL_Rect dest = { grid_point.x - point_width / 2, grid_point.y - point_width / 2, point_width, point_width };
+		point_texture->render(dest);
+	}
+	//render_circles_filled(grid_points, point_width, COLORS[BLACK]);
+
+	grid_points_texture->reset_render_target();
 }
 
 void Grid::update_grid_texture()
@@ -106,8 +127,6 @@ void Grid::update_grid_texture()
 	{
 		render_box_score(grid_box_score.score, *grid_box_score.top_left, *grid_box_score.owner);
 	}
-
-	render_points(grid_points, point_radius, COLORS[BLACK]);
 
 	if (_show_collision_boxes)
 	{
@@ -243,9 +262,9 @@ void Grid::update_grid_collision_rects()
 			if (line_index[0] != -1)
 			{
 				CollisionRect &rect = grid_collision_rects[line_index[0]];
-				rect.x = point_a.x + (0.025 * point_distance.x) + point_radius;
+				rect.x = point_a.x + (0.025 * point_distance.x) + point_width / 2;
 				rect.y = point_a.y - (0.25 * point_distance.y);
-				rect.w = point_distance.x * 0.95 - point_radius;
+				rect.w = point_distance.x * 0.95 - point_width / 2;
 				rect.h = point_distance.y * 0.5;
 			}
 
@@ -254,9 +273,9 @@ void Grid::update_grid_collision_rects()
 			{
 				CollisionRect &rect = grid_collision_rects[line_index[1]];
 				rect.x = point_a.x - (0.25 * point_distance.x);
-				rect.y = point_a.y + (0.025 * point_distance.y) + point_radius;
+				rect.y = point_a.y + (0.025 * point_distance.y) + point_width / 2;
 				rect.w = point_distance.x * 0.5;
-				rect.h = point_distance.y * 0.95 - point_radius;
+				rect.h = point_distance.y * 0.95 - point_width / 2;
 			}
 		}
 	}
@@ -270,10 +289,12 @@ void Grid::resize_update()
 	viewport_rect.h -= viewport_rect.y;
 
 	grid_texture->resize(viewport_rect.w, viewport_rect.h);
+	grid_points_texture->resize(viewport_rect.w, viewport_rect.h);
 
 	update_grid_points();
 	update_grid_collision_rects();
 
+	update_grid_points_texture();
 	update_grid_texture();
 	update_hover_line_texture();
 }
@@ -514,7 +535,7 @@ void Grid::render_box_score(const char score, const SDL_Point &top_left, const P
 	const int &text_height = score_texture->get_height();
 
 	int x = top_left.x + (point_distance.x / 2) - (text_width / 2);
-	int y = top_left.y + (point_distance.y / 2) - (text_height / 2) - (point_radius / 2);
+	int y = top_left.y + (point_distance.y / 2) - (text_height / 2);  // -(point_width / 4);
 	
 	score_texture->set_color_mod(player.color->r, player.color->g, player.color->b);
 	score_texture->render(x, y);

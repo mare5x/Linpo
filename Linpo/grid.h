@@ -80,6 +80,7 @@ private:
 	int check_collision(const SDL_Point &point) const;
 
 	void update_textures();
+	void update_grid_points_texture();
 	void update_grid_texture();
 	void update_hover_line_texture();
 
@@ -99,7 +100,7 @@ private:
 	SDL_Rect viewport_rect;
 
 	int cols, rows, n_edges;
-	int point_radius, line_width;
+	int point_width, line_width;
 
 	MouseState mouse_state;
 	bool mouse_clicked;
@@ -119,5 +120,5 @@ private:
 	
 	std::array<std::unique_ptr<TextTexture>, 4> score_textures;
 
-	std::unique_ptr<TextureWrapper> grid_texture, hover_line_texture;
+	std::unique_ptr<TextureWrapper> grid_texture, grid_points_texture, hover_line_texture, point_texture;
 };
