@@ -1,7 +1,7 @@
 #pragma once
 
-#include "player_array.h"
-#include "grid.h"
+struct Player;
+class Grid;
 
 
 class AI_Logic
@@ -11,7 +11,8 @@ public:
 
 	void make_move(Player &player);
 private:
-	void make_greedy_line(Player &player);
+	int get_greedy_line(Player &player);
+	int get_smart_line(Player &player);
 	int get_rand_index() const;
 
 	Grid &game_grid;

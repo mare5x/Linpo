@@ -210,6 +210,9 @@ int main(int argc, char* argv[])
 // BETTER AI (smarter and less cpu)
 // better resizing for all resolutions ...
 // color schemes (black theme)
+// end game screen
+
+// make use of gridboxstates in grid
 
 // options: make a slider?
 

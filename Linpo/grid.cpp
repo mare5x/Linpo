@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "constants.h"
 #include "render_functions.h"
+#include "text_texture.h"
 
 
 Grid::Grid(int cols, int rows)
@@ -19,6 +20,7 @@ Grid::Grid(int cols, int rows)
 	prev_n_lines(0),
 	prev_n_boxes(0),
 	lines_placed(0),
+	grid_box_states(*this),
 	grid_texture(std::make_unique<TextureWrapper>(main_renderer)),
 	grid_points_texture(std::make_unique<TextTexture>(main_renderer)),
 	hover_line_texture(std::make_unique<TextureWrapper>(main_renderer)),
@@ -186,6 +188,7 @@ void Grid::update_grid_points()
 void Grid::init_grid_lines()
 {
 	update_grid_points();
+	grid_box_states.update();
 
 	grid_lines.resize(n_edges);
 	grid_lines.shrink_to_fit();
@@ -235,14 +238,7 @@ void Grid::set_grid_line(int index, Player &owner)
 	grid_lines[index].owner = &owner;
 	taken_grid_lines[index] = true;
 	++lines_placed;
-	//add_grid_score_boxes(get_boxes_around_line(index, owner), owner);
-}
-
-void Grid::remove_grid_line(int index)
-{
-	grid_lines[index].owner = nullptr;
-	taken_grid_lines[index] = false;
-	--lines_placed;
+	add_grid_score_boxes(get_boxes_around_line(index, owner), owner);
 }
 
 void Grid::update_grid_collision_rects()
@@ -325,10 +321,6 @@ void Grid::handle_mouse_click(Player &player)
 		if (!taken_grid_lines[hover_line_index])
 		{
 			set_grid_line(hover_line_index, player);
-
-			auto boxes = get_boxes_around_line(hover_line_index, player);
-
-			add_grid_score_boxes(boxes, player);
 		}
 	}
 }
@@ -417,7 +409,7 @@ bool Grid::is_valid_top_line_index(int index) const
 	return index >= 0 && index < (l_row * (rows - 1)) && index % l_row != (l_row - 1);
 }
 
-bool Grid::is_valid_box_indices(const std::array<int, 4>& box_indices) const
+bool Grid::is_full_box(const std::array<int, 4>& box_indices) const
 {
 	if (!is_valid_top_line_index(box_indices[0]))
 		return false;
@@ -455,11 +447,11 @@ std::vector<ScoreBox> Grid::get_boxes_around_line(int line_index, Player &owner)
 	std::vector<ScoreBox> boxes;
 	const Line &line = grid_lines[line_index];
 
-	//if (!taken_grid_lines[line_index]) return boxes;  // leave it commented so the AI can test all possibilites
+	//if (!taken_grid_lines[line_index]) return boxes; 
 
 	int top_index;
 	std::array<int, 4> indices;
-	if (line.start->x == line.end->x)  // if vertical line: check left and right
+	if (line.is_vertical())  // if vertical line: check left and right
 	{
 		int line_index_col = get_grid_line_index_col(line_index);
 		// find the left box
@@ -467,7 +459,7 @@ std::vector<ScoreBox> Grid::get_boxes_around_line(int line_index, Player &owner)
 		{
 			top_index = line_index - cols;
 			indices = get_box_indices(top_index);
-			if (is_valid_box_indices(indices))
+			if (is_full_box(indices))
 				boxes.push_back(make_box(indices, owner));
 		}
 
@@ -476,7 +468,7 @@ std::vector<ScoreBox> Grid::get_boxes_around_line(int line_index, Player &owner)
 		{
 			top_index = (line_index - cols) + 1;
 			indices = get_box_indices(top_index);
-			if (is_valid_box_indices(indices))
+			if (is_full_box(indices))
 				boxes.push_back(make_box(indices, owner));
 		}
 	}
@@ -488,7 +480,7 @@ std::vector<ScoreBox> Grid::get_boxes_around_line(int line_index, Player &owner)
 		{
 			top_index = line_index - get_lines_in_row();
 			indices = get_box_indices(top_index);
-			if (is_valid_box_indices(indices))
+			if (is_full_box(indices))
 				boxes.push_back(make_box(indices, owner));
 		}
 		
@@ -497,7 +489,7 @@ std::vector<ScoreBox> Grid::get_boxes_around_line(int line_index, Player &owner)
 		{
 			top_index = line_index;
 			indices = get_box_indices(top_index);
-			if (is_valid_box_indices(indices))
+			if (is_full_box(indices))
 				boxes.push_back(make_box(indices, owner));
 		}
 	}

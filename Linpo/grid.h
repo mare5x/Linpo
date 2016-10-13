@@ -3,13 +3,15 @@
 #include <vector>
 #include <array>
 #include <memory>
-#include <SDL.h>
-#include "constants.h"
-#include "texture_wrapper.h"
-#include "text_texture.h"
-#include "player_array.h"
+#include "SDL.h"
 #include "grid_types.h"
+#include "grid_box_states.h"
 #include "mouse_state.h"
+
+
+struct Player;
+class TextureWrapper;
+class TextTexture;
 
 
 class Grid
@@ -29,8 +31,16 @@ public:
 	void clear_grid();
 	void set_grid_size(int rows, int cols);
 
+	int get_free_lines_size() const { return n_edges - lines_placed; }
+	int get_lines_size() const { return n_edges; }
+
 	const std::vector<bool>& get_taken_grid_lines() const { return taken_grid_lines; }
 	std::vector<bool>& get_taken_grid_lines() { return taken_grid_lines; }
+
+	const Line& get_grid_line(int line_index) const { return grid_lines[line_index]; }
+
+	bool is_line_taken(int line_index) const { return taken_grid_lines[line_index]; }
+	void mark_line_taken(int line_index, bool val) { taken_grid_lines[line_index] = val; }
 
 	/* Returns a ScoreBox vector of size [0, 2] of the adjoining two (or one) boxes,
 	   if those boxes are full (lines on all 4 sides). */
@@ -52,10 +62,12 @@ public:
 	bool is_valid_top_line_index(int index) const;
 
 	/* Returns true if all indices are taken lines and if the top line index is valid. */
-	bool is_valid_box_indices(const std::array<int, 4> &box_indices) const;
+	bool is_full_box(const std::array<int, 4> &box_indices) const;
 
 	/* Returns an array of box indices in the following order: top, left, bottom, right. */
 	std::array<int, 4> get_box_indices(int top_index) const;
+
+	const GridBoxStates& get_box_states() const { return grid_box_states; }
 
 	int get_lines_in_row() const { return 2 * cols - 1; }
 
@@ -68,7 +80,6 @@ public:
 	void add_grid_score_boxes(std::vector<ScoreBox> &score_boxes, Player &player);
 
 	void set_grid_line(int index, Player &owner);
-	void remove_grid_line(int index);
 
 	bool is_grid_full();
 	bool new_line_placed(int &prev_lines);
@@ -105,7 +116,7 @@ private:
 	MouseState mouse_state;
 	bool mouse_clicked;
 
-	// debuggin variables
+	// debugging variables
 	bool _show_collision_boxes;
 
 	Line hover_line, prev_hover_line;
@@ -117,6 +128,7 @@ private:
 	std::vector<bool> taken_grid_lines;
 	std::vector<CollisionRect> grid_collision_rects;
 	std::vector<ScoreBox> grid_score_boxes;
+	GridBoxStates grid_box_states;
 	
 	std::array<std::unique_ptr<TextTexture>, 4> score_textures;
 

@@ -1,58 +1,129 @@
 #include <algorithm>
 #include "ai_logic.h"
+#include "grid.h"
+#include "grid_box_states.h"
 
 
 void AI_Logic::make_move(Player &player)
 {
-	make_greedy_line(player);
+	int line_index = get_smart_line(player);
+
+	if (line_index >= 0)
+	{
+		game_grid.set_grid_line(line_index, player);
+	}
+	// else game is over and do nothing
 }
 
-void AI_Logic::make_greedy_line(Player &player)
+int AI_Logic::get_greedy_line(Player &player)
 {
 	// big O(rows * cols) AKA shit
 
-	auto &taken_grid_lines = game_grid.get_taken_grid_lines();
-
 	int index = -1;
-	std::vector<ScoreBox> new_filled_boxes;
-	for (int i = 0; i < taken_grid_lines.size(); ++i)
-	{
-		if (!taken_grid_lines[i])
-		{
-			game_grid.set_grid_line(i, player);
-			new_filled_boxes = game_grid.get_boxes_around_line(i, player);
-			game_grid.remove_grid_line(i);
 
-			// stop on first box found, since the next move is then anyways yours
-			if (!new_filled_boxes.empty())
+	const GridBoxStates &box_states = game_grid.get_box_states();
+	for (int i = 0; i < box_states.size(); ++i)
+	{
+		const BoxState &box_state = box_states.get_box_state(i);
+		auto free_lines = box_states.get_free_lines(box_state);
+		if (free_lines.size() == 1)
+			return free_lines[0];
+	}
+
+	return get_rand_index();
+}
+
+int AI_Logic::get_smart_line(Player & player)
+{
+	// O((rows - 1) * (cols - 1))
+
+	int best_0_box = -1;
+	int best_1_box_line = -1;
+	int best_2_box = -1;
+	int best_3_box = -1;
+	int best_sacrifice_box_line = -1;
+
+	const GridBoxStates &box_states = game_grid.get_box_states();
+	for (int i = 0; i < box_states.size(); ++i)
+	{
+		const BoxState &box_state = box_states.get_box_state(i);
+		int box_lines_taken = box_states.get_taken_lines_size(box_state);
+		if (box_lines_taken != 4)
+		{
+			if (box_lines_taken == 3)
 			{
-				index = i;
-				break;
+				// TODO: add boxes in a chain to a queue for further moves
+				if (box_states.calc_box_chain_length(box_state) == 2 && game_grid.get_free_lines_size() > 2)
+				{
+					int line_index = box_states.get_free_line(box_state);
+
+					auto other_box_state = box_states.get_next_box_in_chain(box_state);
+					auto other_box_free_lines = box_states.get_free_lines(other_box_state);
+
+					// sacrifice box
+					// only sacrifice if its the last completable box
+					if (best_sacrifice_box_line == -1 && other_box_free_lines.size() > 1)
+					{
+						if (other_box_free_lines[0] == line_index)
+							best_sacrifice_box_line = other_box_free_lines[1];
+						else
+							best_sacrifice_box_line = line_index;
+					}
+					else 
+					{	// no sacrifice
+						best_3_box = i;
+						break;
+					}
+				}
+				else
+				{
+					// make box and end turn
+					best_3_box = i;
+					break;
+				}
 			}
+			else if (box_lines_taken == 2)
+				best_2_box = i;  // there is no safe line anyways
+			else if (box_lines_taken == 1 && best_1_box_line == -1)
+				best_1_box_line = box_states.get_rand_safe_line(box_state);
+			else if (box_lines_taken == 0)
+				best_0_box = i;
 		}
 	}
 
-	if (index == -1)
-		index = get_rand_index();
-
-	if (index >= 0)
+	// TODO: if best_2_box is the only move pick the one that's part of the shortest chain
+	// manage to sacrifice 4 boxes in a 2 x 2 box if there is a larger chain still left
+	// sometimes doesn't sacrifice 
+	// make better sacrificing algorithm
+	
+	if (best_3_box != -1) return box_states.get_free_line(box_states.get_box_state(best_3_box));
+	else if (best_sacrifice_box_line != -1) return best_sacrifice_box_line;
+	else if (best_1_box_line != -1) return best_1_box_line;
+	else if (best_0_box != -1)
 	{
-		game_grid.set_grid_line(index, player);
-		game_grid.add_grid_score_boxes(new_filled_boxes, player);
+		const int line = box_states.get_rand_safe_line(box_states.get_box_state(best_0_box));
+		if (line != -1)
+			return line;
 	}
-	// else game is over and do nothing
+
+	// if we haven't returned yet it means that only unsafe lines are free
+	auto box = box_states.find_shortest_possible_chain();
+	if (box != nullptr)
+		return box_states.get_rand_free_line(*box);
+
+	// if nothing works, fuck it rng
+	return get_rand_index();
 }
 
 int AI_Logic::get_rand_index() const
 {
 	// Reservoir sampling algorithm (kind of ...)
 
-	const auto &taken_grid_lines = game_grid.get_taken_grid_lines();
 	int index = -1;
 	int n_free_lines = 0;
-	for (auto i = 0; i < taken_grid_lines.size(); ++i)
+	for (auto i = 0; i < game_grid.get_lines_size(); ++i)
 	{
-		if (!taken_grid_lines[i])
+		if (!game_grid.is_line_taken(i))
 		{
 			n_free_lines++;
 			if (index == -1)
