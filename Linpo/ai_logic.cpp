@@ -37,7 +37,7 @@ int AI_Logic::get_smart_line(Player & player)
 {
 	// O((rows - 1) * (cols - 1))
 
-	int best_0_box = -1;
+	int best_0_box_line = -1;
 	int best_1_box_line = -1;
 	int best_2_box = -1;
 	int best_3_box = -1;
@@ -52,8 +52,8 @@ int AI_Logic::get_smart_line(Player & player)
 		{
 			if (box_lines_taken == 3)
 			{
-				// TODO: add boxes in a chain to a queue for further moves
-				if (box_states.calc_box_chain_length(box_state) == 2 && game_grid.get_free_lines_size() > 2)
+				// TODO: add boxes in a chain to a queue for further moves, so I don't have to recalculate
+				if (box_states.calc_box_chain_length(box_state) == 2 && game_grid.get_free_lines_size() > 2 && !box_states.safe_box_available()) // && box_states.calc_number_of_chains() > 1)
 				{
 					int line_index = box_states.get_free_line(box_state);
 
@@ -67,9 +67,9 @@ int AI_Logic::get_smart_line(Player & player)
 						if (other_box_free_lines[0] == line_index)
 							best_sacrifice_box_line = other_box_free_lines[1];
 						else
-							best_sacrifice_box_line = line_index;
+							best_sacrifice_box_line = other_box_free_lines[0];
 					}
-					else 
+					else
 					{	// no sacrifice
 						best_3_box = i;
 						break;
@@ -86,8 +86,12 @@ int AI_Logic::get_smart_line(Player & player)
 				best_2_box = i;  // there is no safe line anyways
 			else if (box_lines_taken == 1 && best_1_box_line == -1)
 				best_1_box_line = box_states.get_rand_safe_line(box_state);
-			else if (box_lines_taken == 0)
-				best_0_box = i;
+			else if (box_lines_taken == 0 && best_0_box_line == -1)
+			{
+				const int line = box_states.get_rand_safe_line(box_states.get_box_state(i));
+				if (line != -1)
+					best_0_box_line = line;
+			}
 		}
 	}
 
@@ -95,18 +99,22 @@ int AI_Logic::get_smart_line(Player & player)
 	// manage to sacrifice 4 boxes in a 2 x 2 box if there is a larger chain still left
 	// sometimes doesn't sacrifice 
 	// make better sacrificing algorithm
+
+	// dont allow the enemy to make a sacrifice (in a size 2 chain)
 	
-	if (best_3_box != -1) return box_states.get_free_line(box_states.get_box_state(best_3_box));
+	if (best_3_box != -1)
+	{
+		//// if chain is composed of multiple parts (2) then first start filling in the short one which gives us room to sacrifice
+		//const auto &box_state_origin = box_states.get_shortest_part_of_chain(box_states.get_box_state(best_3_box));
+		//return box_states.get_free_line(box_state_origin);
+		return box_states.get_free_line(box_states.get_box_state(best_3_box));
+	}
 	else if (best_sacrifice_box_line != -1) return best_sacrifice_box_line;
 	else if (best_1_box_line != -1) return best_1_box_line;
-	else if (best_0_box != -1)
-	{
-		const int line = box_states.get_rand_safe_line(box_states.get_box_state(best_0_box));
-		if (line != -1)
-			return line;
-	}
+	else if (best_0_box_line != -1) return best_0_box_line;
 
 	// if we haven't returned yet it means that only unsafe lines are free
+	// FIX THIS
 	auto box = box_states.find_shortest_possible_chain();
 	if (box != nullptr)
 		return box_states.get_rand_free_line(*box);

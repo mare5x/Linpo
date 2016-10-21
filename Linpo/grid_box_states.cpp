@@ -1,4 +1,5 @@
 #include <unordered_set>
+#include <queue>
 #include "grid_box_states.h"
 #include "grid.h"
 
@@ -72,23 +73,83 @@ int GridBoxStates::get_rand_safe_line(const BoxState & box_state) const
 
 void GridBoxStates::mark_box_chain(const BoxState &box_state, std::unordered_set<int> &marked_boxes) const
 {
-	if (get_free_lines_size(box_state) == 1)
+	// using a queue traverse all paths in box chain
+	if (get_taken_lines_size(box_state) == 4)
+		return;
+
+	std::vector<int> marked_lines;
+	std::queue<const BoxState*> box_queue;
+	box_queue.push(&box_state);
+
+	while (!box_queue.empty())
 	{
-		marked_boxes.insert(box_state.top_line());
+		const BoxState &next_box = *box_queue.front();
+		box_queue.pop();
 
-		const auto &next_box = get_next_box_in_chain(box_state);
+		const auto was_marked = marked_boxes.insert(next_box.top_line());
+		if (!was_marked.second)  // if the box has already been marked
+			continue;
 
-		int chain_line_index = get_free_line(box_state);
-		grid.mark_line_taken(chain_line_index, true);
+		int chain_line_index = get_free_line(next_box);
+		if (chain_line_index != -1)
+		{
+			grid.mark_line_taken(chain_line_index, true);
+			marked_lines.push_back(chain_line_index);
 
-		mark_box_chain(next_box, marked_boxes);
+			// if marking a line has completed another box (happens when 2 boxes are left in chain) also add it to the queue
+			const BoxState &adjoining_box = get_adjoining_box_with_line(next_box, chain_line_index);
+			if (adjoining_box != next_box && get_taken_lines_size(adjoining_box) == 4)
+				box_queue.push(&adjoining_box);
+		}
 
-		grid.mark_line_taken(chain_line_index, false);
+		for (const BoxState* const adjacent_box : next_box.get_adjoining_boxes())
+		{
+			if (get_free_lines_size(*adjacent_box) == 1)
+			{
+				box_queue.push(adjacent_box);
+			}
+		}
 	}
+
+	for (int marked_line : marked_lines)
+		grid.mark_line_taken(marked_line, false);
 }
 
-int GridBoxStates::calc_box_chain_length(const BoxState & box_state) const
+void GridBoxStates::mark_possible_chain(const BoxState & box_state, std::unordered_set<int>& marked_boxes) const
 {
+	int chain_line_index = get_free_line(box_state);
+	grid.mark_line_taken(chain_line_index, true);
+
+	mark_box_chain(box_state, marked_boxes);
+
+	grid.mark_line_taken(chain_line_index, false);
+}
+
+std::vector<const BoxState*> GridBoxStates::get_chain_part_origins(const BoxState & box_state) const
+{
+	std::vector<const BoxState*> chain_part_origins;
+	if (get_free_lines_size(box_state) == 1)
+	{
+		chain_part_origins.push_back(&box_state);
+		for (const BoxState* const box : box_state.get_adjoining_boxes())
+		{
+			if (get_free_lines_size(box_state) == 1)
+				chain_part_origins.push_back(&box_state);
+		}
+	}
+	return chain_part_origins;
+}
+
+int GridBoxStates::get_actual_safe_line(const BoxState & box_state) const
+{
+	if (get_taken_lines_size(box_state) < 2)
+		return get_safe_line(box_state);
+	return -1;
+}
+
+int GridBoxStates::calc_box_chain_length_part(const BoxState & box_state) const
+{
+	// FIX THIS (USE MARKING, PROBLEM WITH LENGTH 2 CHAINS)
 	int chain_length = 0;
 	if (get_free_lines_size(box_state) == 1)
 	{
@@ -105,6 +166,65 @@ int GridBoxStates::calc_box_chain_length(const BoxState & box_state) const
 	}
 
 	return chain_length;
+}
+
+int GridBoxStates::calc_box_chain_length(const BoxState & box_state, std::unordered_set<int>& marked_boxes) const
+{
+	int prev_size = marked_boxes.size();
+	mark_box_chain(box_state, marked_boxes);
+	return marked_boxes.size() - prev_size;
+}
+
+int GridBoxStates::calc_box_chain_length(const BoxState & box_state) const
+{
+
+	if (get_taken_lines_size(box_state) == 4)
+		return 0;
+
+	std::unordered_set<int> marked_boxes;
+
+	return calc_box_chain_length(box_state, marked_boxes);
+}
+
+int GridBoxStates::calc_number_of_possible_chains() const
+{
+	std::unordered_set<int> marked_boxes(box_states.size());
+
+	int number_of_chains = 0;
+	for (const auto &box_state : box_states)
+	{
+		if (marked_boxes.find(box_state.top_line()) != marked_boxes.end())
+			continue;
+
+		int taken_lines_size = get_taken_lines_size(box_state);
+
+		if (taken_lines_size == 3)
+		{
+			mark_box_chain(box_state, marked_boxes);
+			number_of_chains++;
+		}
+		else if (taken_lines_size == 2)
+		{
+			mark_possible_chain(box_state, marked_boxes);
+			number_of_chains++;
+		}
+	}
+	return number_of_chains;
+}
+
+bool GridBoxStates::safe_box_available() const
+{
+	for (const auto &box_state : box_states)
+	{
+		if (is_box_safe(box_state))
+			return true;
+	}
+	return false;
+}
+
+bool GridBoxStates::is_box_safe(const BoxState & box_state) const
+{
+	return get_actual_safe_line(box_state) != -1;
 }
 
 const BoxState* GridBoxStates::find_shortest_possible_chain() const
@@ -129,17 +249,7 @@ const BoxState* GridBoxStates::find_shortest_possible_chain() const
 		int prev_boxes_size = marked_boxes.size();
 
 		if (taken_lines_size == 2)
-		{
-			int chain_line_index = get_free_line(box_state);
-			grid.mark_line_taken(chain_line_index, true);
-			// mark top & bot and left & right chains, since they are actually part of the same chain
-			mark_box_chain(box_state, marked_boxes);
-			auto next_box = get_adjoining_box_with_line(box_state, chain_line_index);
-			if (next_box != box_state)
-				mark_box_chain(next_box, marked_boxes);
-
-			grid.mark_line_taken(chain_line_index, false);
-		}
+			mark_possible_chain(box_state, marked_boxes);
 		else
 			mark_box_chain(box_state, marked_boxes);
 
@@ -155,6 +265,27 @@ const BoxState* GridBoxStates::find_shortest_possible_chain() const
 			return box;
 	}
 	return box;
+}
+
+const BoxState & GridBoxStates::get_shortest_part_of_chain(const BoxState & box_state) const
+{
+	const auto chain_part_origins = get_chain_part_origins(box_state);
+	int shortest_chain_length = box_states.size() + 1;
+	const BoxState* shortest_origin = nullptr;
+	for (const auto box_state_origin : chain_part_origins)
+	{
+		int part_length = calc_box_chain_length_part(*box_state_origin);
+		if (part_length != 0 && part_length < shortest_chain_length)
+		{
+			shortest_chain_length = part_length;
+			shortest_origin = box_state_origin;
+		}
+	}
+
+	if (shortest_origin != nullptr)
+		return *shortest_origin;
+	else
+		return box_state;
 }
 
 const BoxState & GridBoxStates::get_adjoining_box_with_free_line(const BoxState & box_state, int line_index) const
@@ -181,20 +312,6 @@ const BoxState & GridBoxStates::get_adjoining_box_with_line(const BoxState & box
 		}
 	}
 	return box_state;
-}
-
-const std::vector<const BoxState*> GridBoxStates::get_adjoining_boxes_with_line(const BoxState & box_state, int line_index) const
-{
-	std::vector<const BoxState*> adjoining_boxes;
-	for (const BoxState* adjoining_box : box_state.get_adjoining_boxes())
-	{
-		for (int box_line : get_free_lines(*adjoining_box))
-		{
-			if (box_line == line_index)
-				adjoining_boxes.push_back(adjoining_box);
-		}
-	}
-	return adjoining_boxes;
 }
 
 int GridBoxStates::get_taken_lines_size(const BoxState & box_state) const

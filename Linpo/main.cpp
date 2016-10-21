@@ -211,6 +211,9 @@ int main(int argc, char* argv[])
 // better resizing for all resolutions ...
 // color schemes (black theme)
 // end game screen
+// ai difficulty option
+
+// toggle ai correctly mid game (currently it skips moves)
 
 // make use of gridboxstates in grid
 
