@@ -105,16 +105,15 @@ int AI_Logic::get_smart_line(Player & player)
 	if (best_3_box != -1)
 	{
 		//// if chain is composed of multiple parts (2) then first start filling in the short one which gives us room to sacrifice
-		//const auto &box_state_origin = box_states.get_shortest_part_of_chain(box_states.get_box_state(best_3_box));
-		//return box_states.get_free_line(box_state_origin);
-		return box_states.get_free_line(box_states.get_box_state(best_3_box));
+		const auto &box_state_origin = box_states.get_shortest_part_of_chain(box_states.get_box_state(best_3_box));
+		return box_states.get_free_line(box_state_origin);
+		//return box_states.get_free_line(box_states.get_box_state(best_3_box));
 	}
 	else if (best_sacrifice_box_line != -1) return best_sacrifice_box_line;
 	else if (best_1_box_line != -1) return best_1_box_line;
 	else if (best_0_box_line != -1) return best_0_box_line;
 
 	// if we haven't returned yet it means that only unsafe lines are free
-	// FIX THIS
 	auto box = box_states.find_shortest_possible_chain();
 	if (box != nullptr)
 		return box_states.get_rand_free_line(*box);

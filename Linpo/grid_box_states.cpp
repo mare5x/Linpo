@@ -133,8 +133,8 @@ std::vector<const BoxState*> GridBoxStates::get_chain_part_origins(const BoxStat
 		chain_part_origins.push_back(&box_state);
 		for (const BoxState* const box : box_state.get_adjoining_boxes())
 		{
-			if (get_free_lines_size(box_state) == 1)
-				chain_part_origins.push_back(&box_state);
+			if (get_free_lines_size(*box) == 1)
+				chain_part_origins.push_back(box);
 		}
 	}
 	return chain_part_origins;
@@ -237,11 +237,16 @@ const BoxState* GridBoxStates::find_shortest_possible_chain() const
 	
 	for (const auto &box_state : box_states)
 	{
-		// if box has been marked already
-		if (marked_boxes.find(box_state.top_line()) != marked_boxes.end())
-			continue;
+		// sometimes a chain is of different length depending on which line gets taken first -> no marking?
 
 		int taken_lines_size = get_taken_lines_size(box_state);
+
+		if (taken_lines_size == 3)
+			return &box_state;
+
+		// if box has already been marked
+		if (marked_boxes.find(box_state.top_line()) != marked_boxes.end())
+			continue;
 
 		if (taken_lines_size < 2 || taken_lines_size == 4)
 			continue;
