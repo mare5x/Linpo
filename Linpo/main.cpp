@@ -213,8 +213,6 @@ int main(int argc, char* argv[])
 // end game screen
 // ai difficulty option
 
-// toggle ai correctly mid game (currently it skips moves)
-
 // make use of gridboxstates in grid
 
 // options: make a slider?

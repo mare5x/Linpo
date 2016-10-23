@@ -21,6 +21,8 @@ public:
 	   The box must have 1 empty line for a chain to be found. */
 	const BoxState& get_next_box_in_chain(const BoxState &box_state) const;
 
+	const std::vector<const BoxState*> get_box_chain_part(const BoxState &box_state) const;
+
 	/* Calculates not only the chain leading from box_state but also the surrounding chains around box_state.
 	   Note: box_state must be part of an actual chain. */
 	int calc_box_chain_length(const BoxState &box_state) const;
@@ -35,7 +37,9 @@ public:
 
 	const BoxState& get_shortest_part_of_chain(const BoxState &box_state) const;
 
-	bool is_chain_open_ended(const BoxState &box_state) const;
+	/* Returns whether the last box in chain has 2 free lines. 
+	   Note: make sure box_state is part of a chain. */
+	bool is_chain_part_open_ended(const BoxState &box_state) const;
 
 	/* Returns argument box_state if no adjoining box matches the criteria. */
 	const BoxState& get_adjoining_box_with_free_line(const BoxState &box_state, int line_index) const;

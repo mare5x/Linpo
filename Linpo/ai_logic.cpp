@@ -53,26 +53,67 @@ int AI_Logic::get_smart_line(Player & player)
 			if (box_lines_taken == 3)
 			{
 				// TODO: add boxes in a chain to a queue for further moves, so I don't have to recalculate
-				if (box_states.calc_box_chain_length(box_state) == 2 && game_grid.get_free_lines_size() > 2 && !box_states.safe_box_available()) // && box_states.calc_number_of_chains() > 1)
+
+				int sacrifice_length = 2;
+				if (!box_states.is_chain_part_open_ended(box_state))
+					sacrifice_length = 4;
+
+				if (best_sacrifice_box_line == -1 && box_states.calc_box_chain_length(box_state) == sacrifice_length && game_grid.get_free_lines_size() > sacrifice_length && !box_states.safe_box_available()) // && box_states.calc_number_of_chains() > 1)
 				{
-					int line_index = box_states.get_free_line(box_state);
-
-					auto other_box_state = box_states.get_next_box_in_chain(box_state);
-					auto other_box_free_lines = box_states.get_free_lines(other_box_state);
-
-					// sacrifice box
-					// only sacrifice if its the last completable box
-					if (best_sacrifice_box_line == -1 && other_box_free_lines.size() > 1)
+					if (sacrifice_length == 2)
 					{
-						if (other_box_free_lines[0] == line_index)
-							best_sacrifice_box_line = other_box_free_lines[1];
+						int line_index = box_states.get_free_line(box_state);
+
+						auto other_box_state = box_states.get_next_box_in_chain(box_state);
+						auto other_box_free_lines = box_states.get_free_lines(other_box_state);
+
+						// sacrifice box
+						// only sacrifice if its the last completable box
+						if (other_box_free_lines.size() > 1)
+						{
+							if (other_box_free_lines[0] == line_index)
+								best_sacrifice_box_line = other_box_free_lines[1];
+							else
+								best_sacrifice_box_line = other_box_free_lines[0];
+						}
 						else
-							best_sacrifice_box_line = other_box_free_lines[0];
+						{	// no sacrifice
+							best_3_box = i;
+							break;
+						}
 					}
-					else
-					{	// no sacrifice
-						best_3_box = i;
-						break;
+					else  // len = 4
+					{
+						const auto &boxes = box_states.get_box_chain_part(box_state);
+
+						int prev_marked_line = -1;
+						for (const auto box : boxes)
+						{
+							for (int free_line : box_states.get_free_lines(*box))
+							{
+								if (free_line == prev_marked_line)
+									continue;
+
+								game_grid.mark_line_taken(free_line, true);
+								prev_marked_line = free_line;  // don't check lines we've already checked
+
+								if (box_states.get_free_lines_size(*box) == 1)
+								{
+									best_sacrifice_box_line = free_line;
+									game_grid.mark_line_taken(free_line, false);
+									goto decision;
+								}
+
+								game_grid.mark_line_taken(free_line, false);
+							}
+						}
+
+						// no sacrifice
+						if (best_sacrifice_box_line == -1)
+						{
+							best_3_box = i;
+							break;
+						}
 					}
 				}
 				else
@@ -101,7 +142,8 @@ int AI_Logic::get_smart_line(Player & player)
 	// make better sacrificing algorithm
 
 	// dont allow the enemy to make a sacrifice (in a size 2 chain)
-	
+
+decision:
 	if (best_3_box != -1)
 	{
 		//// if chain is composed of multiple parts (2) then first start filling in the short one which gives us room to sacrifice

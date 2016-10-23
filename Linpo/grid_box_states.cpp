@@ -45,6 +45,37 @@ const BoxState & GridBoxStates::get_next_box_in_chain(const BoxState & box_state
 	return box_state;
 }
 
+const std::vector<const BoxState*> GridBoxStates::get_box_chain_part(const BoxState & box_state) const
+{
+	std::vector<const BoxState*> box_chain;
+	if (get_free_lines_size(box_state) == 1)
+	{
+		const BoxState* prev_box = nullptr;
+		const BoxState* next_box = &box_state;
+		std::vector<int> lines_marked;
+		while (next_box != prev_box)
+		{
+			prev_box = next_box;
+			next_box = &get_next_box_in_chain(*next_box);
+
+			int chain_line_index = get_free_line(*prev_box);
+			if (chain_line_index == -1)  // no free line means that the previously marked free line marked off two boxes
+			{
+				box_chain.push_back(prev_box);
+				break;
+			}
+			grid.mark_line_taken(chain_line_index, true);
+			lines_marked.push_back(chain_line_index);
+
+			box_chain.push_back(prev_box);
+		}
+
+		for (int line : lines_marked)
+			grid.mark_line_taken(line, false);
+	}
+	return box_chain;
+}
+
 int GridBoxStates::get_safe_line(const BoxState & box_state) const
 {
 	for (int line : get_free_lines(box_state))
@@ -291,6 +322,19 @@ const BoxState & GridBoxStates::get_shortest_part_of_chain(const BoxState & box_
 		return *shortest_origin;
 	else
 		return box_state;
+}
+
+bool GridBoxStates::is_chain_part_open_ended(const BoxState & box_state) const
+{
+	if (get_free_lines_size(box_state) == 1)
+	{
+		// traverse chain and check the size of the last box
+		auto box_chain = get_box_chain_part(box_state);
+		const BoxState &last_box = *box_chain.back();
+		if (get_free_lines_size(last_box) > 1)
+			return true;
+	}
+	return false;
 }
 
 const BoxState & GridBoxStates::get_adjoining_box_with_free_line(const BoxState & box_state, int line_index) const
