@@ -4,7 +4,6 @@
 #include "SDL_ttf.h"
 #include "texture_wrapper.h"
 
-
 class TextTexture : public TextureWrapper
 {
 public:
@@ -20,6 +19,7 @@ public:
 	void set_font_size(const int font_size);
 
 	void set_render_pos(const SDL_Point &top_left);
+	SDL_Rect get_render_pos() const;
 	void render();
 private:
 	void init();

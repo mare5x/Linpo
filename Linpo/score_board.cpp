@@ -4,16 +4,19 @@
 
 
 ScoreBoard::ScoreBoard(PlayerArray &players_array, Grid &game_grid)
-	:viewport_rect{ 0, 0, SCREEN_WIDTH, static_cast<int>(0.05 * SCREEN_HEIGHT) },
+	:viewport_rect{ 0, 0, SCREEN_WIDTH, static_cast<int>(FONT_SIZE + 4) },
 	_prev_score{ 0 },
+	_base_score_texture_width{ 0 },
 	game_grid(game_grid), 
 	players(players_array)
 {
 	for (int i = 0; i < players.max_size(); ++i)
 		scoreboard_textures[i] = std::make_unique<TextTexture>(main_renderer);
 
-	update_scoreboard_textures();
+	update_scoreboard_textures_full();
 	update_texture_positions();
+
+	_base_score_texture_width = scoreboard_textures[0]->get_width();
 }
 
 void ScoreBoard::handle_event(SDL_Event &e)
@@ -27,20 +30,32 @@ void ScoreBoard::render()
 	SDL_RenderSetViewport(main_renderer, &viewport_rect);
 
 	if (game_grid.score_changed(_prev_score))
-		update_scoreboard_textures();
+		if (are_full_textures_overlapping())
+			update_scoreboard_textures_score_only();
+		else
+			update_scoreboard_textures_full();
 
 	for (int i = 0; i < players.size(); ++i)
 	{
 		scoreboard_textures[i]->render();
 	}
+
+	//set_render_draw_color(COLORS[BLUE]);
+	//SDL_RenderDrawRect(main_renderer, NULL);
 }
 
 void ScoreBoard::resize_update()
 {
-	SDL_GetRendererOutputSize(main_renderer, &viewport_rect.w, &viewport_rect.h);
-	viewport_rect.h = 0.05 * viewport_rect.h;
+	SDL_GetRendererOutputSize(main_renderer, &viewport_rect.w, NULL);
+	//viewport_rect.h = 0.05 * viewport_rect.h;
 
-	update_scoreboard_textures();
+	update_texture_positions();
+
+	if (are_full_textures_overlapping())
+		update_scoreboard_textures_score_only();
+	else
+		update_scoreboard_textures_full();
+
 	update_texture_positions();
 }
 
@@ -50,7 +65,7 @@ void ScoreBoard::clear()
 	resize_update();
 }
 
-void ScoreBoard::update_scoreboard_textures()
+void ScoreBoard::update_scoreboard_textures_full()
 {
 	for (int i = 0; i < players.size(); ++i)
 	{
@@ -58,6 +73,39 @@ void ScoreBoard::update_scoreboard_textures()
 		s << "Player " << i + 1 << ": " << players[i].score;
 		scoreboard_textures[i]->write_text(s.str(), *players[i].color);
 	}
+}
+
+void ScoreBoard::update_scoreboard_textures_score_only()
+{
+	for (int i = 0; i < players.size(); ++i)
+	{
+		std::stringstream s;
+		s << players[i].score;
+		scoreboard_textures[i]->write_text(s.str(), *players[i].color);
+	}
+}
+
+bool ScoreBoard::are_textures_overlapping() const
+{
+	SDL_Rect prev_rect{};
+	for (int i = 0; i < players.size(); ++i)
+	{
+		SDL_Rect texture_rect = scoreboard_textures[i]->get_render_pos();
+		if (SDL_HasIntersection(&prev_rect, &texture_rect) == SDL_TRUE)
+			return true;
+		prev_rect = texture_rect;
+	}
+	return false;
+}
+
+bool ScoreBoard::are_full_textures_overlapping() const
+{
+	return _calc_full_x(1) - (_calc_full_x(0) + _base_score_texture_width) < 4;
+}
+
+int ScoreBoard::_calc_full_x(int index) const
+{
+	return (get_width() / players.size() / 2) + (index * (get_width() / players.size())) - (_base_score_texture_width / 2);
 }
 
 void ScoreBoard::update_texture_positions()

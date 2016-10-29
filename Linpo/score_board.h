@@ -21,14 +21,24 @@ public:
 
 	void clear();
 
-	void update_scoreboard_textures();
-	void update_texture_positions();
-
 	virtual const int get_width() const;
 	virtual const int get_height() const;
+protected:
+	void update_texture_positions();
 private:
+	void update_scoreboard_textures_full();
+	void update_scoreboard_textures_score_only();
+
+	bool are_textures_overlapping() const;
+	/* Returns whether the textures of the full length score format ("Player 1: 0") are overlapping. */
+	bool are_full_textures_overlapping() const;
+
+	/* Calculates the the x coordinate of a full length score format texture at player index location index. */
+	int _calc_full_x(int index) const;
+
 	SDL_Rect viewport_rect;
 	int _prev_score;
+	int _base_score_texture_width;
 
 	Grid &game_grid;
 	PlayerArray &players;

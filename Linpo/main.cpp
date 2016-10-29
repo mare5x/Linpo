@@ -52,7 +52,9 @@ bool init()
 	}
 	else
 	{
-		global_font = TTF_OpenFont("resources/OpenSans-Regular.ttf", calculate_font_size());
+		FONT_SIZE = calculate_font_size();
+		SDL_Log("Font size: %d\n", FONT_SIZE);
+		global_font = TTF_OpenFont("resources/OpenSans-Regular.ttf", FONT_SIZE);
 		if (global_font == NULL)
 		{
 			SDL_Log("TTF_OpenFont error: %s", TTF_GetError());
@@ -212,6 +214,8 @@ int main(int argc, char* argv[])
 // color schemes (black theme)
 // end game screen
 // ai difficulty option
+
+// pause item sometimes goes invisible when resizing ???????
 
 // make use of gridboxstates in grid
 

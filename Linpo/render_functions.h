@@ -15,4 +15,4 @@ void render_circles_filled(const std::vector<SDL_Point> &points, int radius, con
 
 void render_rect(const SDL_Rect &rect, const SDL_Color &color);
 
-inline void set_render_draw_color(const SDL_Color &color);
+void set_render_draw_color(const SDL_Color &color);

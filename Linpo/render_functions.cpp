@@ -84,7 +84,7 @@ void render_rect(const SDL_Rect & rect, const SDL_Color & color)
 	SDL_RenderFillRect(main_renderer, &rect);
 }
 
-inline void set_render_draw_color(const SDL_Color &color)
+void set_render_draw_color(const SDL_Color &color)
 {
 	SDL_SetRenderDrawColor(main_renderer, color.r, color.g, color.b, color.a);
 }

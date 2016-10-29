@@ -77,7 +77,7 @@ public:
 	int get_cols() const { return cols; }
 	SDL_Point get_point_distance() const;
 
-	void add_grid_score_boxes(std::vector<ScoreBox> &score_boxes, Player &player);
+	void add_grid_score_boxes(const std::vector<ScoreBox> &score_boxes, Player &player);
 
 	void set_grid_line(int index, Player &owner);
 

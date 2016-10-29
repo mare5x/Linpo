@@ -7,11 +7,11 @@
 
 
 Grid::Grid(int cols, int rows)
-	:viewport_rect{ 0, static_cast<int>(0.05 * SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT - viewport_rect.y },
+	:viewport_rect{ 0, static_cast<int>(FONT_SIZE + 4), SCREEN_WIDTH, SCREEN_HEIGHT - viewport_rect.y },
 	cols(cols),
 	rows(rows),
 	n_edges(2 * rows * cols - rows - cols),
-	point_width(10),
+	point_width(0.02 * SCREEN_WIDTH),
 	line_width(point_width),
 	mouse_state{},
 	_show_collision_boxes(false),
@@ -91,6 +91,7 @@ void Grid::render()
 
 	// (for debugging purposes below)
 	//render_circle_filled(mouse_state.pos, point_width, COLORS[RED]);
+	//set_render_draw_color(COLORS[RED]);
 	//SDL_RenderDrawRect(main_renderer, NULL);
 }
 
@@ -224,7 +225,7 @@ void Grid::init_grid_lines()
 	}
 }
 
-void Grid::add_grid_score_boxes(std::vector<ScoreBox>& score_boxes, Player &player)
+void Grid::add_grid_score_boxes(const std::vector<ScoreBox>& score_boxes, Player &player)
 {
 	for (auto &box : score_boxes) 
 	{
@@ -281,8 +282,11 @@ void Grid::resize_update()
 {
 	SDL_GetRendererOutputSize(main_renderer, &viewport_rect.w, &viewport_rect.h);
 
-	viewport_rect.y = 0.05 * viewport_rect.h;
+	//viewport_rect.y = 0.05 * viewport_rect.h;
 	viewport_rect.h -= viewport_rect.y;
+
+	point_width = 0.2 * (viewport_rect.w / rows);
+	line_width = point_width;
 
 	grid_texture->resize(viewport_rect.w, viewport_rect.h);
 	grid_points_texture->resize(viewport_rect.w, viewport_rect.h);
@@ -376,8 +380,8 @@ std::array<int, 2> Grid::get_grid_line_index(int row, int col) const
 std::array<int, 4> Grid::get_grid_line_index(const SDL_Point & point) const
 {
 	auto point_distance = get_point_distance();
-	int row = std::round((point.y - grid_points[0].y) / (float)point_distance.y);
-	int col = std::round((point.x - grid_points[0].x) / (float)point_distance.x);
+	int row = round((point.y - grid_points[0].y) / (float)point_distance.y);
+	int col = round((point.x - grid_points[0].x) / (float)point_distance.x);
 
 	if (row >= 0 && row < rows && col >= 0 && col < cols)
 	{

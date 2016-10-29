@@ -62,6 +62,16 @@ void TextTexture::set_render_pos(const SDL_Point &top_left)
 	top_left_pos = top_left;
 }
 
+SDL_Rect TextTexture::get_render_pos() const
+{
+	SDL_Rect rect;
+	rect.x = top_left_pos.x;
+	rect.y = top_left_pos.y;
+	rect.w = get_width();
+	rect.h = get_height();
+	return rect;
+}
+
 void TextTexture::render()
 {
 	TextureWrapper::render(top_left_pos.x, top_left_pos.y);
@@ -70,7 +80,7 @@ void TextTexture::render()
 void TextTexture::init()
 {
 	text_font = global_font;
-	font_size = calculate_font_size();
+	font_size = FONT_SIZE;  // calculate_font_size();
 	top_left_pos = { 0, 0 };
 }
 
@@ -82,7 +92,9 @@ int calculate_font_size()
 	if (SDL_GetDisplayDPI(SDL_GetWindowDisplayIndex(main_window), &ddpi, &hdpi, &vdpi) < 0)
 	{
 		SDL_Log("DPI Error: %s", SDL_GetError());
-		return BASE_FONT_SIZE;
+		int height, width;
+		SDL_GetRendererOutputSize(main_renderer, &width, &height);
+		return BASE_FONT_SIZE * ((float)(height / SCREEN_HEIGHT) + (float)(width / SCREEN_WIDTH) / 2);
 	}
 
 	SDL_Log("DPI: %f %f %f", ddpi, hdpi, vdpi);
