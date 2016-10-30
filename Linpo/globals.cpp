@@ -6,3 +6,4 @@ SDL_Renderer* main_renderer = nullptr;
 TTF_Font* global_font = nullptr;
 
 int FONT_SIZE = 0;
+COLOR_THEME GLOBAL_COLOR_THEME = COLOR_THEME::DEFAULT;

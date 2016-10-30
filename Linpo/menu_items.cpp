@@ -373,3 +373,38 @@ void PauseItem::update_full_texture()
 
 	item_texture->reset_render_target();
 }
+
+ThemeMenuItem::ThemeMenuItem(const std::string & name, const MENU_OPTION & option_type)
+	:TextMenuItem::TextMenuItem(name, option_type),
+	color_theme{COLOR_THEME::DEFAULT},
+	theme_text{std::make_unique<TextTexture>(main_renderer, "default", COLORS[BLACK])}
+{
+	resize(text_texture->get_width() + theme_text->get_width() + 10, theme_text->get_height() + 10);
+	update_full_texture();
+}
+
+void ThemeMenuItem::handle_item_click()
+{
+	color_theme = static_cast<COLOR_THEME>((static_cast<int>(color_theme) + 1) % static_cast<int>(COLOR_THEME::N_THEMES));
+	switch (color_theme)
+	{
+	case COLOR_THEME::DEFAULT:
+		theme_text->write_text("default", COLORS[BLACK]);
+		break;
+	case COLOR_THEME::BLACK:
+		theme_text->write_text("black", COLORS[BLACK]);
+		break;
+	};
+	update_full_texture();
+}
+
+void ThemeMenuItem::update_full_texture()
+{
+	TextMenuItem::update_full_texture();
+
+	item_texture->set_as_render_target();
+
+	theme_text->render(text_texture->get_width() + 5, 5);
+
+	item_texture->reset_render_target();
+}

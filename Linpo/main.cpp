@@ -115,6 +115,15 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem
 		linpo.set_ai_enabled(menu_item.get_cur_val());
 		break;
 	}
+	case MENU_OPTION::COLOR_THEME:
+	{
+		SDL_Log("color theme change");
+		const ThemeMenuItem& menu_item = static_cast<const ThemeMenuItem&>(main_menu.get_option_item(MENU_OPTION::COLOR_THEME));
+		GLOBAL_COLOR_THEME = menu_item.get_cur_val();
+		linpo.set_color_theme(GLOBAL_COLOR_THEME);
+		//score_board.set_color_theme(menu_item.get_cur_val());
+		break;
+	}
 	case MENU_OPTION::PAUSE:
 		SDL_Log("pause button");
 		main_menu.toggle_visibility();
@@ -175,7 +184,16 @@ int main(int argc, char* argv[])
 				} while (SDL_PollEvent(&e) != 0);
 			}
 
-			SDL_SetRenderDrawColor(main_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+			// change base background drawing color based on the selected theme
+			switch (GLOBAL_COLOR_THEME)
+			{
+			case COLOR_THEME::DEFAULT:
+				SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
+				break;
+			case COLOR_THEME::BLACK:
+				SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
+				break;
+			}
 			SDL_RenderClear(main_renderer);
 
 			// Code below

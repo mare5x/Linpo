@@ -14,6 +14,7 @@ MainMenu::MainMenu()
 	menu_items[(int)MENU_OPTION::N_PLAYER_CHANGE] = std::make_unique<IncrementerMenuItem>("Number of players:", MENU_OPTION::N_PLAYER_CHANGE);
 	menu_items[(int)MENU_OPTION::GRID_SIZE] = std::make_unique<GridSizeMenuItem>("Grid size: ", MENU_OPTION::GRID_SIZE);
 	menu_items[(int)MENU_OPTION::AI_TOGGLE] = std::make_unique<BoolMenuItem>("AI player: ", MENU_OPTION::AI_TOGGLE);
+	menu_items[(int)MENU_OPTION::COLOR_THEME] = std::make_unique<ThemeMenuItem>("Color theme: ", MENU_OPTION::COLOR_THEME);
 	menu_items[(int)MENU_OPTION::PAUSE] = std::make_unique<PauseItem>();
 	// TODO: font size selector
 

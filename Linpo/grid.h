@@ -27,6 +27,8 @@ public:
 
 	void render();
 
+	void set_color_theme(const COLOR_THEME &color_theme);
+
 	/* Clears grid and makes it ready for a new game. */
 	void clear_grid();
 	void set_grid_size(int rows, int cols);

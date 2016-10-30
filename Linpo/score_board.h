@@ -21,6 +21,8 @@ public:
 
 	void clear();
 
+	//void set_color_theme(const COLOR_THEME &color_theme);
+
 	virtual const int get_width() const;
 	virtual const int get_height() const;
 protected:

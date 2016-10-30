@@ -108,6 +108,20 @@ private:
 	std::unique_ptr<TextTexture> bool_text;
 };
 
+class ThemeMenuItem : public TextMenuItem
+{
+public:
+	ThemeMenuItem(const std::string &name, const MENU_OPTION &option_type);
+
+	COLOR_THEME get_cur_val() const { return color_theme; }
+private:
+	void handle_item_click() override;
+	void update_full_texture() override;
+
+	COLOR_THEME color_theme;
+	std::unique_ptr<TextTexture> theme_text;
+};
+
 class PauseItem : public AbstractMenuItem
 {
 public:

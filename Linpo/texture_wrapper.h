@@ -29,6 +29,7 @@ public:
 	void set_alpha_mod(const float alpha);
 
 	void set_color_mod(Uint8 r, Uint8 g, Uint8 b);
+	void set_color_mod(const SDL_Color &color_mod);
 
 	void load_from_file(const char* path);
 
@@ -49,4 +50,5 @@ private:
 	SDL_Color background_color;
 	int access;
 	Uint8 alpha_mod;
+	SDL_Color color_mod;
 };

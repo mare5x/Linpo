@@ -21,6 +21,7 @@ public:
 	void set_ai_enabled(bool decision);
 	void set_player_number(int number);
 	void set_grid_size(int size);
+	void set_color_theme(const COLOR_THEME &color_theme);
 
 	bool is_game_over();
 

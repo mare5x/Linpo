@@ -69,6 +69,13 @@ void Linpo::set_grid_size(int size)
 	reset_game(false);
 }
 
+void Linpo::set_color_theme(const COLOR_THEME & color_theme)
+{
+	game_grid.set_color_theme(color_theme);
+
+	// change Player colors
+}
+
 void Linpo::enable_ai(bool decision)
 {
 	for (int i = 1; i < players.size(); ++i)

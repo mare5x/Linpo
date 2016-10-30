@@ -27,7 +27,11 @@ Grid::Grid(int cols, int rows)
 	point_texture(std::make_unique<TextureWrapper>(main_renderer, "resources/whitedot.bmp"))
 {
 	// grid and hover line textures will get properly resized later
-	
+
+	// set the background of the texture to be transparent
+	grid_points_texture->set_background_color({ 0xFF, 0xFF, 0xFF, 0 });
+	grid_texture->set_background_color({ 0xFF, 0xFF, 0xFF, 0 });
+
 	// set the color of the grid points
 	point_texture->set_color_mod(0, 0, 0);
 
@@ -95,6 +99,23 @@ void Grid::render()
 	//SDL_RenderDrawRect(main_renderer, NULL);
 }
 
+void Grid::set_color_theme(const COLOR_THEME & color_theme)
+{
+	switch (color_theme)
+	{
+	case COLOR_THEME::DEFAULT:
+		point_texture->set_color_mod(0, 0, 0);						// black point
+		break;
+	case COLOR_THEME::BLACK:
+		point_texture->set_color_mod(255, 255, 255);				// white point
+		break;
+	}
+
+	update_grid_points_texture();
+	update_grid_texture();
+	update_hover_line_texture();
+}
+
 void Grid::update_textures()
 {
 	if (grid_texture_update_pending())
@@ -106,7 +127,7 @@ void Grid::update_textures()
 void Grid::update_grid_points_texture()
 {
 	// set the background of the texture to be transparent
-	grid_points_texture->clear({ 0xff, 0xff, 0xff, 0 });
+	grid_points_texture->clear();
 
 	for (const auto &grid_point : grid_points)
 	{
@@ -133,7 +154,7 @@ void Grid::update_grid_texture()
 
 	if (_show_collision_boxes)
 	{
-		set_render_draw_color(COLORS[BLACK]);
+		set_render_draw_color(COLORS[RED]);
 		for (const auto &rect : grid_collision_rects)
 			SDL_RenderDrawRect(main_renderer, &rect);
 	}
