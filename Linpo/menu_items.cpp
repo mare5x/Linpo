@@ -142,9 +142,17 @@ void AbstractMenuItem::handle_mouse_click()
 
 TextMenuItem::TextMenuItem(const std::string &name, const MENU_OPTION &option_type)
 	:AbstractMenuItem::AbstractMenuItem(option_type), 
-	text_texture(std::make_unique<TextTexture>(main_renderer, name, COLORS[BLACK]))
+	base_font_color(COLORS[WHITE]),
+	text_texture(std::make_unique<TextTexture>(main_renderer, name, base_font_color))
 {
 	resize(text_texture->get_width() + 10, text_texture->get_height() + 10);
+
+	update_full_texture();
+}
+
+void TextMenuItem::set_font_color(const SDL_Color & color)
+{
+	text_texture->set_color_mod(color);
 
 	update_full_texture();
 }
@@ -170,7 +178,7 @@ void TextMenuItem::update_full_texture()
 IncrementerMenuItem::IncrementerMenuItem(const std::string &name, const MENU_OPTION &option_type, int min, int max, int cur)
 	:TextMenuItem::TextMenuItem(name, option_type), 
 	min_val{ min }, max_val{ max }, cur_val(cur),
-	value_text_tex(std::make_unique<TextTexture>(main_renderer, patch::to_string(cur), COLORS[BLACK])),
+	value_text_tex(std::make_unique<TextTexture>(main_renderer, patch::to_string(cur), base_font_color)),
 	decrement_item(std::make_unique<TextMenuItem>("<", option_type)),
 	increment_item(std::make_unique<TextMenuItem>(">", option_type))
 {
@@ -223,6 +231,16 @@ bool IncrementerMenuItem::was_clicked()
 	return ret;
 }
 
+void IncrementerMenuItem::set_font_color(const SDL_Color & color)
+{
+	TextMenuItem::set_font_color(color);
+	value_text_tex->set_color_mod(color);
+	decrement_item->set_font_color(color);
+	increment_item->set_font_color(color);
+
+	update_full_texture();
+}
+
 const int IncrementerMenuItem::get_cur_val() const
 {
 	return cur_val;
@@ -234,7 +252,7 @@ void IncrementerMenuItem::update_full_texture()
 
 	text_texture->render(5, 5);
 
-	value_text_tex->write_text(patch::to_string(cur_val), COLORS[BLACK]);
+	value_text_tex->write_text(patch::to_string(cur_val), base_font_color);
 	value_text_tex->render(5 + text_texture->get_width() + 5 + decrement_item->get_texture_width(), 5);
 
 	// draw border
@@ -296,16 +314,24 @@ void GridSizeMenuItem::update_value_text()
 {
 	std::ostringstream stream;
 	stream << cur_val << " X " << cur_val;
-	value_text_tex->write_text(stream.str(), COLORS[BLACK]);
+	value_text_tex->write_text(stream.str(), base_font_color);
 }
 
 
 BoolMenuItem::BoolMenuItem(const std::string &name, const MENU_OPTION &option_type)
 	:TextMenuItem::TextMenuItem(name, option_type),
 	bool_val(AI_ENABLED),
-	bool_text(std::make_unique<TextTexture>(main_renderer, AI_ENABLED ? "enabled" : "disabled", COLORS[BLACK]))
+	bool_text(std::make_unique<TextTexture>(main_renderer, AI_ENABLED ? "enabled" : "disabled", base_font_color))
 {
 	resize(text_texture->get_width() + bool_text->get_width() + 10, bool_text->get_height() + 10);
+	update_full_texture();
+}
+
+void BoolMenuItem::set_font_color(const SDL_Color & color)
+{
+	TextMenuItem::set_font_color(color);
+	bool_text->set_color_mod(color);
+
 	update_full_texture();
 }
 
@@ -318,9 +344,9 @@ void BoolMenuItem::handle_item_click()
 {
 	bool_val = !bool_val;
 	if (bool_val)
-		bool_text->write_text("enabled", COLORS[BLACK]);
+		bool_text->write_text("enabled", base_font_color);
 	else
-		bool_text->write_text("disabled", COLORS[BLACK]);
+		bool_text->write_text("disabled", base_font_color);
 	
 	update_full_texture();
 }
@@ -377,9 +403,17 @@ void PauseItem::update_full_texture()
 ThemeMenuItem::ThemeMenuItem(const std::string & name, const MENU_OPTION & option_type)
 	:TextMenuItem::TextMenuItem(name, option_type),
 	color_theme{COLOR_THEME::DEFAULT},
-	theme_text{std::make_unique<TextTexture>(main_renderer, "default", COLORS[BLACK])}
+	theme_text{std::make_unique<TextTexture>(main_renderer, "default", base_font_color)}
 {
 	resize(text_texture->get_width() + theme_text->get_width() + 10, theme_text->get_height() + 10);
+	update_full_texture();
+}
+
+void ThemeMenuItem::set_font_color(const SDL_Color & color)
+{
+	TextMenuItem::set_font_color(color);
+	theme_text->set_color_mod(color);
+
 	update_full_texture();
 }
 
@@ -389,10 +423,10 @@ void ThemeMenuItem::handle_item_click()
 	switch (color_theme)
 	{
 	case COLOR_THEME::DEFAULT:
-		theme_text->write_text("default", COLORS[BLACK]);
+		theme_text->write_text("default", base_font_color);
 		break;
 	case COLOR_THEME::BLACK:
-		theme_text->write_text("black", COLORS[BLACK]);
+		theme_text->write_text("black", base_font_color);
 		break;
 	};
 	update_full_texture();

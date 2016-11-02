@@ -120,6 +120,7 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem
 		SDL_Log("color theme change");
 		const ThemeMenuItem& menu_item = static_cast<const ThemeMenuItem&>(main_menu.get_option_item(MENU_OPTION::COLOR_THEME));
 		GLOBAL_COLOR_THEME = menu_item.get_cur_val();
+		main_menu.set_color_theme(GLOBAL_COLOR_THEME);
 		linpo.set_color_theme(GLOBAL_COLOR_THEME);
 		//score_board.set_color_theme(menu_item.get_cur_val());
 		break;
@@ -227,11 +228,8 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-// BETTER AI (smarter and less cpu)
 // better resizing for all resolutions ...
-// color schemes (black theme)
 // end game screen
-// ai difficulty option
 
 // pause item sometimes goes invisible when resizing ???????
 
@@ -239,14 +237,10 @@ int main(int argc, char* argv[])
 
 // options: make a slider?
 
-// mouse events on buttonup not down for better android experience
 // global mouse_state?
 
 // logical resolution?
 // scaling instead of resizing?
-
-// TODO: ANDROID!
-//		-> pinch to zoom
 
 // TODO: use std::set for grid_lines
 // TODO: make textures be only of necessary size

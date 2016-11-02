@@ -27,12 +27,15 @@ public:
 
 	int get_width() const;
 	int get_height() const;
+
+	/* Sets the font color if the current menu item supports it. */
+	virtual void set_font_color(const SDL_Color &color) {}
 protected:
 	virtual void handle_hover();
 	virtual void handle_item_click() {}
 	virtual void update_full_texture() = 0;
 
-	/*Resizes item_rect and item_texture to w, h.*/
+	/* Resizes item_rect and item_texture to w, h. */
 	void resize(const int &w, const int &h);
 
 	SDL_Rect item_rect;
@@ -51,9 +54,12 @@ class TextMenuItem : public AbstractMenuItem
 {
 public:
 	TextMenuItem(const std::string& name, const MENU_OPTION &option_type = MENU_OPTION::NULL_OPTION);
+	
+	virtual void set_font_color(const SDL_Color &color) override;
 protected:
 	virtual void update_full_texture() override;
 
+	const SDL_Color base_font_color;  // WHITE, so it can easily be changed with set_color_mod
 	std::unique_ptr<TextTexture> text_texture;
 };
 
@@ -66,6 +72,8 @@ public:
 	void render(int x, int y) override;
 
 	bool was_clicked() override;
+
+	void set_font_color(const SDL_Color &color) override;
 
 	const int get_cur_val() const;
 protected:
@@ -97,6 +105,8 @@ class BoolMenuItem : public TextMenuItem
 public:
 	BoolMenuItem(const std::string &name, const MENU_OPTION &option_type);
 
+	void set_font_color(const SDL_Color &color) override;
+
 	bool get_cur_val() const;
 protected:
 	void handle_item_click() override;
@@ -112,6 +122,8 @@ class ThemeMenuItem : public TextMenuItem
 {
 public:
 	ThemeMenuItem(const std::string &name, const MENU_OPTION &option_type);
+
+	void set_font_color(const SDL_Color &color) override;
 
 	COLOR_THEME get_cur_val() const { return color_theme; }
 private:

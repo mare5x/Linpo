@@ -23,22 +23,32 @@ const bool AI_ENABLED = true;
 
 enum COLOR_NAME
 {
-	BLUE,
-	RED,
+	LIGHT_BLUE,
+	BLOOD_RED,
 	GREEN,
 	ORANGE,
 	WHITE,
 	BLACK,
+	BLUE,
+	RED,
+	GREY_YELLOW,
+	DARK_GOLD,
+	LIME,
 	N_COLORS
 };
 
 const SDL_Color COLORS[COLOR_NAME::N_COLORS] = {
-	{ 0, 0, 255, 255 },		 // BLUE
-	{ 255, 0, 0, 255 },		 // RED
+	{ 0, 162, 232, 255},	 // LIGHT BLUE
+	{ 255, 50, 50, 255},	 // BLOOD RED
 	{ 0, 255, 0, 255 },		 // GREEN
 	{ 255, 140, 0, 255 },	 // ORANGE
 	{ 255, 255, 255, 255 },  //	WHITE
-	{ 0, 0, 0, 255 }		 // BLACK
+	{ 0, 0, 0, 255 },		 // BLACK
+	{ 0, 0, 255, 255 },		 // BLUE
+	{ 255, 0, 0, 255 },		 // RED
+	{ 239, 228, 176, 255 },	 // GREY YELLOW
+	{ 210, 163, 0, 255 },	 // DARK GOLD
+	{ 217, 245, 14, 255 }	 // LIME
 };
 
 

@@ -8,15 +8,14 @@ MainMenu::MainMenu()
 	width(SCREEN_WIDTH),
 	height(SCREEN_HEIGHT)
 {
-	visible = false;
-
 	menu_items[(int)MENU_OPTION::RESTART_GAME] = std::make_unique<TextMenuItem>("Restart game", MENU_OPTION::RESTART_GAME);
 	menu_items[(int)MENU_OPTION::N_PLAYER_CHANGE] = std::make_unique<IncrementerMenuItem>("Number of players:", MENU_OPTION::N_PLAYER_CHANGE);
 	menu_items[(int)MENU_OPTION::GRID_SIZE] = std::make_unique<GridSizeMenuItem>("Grid size: ", MENU_OPTION::GRID_SIZE);
 	menu_items[(int)MENU_OPTION::AI_TOGGLE] = std::make_unique<BoolMenuItem>("AI player: ", MENU_OPTION::AI_TOGGLE);
 	menu_items[(int)MENU_OPTION::COLOR_THEME] = std::make_unique<ThemeMenuItem>("Color theme: ", MENU_OPTION::COLOR_THEME);
 	menu_items[(int)MENU_OPTION::PAUSE] = std::make_unique<PauseItem>();
-	// TODO: font size selector
+
+	set_color_theme(GLOBAL_COLOR_THEME);
 
 	resize_update();
 }
@@ -37,10 +36,6 @@ void MainMenu::handle_event(SDL_Event & e)
 
 void MainMenu::render()
 {
-	// White background
-	SDL_SetRenderDrawColor(main_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderClear(main_renderer);
-
 	// center all menu_items
 	int padding_y = height / menu_items.size() / 2;
 	for (size_t i = 0; i < menu_items.size(); ++i)
@@ -62,6 +57,21 @@ MENU_OPTION MainMenu::get_selected_option()
 const AbstractMenuItem & MainMenu::get_option_item(const MENU_OPTION & option) const
 {
 	return *menu_items[static_cast<int>(option)];
+}
+
+void MainMenu::set_color_theme(const COLOR_THEME & color_theme) const
+{
+	switch (color_theme)
+	{
+	case COLOR_THEME::DEFAULT:
+		for (const auto &menu_item : menu_items)
+			menu_item->set_font_color(COLORS[BLACK]);
+		break;
+	case COLOR_THEME::BLACK:
+		for (const auto &menu_item : menu_items)
+			menu_item->set_font_color(COLORS[LIME]);
+		break;
+	}
 }
 
 void MainMenu::toggle_visibility()

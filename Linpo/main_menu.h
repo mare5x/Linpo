@@ -17,6 +17,8 @@ public:
 	MENU_OPTION get_selected_option();
 	const AbstractMenuItem& get_option_item(const MENU_OPTION &option) const;
 
+	void set_color_theme(const COLOR_THEME &color_theme) const;
+
 	void toggle_visibility();
 	bool is_visible();
 private:

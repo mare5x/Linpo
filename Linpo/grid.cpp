@@ -107,7 +107,7 @@ void Grid::set_color_theme(const COLOR_THEME & color_theme)
 		point_texture->set_color_mod(0, 0, 0);						// black point
 		break;
 	case COLOR_THEME::BLACK:
-		point_texture->set_color_mod(255, 255, 255);				// white point
+		point_texture->set_color_mod(COLORS[GREY_YELLOW]);
 		break;
 	}
 

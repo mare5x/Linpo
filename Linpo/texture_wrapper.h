@@ -43,6 +43,8 @@ public:
 	const int &get_width() const { return width; }
 	const int &get_height() const { return height; }
 protected:
+	void restore_texture_settings();
+
 	SDL_Renderer* &renderer;
 	SDL_Texture* texture;
 	int width, height;

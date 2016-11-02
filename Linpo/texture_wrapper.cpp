@@ -51,9 +51,7 @@ void TextureWrapper::resize(int new_width, int new_height)
 		SDL_DestroyTexture(texture);
 
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, new_width, new_height);
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);  // otherwise alpha is ignored!
-	SDL_SetTextureAlphaMod(texture, alpha_mod);
-	set_color_mod(color_mod);
+	restore_texture_settings();
 	width = new_width;
 	height = new_height;
 }
@@ -152,4 +150,11 @@ void TextureWrapper::render(int x, int y)
 void TextureWrapper::render(const SDL_Rect &dest_rect)
 {
 	SDL_RenderCopy(renderer, texture, NULL, &dest_rect);
+}
+
+void TextureWrapper::restore_texture_settings()
+{
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);  // otherwise alpha is ignored!
+	SDL_SetTextureAlphaMod(texture, alpha_mod);
+	set_color_mod(color_mod);
 }

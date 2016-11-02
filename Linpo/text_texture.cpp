@@ -38,6 +38,8 @@ void TextTexture::write_text(const std::string &s, const SDL_Color &color)
 		SDL_FreeSurface(text_surface);
 
 		text = s;
+
+		restore_texture_settings();
 	}
 }
 
