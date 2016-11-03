@@ -8,6 +8,7 @@
 #include "constants.h"
 #include "ai_logic.h"
 
+class GameOverItem;
 
 class Linpo
 {
@@ -16,6 +17,10 @@ public:
 
 	void update();
 
+	/* Renders game_over_item when the game is over, otherwise it does nothing. */
+	void render();
+	void handle_event(const SDL_Event &e);
+
 	void reset_game(bool clear_grid = true);
 
 	void set_ai_enabled(bool decision);
@@ -23,8 +28,14 @@ public:
 	void set_grid_size(int size);
 	void set_color_theme(const COLOR_THEME &color_theme);
 
+	/* Displays the game over screen until the item is clicked/dismissed. */
+	void show_game_winner_notification();
+
 	bool is_game_over();
 
+	/* Returns nullptr if there is no winner. If its a draw, it returns the first winning player based on the scoreboard order. 
+	   Note: it assumes the game is over. */
+	const Player* get_winner() const;
 	Player &get_current_player();
 	PlayerArray &get_player_array();
 private:
@@ -36,6 +47,10 @@ private:
 
 	PlayerArray players;
 	bool ai_enabled;
+
+	std::unique_ptr<GameOverItem> game_over_item;
+	bool game_over_screen_was_shown;
+
 	int player_index;
 	int prev_n_lines, prev_n_boxes;
 };

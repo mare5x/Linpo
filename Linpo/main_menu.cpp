@@ -61,17 +61,9 @@ const AbstractMenuItem & MainMenu::get_option_item(const MENU_OPTION & option) c
 
 void MainMenu::set_color_theme(const COLOR_THEME & color_theme) const
 {
-	switch (color_theme)
-	{
-	case COLOR_THEME::DEFAULT:
-		for (const auto &menu_item : menu_items)
-			menu_item->set_font_color(COLORS[BLACK]);
-		break;
-	case COLOR_THEME::BLACK:
-		for (const auto &menu_item : menu_items)
-			menu_item->set_font_color(COLORS[LIME]);
-		break;
-	}
+	auto font_color = get_font_color(color_theme);
+	for (const auto &menu_item : menu_items)
+		menu_item->set_font_color(font_color);
 }
 
 void MainMenu::toggle_visibility()

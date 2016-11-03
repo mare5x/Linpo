@@ -7,13 +7,14 @@
 #include "constants.h"
 #include "mouse_state.h"
 
+struct Player;
 
 class AbstractMenuItem
 {
 public:
 	AbstractMenuItem(const MENU_OPTION &option_type = MENU_OPTION::NULL_OPTION);
 
-	virtual void handle_event(SDL_Event &e);
+	virtual void handle_event(const SDL_Event &e);
 	virtual void render(int x, int y);
 	void render(const SDL_Rect &dest);
 
@@ -68,7 +69,7 @@ class IncrementerMenuItem : public TextMenuItem
 public:
 	IncrementerMenuItem(const std::string& name, const MENU_OPTION &option_type, int min = MIN_PLAYERS, int max = MAX_PLAYERS, int cur = N_PLAYERS);
 
-	void handle_event(SDL_Event &e) override;
+	void handle_event(const SDL_Event &e) override;
 	void render(int x, int y) override;
 
 	bool was_clicked() override;
@@ -140,4 +141,19 @@ public:
 	PauseItem(const int w = 64, const int h = 64);
 protected:
 	void update_full_texture() override;
+};
+
+class GameOverItem : public TextMenuItem
+{
+public:
+	GameOverItem(const Player &winner, const SDL_Color &theme_font_color);
+
+	/* Note: the theme will be applied only if it differs to the currently applied theme. */
+	void apply_theme(const COLOR_THEME &color_theme);
+	void set_font_color(const SDL_Color &color) override;
+private:
+	void update_full_texture() override;
+
+	COLOR_THEME current_theme;
+	std::unique_ptr<TextTexture> winner_text;
 };

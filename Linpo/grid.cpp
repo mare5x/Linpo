@@ -7,7 +7,7 @@
 
 
 Grid::Grid(int cols, int rows)
-	:viewport_rect{ 0, static_cast<int>(FONT_SIZE + 4), SCREEN_WIDTH, SCREEN_HEIGHT - viewport_rect.y },
+	:viewport_rect{ 0, static_cast<int>(FONT_SIZE + 4) + 4, SCREEN_WIDTH, SCREEN_HEIGHT - viewport_rect.y },
 	cols(cols),
 	rows(rows),
 	n_edges(2 * rows * cols - rows - cols),

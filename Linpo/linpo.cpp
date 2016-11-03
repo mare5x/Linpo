@@ -1,4 +1,6 @@
 #include <numeric>
+#include "globals.h"
+#include "menu_items.h"
 #include "linpo.h"
 
 
@@ -7,6 +9,8 @@ Linpo::Linpo(Grid &game_grid)
 	ai_logic(std::make_unique<AI_Logic>(game_grid)),
 	players{},
 	ai_enabled(AI_ENABLED),
+	game_over_item(nullptr),
+	game_over_screen_was_shown{ false },
 	player_index(0),
 	prev_n_lines(0),
 	prev_n_boxes(0)
@@ -34,6 +38,21 @@ void Linpo::update()
 	}
 }
 
+void Linpo::render()
+{
+	if (is_game_over())
+	{
+		if (!game_over_screen_was_shown)
+			show_game_winner_notification();
+	}
+}
+
+void Linpo::handle_event(const SDL_Event & e)
+{
+	if (game_over_item)
+		game_over_item->handle_event(e);
+}
+
 void Linpo::reset_game(bool clear_grid)
 {
 	if (clear_grid)
@@ -42,6 +61,9 @@ void Linpo::reset_game(bool clear_grid)
 	player_index = 0;
 	prev_n_lines = 0;
 	prev_n_boxes = 0;
+
+	game_over_item.reset(nullptr);
+	game_over_screen_was_shown = false;
 
 	for (auto &player : players)
 		player.score = 0;
@@ -82,6 +104,21 @@ void Linpo::enable_ai(bool decision)
 		players[i].is_ai = decision;
 }
 
+const Player* Linpo::get_winner() const
+{
+	int best_score = -1;
+	const Player* winner = nullptr;
+	for (const Player &player : players)
+	{
+		if (player.score > best_score)
+		{
+			best_score = player.score;
+			winner = &player;
+		}
+	}
+	return winner;
+}
+
 Player &Linpo::get_current_player()
 {
 	return players[player_index];
@@ -95,6 +132,47 @@ PlayerArray& Linpo::get_player_array()
 bool Linpo::is_ai_turn()
 {
 	return get_current_player().is_ai;
+}
+
+void Linpo::show_game_winner_notification()
+{
+	if (!game_over_item)  // == nullptr
+	{
+		const Player* winner = get_winner();
+		if (winner == nullptr)
+			return;
+
+		switch (GLOBAL_COLOR_THEME)
+		{
+		case COLOR_THEME::DEFAULT:
+			game_over_item = std::make_unique<GameOverItem>(*winner, COLORS[BLACK]);
+			break;
+		case COLOR_THEME::BLACK:
+			game_over_item = std::make_unique<GameOverItem>(*winner, COLORS[LIME]);
+			break;
+		}
+	}
+
+	if (!game_over_item->was_clicked())
+	{
+		// reset the viewport so event handling gets the correct coordinates
+		SDL_RenderSetViewport(main_renderer, NULL);
+
+		int width, height;
+		SDL_GetRendererOutputSize(main_renderer, &width, &height);
+
+		// center it
+		SDL_Rect viewport_rect = { (width / 2) - (game_over_item->get_width() / 2), (height / 2) - (game_over_item->get_height() / 2), game_over_item->get_width(), game_over_item->get_height() };
+		set_global_color_theme_render_color();
+		SDL_RenderFillRect(main_renderer, &viewport_rect);
+		game_over_item->apply_theme(GLOBAL_COLOR_THEME);
+		game_over_item->render(viewport_rect);
+	}
+	else
+	{
+		game_over_item.reset(nullptr);  // delete the item
+		game_over_screen_was_shown = true;
+	}
 }
 
 bool Linpo::is_game_over()

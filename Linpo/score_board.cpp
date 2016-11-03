@@ -4,7 +4,7 @@
 
 
 ScoreBoard::ScoreBoard(PlayerArray &players_array, Grid &game_grid)
-	:viewport_rect{ 0, 0, SCREEN_WIDTH, static_cast<int>(FONT_SIZE + 4) },
+	:viewport_rect{ 0, 4, SCREEN_WIDTH, static_cast<int>(FONT_SIZE + 4) },
 	_prev_score{ 0 },
 	_base_score_texture_width{ 0 },
 	game_grid(game_grid), 

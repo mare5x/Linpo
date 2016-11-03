@@ -167,6 +167,7 @@ int main(int argc, char* argv[])
 
 					if (!main_menu.is_visible())
 					{
+						linpo_logic.handle_event(e);
 						game_grid.handle_event(e);
 						score_board.handle_event(e);
 					}
@@ -186,15 +187,7 @@ int main(int argc, char* argv[])
 			}
 
 			// change base background drawing color based on the selected theme
-			switch (GLOBAL_COLOR_THEME)
-			{
-			case COLOR_THEME::DEFAULT:
-				SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
-				break;
-			case COLOR_THEME::BLACK:
-				SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
-				break;
-			}
+			set_global_color_theme_render_color();
 			SDL_RenderClear(main_renderer);
 
 			// Code below
@@ -206,11 +199,13 @@ int main(int argc, char* argv[])
 
 				handle_option(main_menu.get_selected_option(), linpo_logic, score_board, main_menu);
 			}
-			else {
+			else 
+			{
 				linpo_logic.update();
 				game_grid.update(linpo_logic.get_current_player());
 				game_grid.render();
 				score_board.render();
+				linpo_logic.render();
 			}
 
 			SDL_RenderPresent(main_renderer);
@@ -228,8 +223,8 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-// better resizing for all resolutions ...
-// end game screen
+
+// SETTINGS FILE FOR MENU OPTIONS
 
 // pause item sometimes goes invisible when resizing ???????
 

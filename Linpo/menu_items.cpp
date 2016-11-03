@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "constants.h"
 #include "render_functions.h"
+#include "player_array.h"
 #include "android-patch.h"
 #include <sstream>
 
@@ -16,7 +17,7 @@ AbstractMenuItem::AbstractMenuItem(const MENU_OPTION &option_type)
 	item_clicked(false)
 { }
 
-void AbstractMenuItem::handle_event(SDL_Event & e)
+void AbstractMenuItem::handle_event(const SDL_Event & e)
 {
 	switch (e.type)
 	{
@@ -186,7 +187,7 @@ IncrementerMenuItem::IncrementerMenuItem(const std::string &name, const MENU_OPT
 	update_full_texture();  // initializes it
 }
 
-void IncrementerMenuItem::handle_event(SDL_Event & e)
+void IncrementerMenuItem::handle_event(const SDL_Event & e)
 {
 	decrement_item->handle_event(e);
 	increment_item->handle_event(e);
@@ -439,6 +440,47 @@ void ThemeMenuItem::update_full_texture()
 	item_texture->set_as_render_target();
 
 	theme_text->render(text_texture->get_width() + 5, 5);
+
+	item_texture->reset_render_target();
+}
+
+GameOverItem::GameOverItem(const Player & winner, const SDL_Color & theme_font_color)
+	:TextMenuItem::TextMenuItem("The winner is: "),
+	current_theme(COLOR_THEME::DEFAULT),
+	winner_text(std::make_unique<TextTexture>(main_renderer))
+{
+	std::stringstream message;
+	message << "Player " << winner.id + 1;
+	winner_text->write_text(message.str(), *winner.color);
+
+	set_font_color(theme_font_color);
+
+	resize(text_texture->get_width() + winner_text->get_width() + 10, winner_text->get_height() + 10);
+	update_full_texture();
+}
+
+void GameOverItem::apply_theme(const COLOR_THEME & color_theme)
+{
+	if (static_cast<int>(current_theme) == static_cast<int>(color_theme))
+		return;
+
+	current_theme = color_theme;
+
+	set_font_color(get_font_color(color_theme));
+}
+
+void GameOverItem::set_font_color(const SDL_Color & color)
+{
+	TextMenuItem::set_font_color(color);
+}
+
+void GameOverItem::update_full_texture()
+{
+	TextMenuItem::update_full_texture();
+
+	item_texture->set_as_render_target();
+
+	winner_text->render(text_texture->get_width() + 5, 5);
 
 	item_texture->reset_render_target();
 }
