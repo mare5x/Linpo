@@ -53,6 +53,9 @@
     <ClCompile Include="globals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pref_file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globals.h">
@@ -104,6 +107,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="grid_box_states.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pref_file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

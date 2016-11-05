@@ -95,34 +95,42 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem
 	case MENU_OPTION::N_PLAYER_CHANGE:
 	{
 		SDL_Log("n player change");
-		const IncrementerMenuItem& menu_item = static_cast<const IncrementerMenuItem&>(main_menu.get_option_item(MENU_OPTION::N_PLAYER_CHANGE));
+		const IncrementerMenuItem& menu_item = static_cast<const IncrementerMenuItem&>(main_menu.get_item(MENU_OPTION::N_PLAYER_CHANGE));
 		linpo.set_player_number(menu_item.get_cur_val());
 		score_board.clear();
+
+		main_menu.write_pref_option(PREF_OPTIONS::N_PLAYERS, menu_item.get_cur_val());
 		break;
 	}
 	case MENU_OPTION::GRID_SIZE:
 	{
 		SDL_Log("grid size change");
-		const GridSizeMenuItem& menu_item = static_cast<const GridSizeMenuItem&>(main_menu.get_option_item(MENU_OPTION::GRID_SIZE));
+		const GridSizeMenuItem& menu_item = static_cast<const GridSizeMenuItem&>(main_menu.get_item(MENU_OPTION::GRID_SIZE));
 		linpo.set_grid_size(menu_item.get_cur_val());
 		score_board.clear();
+
+		main_menu.write_pref_option(PREF_OPTIONS::GRID_SIZE, menu_item.get_cur_val());
 		break;
 	}
 	case MENU_OPTION::AI_TOGGLE:
 	{
 		SDL_Log("ai toggle");
-		const BoolMenuItem& menu_item = static_cast<const BoolMenuItem&>(main_menu.get_option_item(MENU_OPTION::AI_TOGGLE));
+		const BoolMenuItem& menu_item = static_cast<const BoolMenuItem&>(main_menu.get_item(MENU_OPTION::AI_TOGGLE));
 		linpo.set_ai_enabled(menu_item.get_cur_val());
+
+		main_menu.write_pref_option(PREF_OPTIONS::AI_ENABLED, menu_item.get_cur_val());
 		break;
 	}
 	case MENU_OPTION::COLOR_THEME:
 	{
 		SDL_Log("color theme change");
-		const ThemeMenuItem& menu_item = static_cast<const ThemeMenuItem&>(main_menu.get_option_item(MENU_OPTION::COLOR_THEME));
+		const ThemeMenuItem& menu_item = static_cast<const ThemeMenuItem&>(main_menu.get_item(MENU_OPTION::COLOR_THEME));
 		GLOBAL_COLOR_THEME = menu_item.get_cur_val();
 		main_menu.set_color_theme(GLOBAL_COLOR_THEME);
 		linpo.set_color_theme(GLOBAL_COLOR_THEME);
 		//score_board.set_color_theme(menu_item.get_cur_val());
+
+		main_menu.write_pref_option(PREF_OPTIONS::COLOR_THEME, static_cast<int>(GLOBAL_COLOR_THEME));
 		break;
 	}
 	case MENU_OPTION::PAUSE:
@@ -130,6 +138,48 @@ void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem
 		main_menu.toggle_visibility();
 		break;
 	}
+}
+
+/* Applies the options saved in the preferences file. */
+void apply_preferences_file(MainMenu &main_menu, Linpo &linpo)
+{
+	const PrefFile &pref_file = main_menu.get_pref_file();
+
+	int game_width = pref_file.get_preference_data(PREF_OPTIONS::RESOLUTION_WIDTH);
+	int game_height = pref_file.get_preference_data(PREF_OPTIONS::RESOLUTION_HEIGHT);
+	SDL_SetWindowSize(main_window, game_width, game_height);
+
+	int game_x = pref_file.get_preference_data(PREF_OPTIONS::WINDOW_X);
+	int game_y = pref_file.get_preference_data(PREF_OPTIONS::WINDOW_Y);
+	SDL_SetWindowPosition(main_window, game_x, game_y);
+
+	int n_players = pref_file.get_preference_data(PREF_OPTIONS::N_PLAYERS);
+	if (n_players != N_PLAYERS)
+	{
+		linpo.set_player_number(n_players);
+	}
+
+	int grid_size = pref_file.get_preference_data(PREF_OPTIONS::GRID_SIZE);
+	if (grid_size != DEFAULT_GRID_SIZE)
+	{
+		linpo.set_grid_size(grid_size);
+	}
+
+	bool ai_enabled = pref_file.get_preference_data(PREF_OPTIONS::AI_ENABLED);
+	if (ai_enabled != AI_ENABLED)
+	{
+		linpo.set_ai_enabled(ai_enabled);
+	}
+
+	COLOR_THEME color_theme = static_cast<COLOR_THEME>(pref_file.get_preference_data(PREF_OPTIONS::COLOR_THEME));
+	if (color_theme != COLOR_THEME::DEFAULT)
+	{
+		GLOBAL_COLOR_THEME = color_theme;
+		linpo.set_color_theme(GLOBAL_COLOR_THEME);
+		main_menu.set_color_theme(GLOBAL_COLOR_THEME);
+	}
+
+	main_menu.update_from_pref_file();
 }
 
 
@@ -145,6 +195,8 @@ int main(int argc, char* argv[])
 		Linpo linpo_logic(game_grid);
 		ScoreBoardWPauseItem score_board(linpo_logic.get_player_array(), game_grid);
 		MainMenu main_menu;
+
+		apply_preferences_file(main_menu, linpo_logic);
 
 		SDL_SetRenderDrawBlendMode(main_renderer, SDL_BLENDMODE_BLEND);  // otherwise alpha value is ignored when using line and fill!
 

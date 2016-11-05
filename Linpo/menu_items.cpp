@@ -247,6 +247,12 @@ const int IncrementerMenuItem::get_cur_val() const
 	return cur_val;
 }
 
+void IncrementerMenuItem::set_cur_val(int val)
+{
+	cur_val = val;
+	update_full_texture();
+}
+
 void IncrementerMenuItem::update_full_texture()
 {
 	item_texture->clear({ 255, 0, 0, 50 });
@@ -341,20 +347,26 @@ bool BoolMenuItem::get_cur_val() const
 	return bool_val;
 }
 
+void BoolMenuItem::set_cur_val(bool val)
+{
+	bool_val = val;
+	update_full_texture();
+}
+
 void BoolMenuItem::handle_item_click()
 {
 	bool_val = !bool_val;
-	if (bool_val)
-		bool_text->write_text("enabled", base_font_color);
-	else
-		bool_text->write_text("disabled", base_font_color);
-	
 	update_full_texture();
 }
 
 void BoolMenuItem::update_full_texture()
 {
 	TextMenuItem::update_full_texture();
+
+	if (bool_val)
+		bool_text->write_text("enabled", base_font_color);
+	else
+		bool_text->write_text("disabled", base_font_color);
 
 	item_texture->set_as_render_target();
 
@@ -418,9 +430,22 @@ void ThemeMenuItem::set_font_color(const SDL_Color & color)
 	update_full_texture();
 }
 
+void ThemeMenuItem::set_cur_val(const COLOR_THEME & theme)
+{
+	color_theme = theme;
+	update_full_texture();
+}
+
 void ThemeMenuItem::handle_item_click()
 {
 	color_theme = static_cast<COLOR_THEME>((static_cast<int>(color_theme) + 1) % static_cast<int>(COLOR_THEME::N_THEMES));
+	update_full_texture();
+}
+
+void ThemeMenuItem::update_full_texture()
+{
+	TextMenuItem::update_full_texture();
+
 	switch (color_theme)
 	{
 	case COLOR_THEME::DEFAULT:
@@ -430,12 +455,6 @@ void ThemeMenuItem::handle_item_click()
 		theme_text->write_text("black", base_font_color);
 		break;
 	};
-	update_full_texture();
-}
-
-void ThemeMenuItem::update_full_texture()
-{
-	TextMenuItem::update_full_texture();
 
 	item_texture->set_as_render_target();
 

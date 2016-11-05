@@ -130,6 +130,7 @@
     <ClCompile Include="main_menu.cpp" />
     <ClCompile Include="menu_items.cpp" />
     <ClCompile Include="player_array.cpp" />
+    <ClCompile Include="pref_file.cpp" />
     <ClCompile Include="render_functions.cpp" />
     <ClCompile Include="score_board.cpp" />
     <ClCompile Include="texture_wrapper.cpp" />
@@ -143,6 +144,7 @@
     <ClInclude Include="main_menu.h" />
     <ClInclude Include="menu_items.h" />
     <ClInclude Include="mouse_state.h" />
+    <ClInclude Include="pref_file.h" />
     <ClInclude Include="text_texture.h" />
     <ClInclude Include="fps_timer.h" />
     <ClInclude Include="globals.h" />

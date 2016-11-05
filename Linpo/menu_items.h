@@ -77,6 +77,7 @@ public:
 	void set_font_color(const SDL_Color &color) override;
 
 	const int get_cur_val() const;
+	void set_cur_val(int val);
 protected:
 	void handle_hover() override;
 	void update_full_texture() override;
@@ -109,6 +110,7 @@ public:
 	void set_font_color(const SDL_Color &color) override;
 
 	bool get_cur_val() const;
+	void set_cur_val(bool val);
 protected:
 	void handle_item_click() override;
 private:
@@ -127,6 +129,7 @@ public:
 	void set_font_color(const SDL_Color &color) override;
 
 	COLOR_THEME get_cur_val() const { return color_theme; }
+	void set_cur_val(const COLOR_THEME &theme);
 private:
 	void handle_item_click() override;
 	void update_full_texture() override;
