@@ -30,6 +30,11 @@ bool init()
 	}
 	else
 	{
+		SDL_Surface* icon = SDL_LoadBMP("resources/linpo-logo.bmp");
+		SDL_SetColorKey(icon, 1, SDL_MapRGB(icon->format, 255, 255, 255));
+		SDL_SetWindowIcon(main_window, icon);
+		SDL_FreeSurface(icon);
+
 		if (VSYNC_ENABLED)
 			main_renderer = SDL_CreateRenderer(main_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
 		else
@@ -276,7 +281,7 @@ int main(int argc, char* argv[])
 }
 
 
-// SETTINGS FILE FOR MENU OPTIONS
+// UNDO BUTTON
 
 // pause item sometimes goes invisible when resizing ???????
 
