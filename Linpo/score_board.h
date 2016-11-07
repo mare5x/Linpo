@@ -10,10 +10,10 @@
 #include "menu_items.h"
 
 
-class ScoreBoard
+class ScoreBoardBase
 {
 public:
-	ScoreBoard(PlayerArray &players_array, Grid &game_grid);
+	ScoreBoardBase(PlayerArray &players_array, Grid &game_grid);
 
 	virtual void handle_event(SDL_Event &e);
 	virtual void render();
@@ -48,18 +48,20 @@ private:
 	std::array<std::unique_ptr<TextTexture>, MAX_PLAYERS> scoreboard_textures;
 };
 
-class ScoreBoardWPauseItem : public ScoreBoard
+class ScoreBoard : public ScoreBoardBase
 {
 public:
-	ScoreBoardWPauseItem(PlayerArray &players_array, Grid &game_grid);
+	ScoreBoard(PlayerArray &players_array, Grid &game_grid);
 
 	void handle_event(SDL_Event &e);
 	void render();
 
-	bool item_clicked();
+	bool pause_item_clicked();
+	bool undo_item_clicked();
 
-	// get width of scoreboard area only
-	const int get_width() const;
+	// get width of scoreboard area only (excluding items)
+	const int get_width() const override;
 private:
 	std::unique_ptr<PauseItem> pause_item;
+	std::unique_ptr<UndoItem> undo_item;
 };

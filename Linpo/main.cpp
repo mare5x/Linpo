@@ -86,7 +86,7 @@ void close()
 }
 
 
-void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoardWPauseItem &score_board, MainMenu &main_menu)
+void handle_option(const MENU_OPTION &option, Linpo &linpo, ScoreBoard &score_board, MainMenu &main_menu)
 {
 	switch (option)
 	{
@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
 		Grid game_grid(DEFAULT_GRID_SIZE, DEFAULT_GRID_SIZE);
 		Timer fps_cap_timer;
 		Linpo linpo_logic(game_grid);
-		ScoreBoardWPauseItem score_board(linpo_logic.get_player_array(), game_grid);
+		ScoreBoard score_board(linpo_logic.get_player_array(), game_grid);
 		MainMenu main_menu;
 
 		apply_preferences_file(main_menu, linpo_logic);
@@ -227,6 +227,8 @@ int main(int argc, char* argv[])
 						linpo_logic.handle_event(e);
 						game_grid.handle_event(e);
 						score_board.handle_event(e);
+						if (score_board.undo_item_clicked())
+							linpo_logic.undo_last_move();
 					}
 					else
 					{
@@ -235,7 +237,7 @@ int main(int argc, char* argv[])
 
 					if (e.type == SDL_KEYDOWN && 
 					   (e.key.keysym.sym == SDLK_ESCAPE || e.key.keysym.sym == SDLK_AC_BACK) ||
-					   score_board.item_clicked())
+					   score_board.pause_item_clicked())
 						main_menu.toggle_visibility();
 
 					if (e.type == SDL_QUIT)
@@ -250,10 +252,7 @@ int main(int argc, char* argv[])
 			// Code below
 			if (main_menu.is_visible())
 			{
-				// the viewport needs to be reset
-				SDL_RenderSetViewport(main_renderer, NULL);
 				main_menu.render();
-
 				handle_option(main_menu.get_selected_option(), linpo_logic, score_board, main_menu);
 			}
 			else 
@@ -283,7 +282,8 @@ int main(int argc, char* argv[])
 
 // UNDO BUTTON
 
-// pause item sometimes goes invisible when resizing ???????
+// FIX INVISIBLE MENU:
+	//resize -> maximize -> pause
 
 // make use of gridboxstates in grid
 

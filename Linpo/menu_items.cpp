@@ -503,3 +503,43 @@ void GameOverItem::update_full_texture()
 
 	item_texture->reset_render_target();
 }
+
+UndoItem::UndoItem(int w, int h)
+	:AbstractMenuItem::AbstractMenuItem(),
+	undo_arrow(std::make_unique<TextureWrapper>(main_renderer, "resources/undoarrow.bmp"))
+{
+	resize(w, h);
+
+	undo_arrow->set_color_mod(COLORS[RED]);
+	undo_arrow->set_alpha_mod(0.4);
+
+	update_full_texture();
+}
+
+void UndoItem::update_full_texture()
+{
+	item_texture->clear({ 255, 0, 0, 50 });
+
+	SDL_Rect undo_arrow_rect;
+	undo_arrow_rect.x = get_texture_width() * 0.04 + 1;
+	undo_arrow_rect.y = get_texture_height() * 0.04 + 1;
+	undo_arrow_rect.w = get_texture_width() - (2 * undo_arrow_rect.x);
+	undo_arrow_rect.h = get_texture_height() - (2 * undo_arrow_rect.y);
+
+	if (is_hovered())
+	{
+		undo_arrow->set_alpha_mod(0.8);
+	}
+	else
+	{
+		undo_arrow->set_alpha_mod(0.4);
+	}
+
+	undo_arrow->render(undo_arrow_rect);
+
+	// draw border
+	SDL_SetRenderDrawColor(main_renderer, 255, 0, 0, 255);
+	SDL_RenderDrawRect(main_renderer, NULL);
+
+	item_texture->reset_render_target();
+}

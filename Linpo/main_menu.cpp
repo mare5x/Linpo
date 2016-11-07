@@ -42,6 +42,9 @@ void MainMenu::handle_event(SDL_Event & e)
 
 void MainMenu::render()
 {
+	// the viewport needs to be reset
+	SDL_RenderSetViewport(main_renderer, NULL);
+
 	// center all menu_items
 	int padding_y = height / menu_items.size() / 2;
 	for (size_t i = 0; i < menu_items.size(); ++i)
@@ -115,5 +118,5 @@ bool MainMenu::is_visible()
 
 void MainMenu::resize_update()
 {
-	SDL_GetRendererOutputSize(main_renderer, &this->width, &this->height);
+	SDL_GetRendererOutputSize(main_renderer, &width, &height);
 }

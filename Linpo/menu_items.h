@@ -160,3 +160,13 @@ private:
 	COLOR_THEME current_theme;
 	std::unique_ptr<TextTexture> winner_text;
 };
+
+class UndoItem : public AbstractMenuItem
+{
+public:
+	UndoItem(int w = 64, int h = 64);
+private:
+	void update_full_texture() override;
+	
+	std::unique_ptr<TextureWrapper> undo_arrow;
+};

@@ -3,7 +3,7 @@
 #include "render_functions.h"
 
 
-ScoreBoard::ScoreBoard(PlayerArray &players_array, Grid &game_grid)
+ScoreBoardBase::ScoreBoardBase(PlayerArray &players_array, Grid &game_grid)
 	:viewport_rect{ 0, 4, SCREEN_WIDTH, static_cast<int>(FONT_SIZE + 4) },
 	_prev_score{ 0 },
 	_base_score_texture_width{ 0 },
@@ -19,13 +19,13 @@ ScoreBoard::ScoreBoard(PlayerArray &players_array, Grid &game_grid)
 	_base_score_texture_width = scoreboard_textures[0]->get_width();
 }
 
-void ScoreBoard::handle_event(SDL_Event &e)
+void ScoreBoardBase::handle_event(SDL_Event &e)
 {
 	if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 		resize_update();
 }
 
-void ScoreBoard::render()
+void ScoreBoardBase::render()
 {
 	SDL_RenderSetViewport(main_renderer, &viewport_rect);
 
@@ -44,7 +44,7 @@ void ScoreBoard::render()
 	//SDL_RenderDrawRect(main_renderer, NULL);
 }
 
-void ScoreBoard::resize_update()
+void ScoreBoardBase::resize_update()
 {
 	SDL_GetRendererOutputSize(main_renderer, &viewport_rect.w, NULL);
 	//viewport_rect.h = 0.05 * viewport_rect.h;
@@ -59,13 +59,13 @@ void ScoreBoard::resize_update()
 	update_texture_positions();
 }
 
-void ScoreBoard::clear()
+void ScoreBoardBase::clear()
 {
 	_prev_score = 0;
 	resize_update();
 }
 
-void ScoreBoard::update_scoreboard_textures_full()
+void ScoreBoardBase::update_scoreboard_textures_full()
 {
 	for (int i = 0; i < players.size(); ++i)
 	{
@@ -75,7 +75,7 @@ void ScoreBoard::update_scoreboard_textures_full()
 	}
 }
 
-void ScoreBoard::update_scoreboard_textures_score_only()
+void ScoreBoardBase::update_scoreboard_textures_score_only()
 {
 	for (int i = 0; i < players.size(); ++i)
 	{
@@ -85,7 +85,7 @@ void ScoreBoard::update_scoreboard_textures_score_only()
 	}
 }
 
-bool ScoreBoard::are_textures_overlapping() const
+bool ScoreBoardBase::are_textures_overlapping() const
 {
 	SDL_Rect prev_rect{};
 	for (int i = 0; i < players.size(); ++i)
@@ -98,17 +98,17 @@ bool ScoreBoard::are_textures_overlapping() const
 	return false;
 }
 
-bool ScoreBoard::are_full_textures_overlapping() const
+bool ScoreBoardBase::are_full_textures_overlapping() const
 {
 	return _calc_full_x(1) - (_calc_full_x(0) + _base_score_texture_width) < 4;
 }
 
-int ScoreBoard::_calc_full_x(int index) const
+int ScoreBoardBase::_calc_full_x(int index) const
 {
 	return (get_width() / players.size() / 2) + (index * (get_width() / players.size())) - (_base_score_texture_width / 2);
 }
 
-void ScoreBoard::update_texture_positions()
+void ScoreBoardBase::update_texture_positions()
 {
 	for (int i = 0; i < players.size(); ++i)
 	{
@@ -121,46 +121,61 @@ void ScoreBoard::update_texture_positions()
 	}
 }
 
-const int ScoreBoard::get_width() const
+const int ScoreBoardBase::get_width() const
 {
 	return viewport_rect.w;
 }
 
-const int ScoreBoard::get_height() const
+const int ScoreBoardBase::get_height() const
 {
 	return viewport_rect.h;
 }
 
-ScoreBoardWPauseItem::ScoreBoardWPauseItem(PlayerArray& players_array, Grid & game_grid)
-	:ScoreBoard::ScoreBoard(players_array, game_grid),
-	pause_item(std::make_unique<PauseItem>())
+ScoreBoard::ScoreBoard(PlayerArray& players_array, Grid & game_grid)
+	:ScoreBoardBase::ScoreBoardBase(players_array, game_grid),
+	pause_item(std::make_unique<PauseItem>(get_height(), get_height())),
+	undo_item(std::make_unique<UndoItem>(get_height(), get_height()))
 {
 	update_texture_positions();
 }
 
-void ScoreBoardWPauseItem::handle_event(SDL_Event & e)
+void ScoreBoard::handle_event(SDL_Event & e)
 {
-	ScoreBoard::handle_event(e);
+	ScoreBoardBase::handle_event(e);
 	pause_item->handle_event(e);
+	undo_item->handle_event(e);
 }
 
-void ScoreBoardWPauseItem::render()
+void ScoreBoard::render()
 {
-	ScoreBoard::render();
-	SDL_Rect dest_rect;
-	dest_rect.x = get_width();
-	dest_rect.y = 0;
-	dest_rect.w = get_height();
-	dest_rect.h = get_height();
-	pause_item->render(dest_rect);
+	ScoreBoardBase::render();
+
+	SDL_Rect undo_rect;
+	undo_rect.x = get_width();
+	undo_rect.y = 0;
+	undo_rect.w = get_height();
+	undo_rect.h = get_height();
+	undo_item->render(undo_rect);
+
+	SDL_Rect pause_rect;
+	pause_rect.x = undo_rect.x + undo_rect.w + (0.5 * get_height());
+	pause_rect.y = 0;
+	pause_rect.w = undo_rect.w;
+	pause_rect.h = undo_rect.h;
+	pause_item->render(pause_rect);
 }
 
-bool ScoreBoardWPauseItem::item_clicked()
+bool ScoreBoard::pause_item_clicked()
 {
 	return pause_item->was_clicked();
 }
 
-const int ScoreBoardWPauseItem::get_width() const
+bool ScoreBoard::undo_item_clicked()
 {
-	return ScoreBoard::get_width() - 2 * get_height();
+	return undo_item->was_clicked();
+}
+
+const int ScoreBoard::get_width() const
+{
+	return ScoreBoardBase::get_width() - (3 * get_height());
 }

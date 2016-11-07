@@ -69,6 +69,14 @@ void Linpo::reset_game(bool clear_grid)
 		player.score = 0;
 }
 
+void Linpo::undo_last_move()
+{
+	SDL_Log("Undoing last move!\n");
+
+	//player_index = (player_index - 1) % players.size();
+	//game_grid.undo_last_move();
+}
+
 void Linpo::set_ai_enabled(bool decision)
 {
 	if (decision != ai_enabled)

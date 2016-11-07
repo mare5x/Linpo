@@ -23,6 +23,8 @@ public:
 
 	void reset_game(bool clear_grid = true);
 
+	void undo_last_move();
+
 	void set_ai_enabled(bool decision);
 	void set_player_number(int number);
 	void set_grid_size(int size);
