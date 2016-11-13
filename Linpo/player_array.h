@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <array>
+#include <vector>
 #include "constants.h"
 
 
@@ -11,6 +12,7 @@ struct Player
 	int score;
 	const SDL_Color* color;
 	bool is_ai;
+	std::vector< std::vector<int> > last_moves;
 };
 
 

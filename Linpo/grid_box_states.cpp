@@ -28,7 +28,7 @@ void GridBoxStates::update()
 	}
 }
 
-inline int GridBoxStates::get_box_state_index(int row, int col) const
+int GridBoxStates::get_box_state_index(int row, int col) const
 {
 	return (grid.get_cols() - 1) * row + col;
 }

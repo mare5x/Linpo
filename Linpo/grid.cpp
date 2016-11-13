@@ -20,6 +20,7 @@ Grid::Grid(int cols, int rows)
 	prev_n_lines(0),
 	prev_n_boxes(0),
 	lines_placed(0),
+	boxes_placed(0),
 	grid_box_states(*this),
 	grid_texture(std::make_unique<TextureWrapper>(main_renderer)),
 	grid_points_texture(std::make_unique<TextTexture>(main_renderer)),
@@ -44,9 +45,7 @@ Grid::Grid(int cols, int rows)
 	}
 
 	int n_points = rows * cols;
-	int n_boxes = (rows - 1) * (cols - 1);
 	grid_points.reserve(n_points);
-	grid_score_boxes.reserve(n_boxes);
 
 	init_grid_lines();
 
@@ -149,7 +148,8 @@ void Grid::update_grid_texture()
 
 	for (const auto &grid_box_score : grid_score_boxes)
 	{
-		render_box_score(grid_box_score.score, *grid_box_score.top_left, *grid_box_score.owner);
+		if (grid_box_score.has_owner())
+			render_box_score(grid_box_score.score, *grid_box_score.top_left, *grid_box_score.owner);
 	}
 
 	if (_show_collision_boxes)
@@ -188,7 +188,25 @@ bool Grid::hover_line_update_pending()
 
 bool Grid::grid_texture_update_pending()
 {
-	return new_line_placed(prev_n_lines) || score_changed(prev_n_boxes);
+	return lines_placed_changed(prev_n_lines) || score_changed(prev_n_boxes);
+}
+
+void Grid::update_grid_score_boxes()
+{
+	int n_boxes = (get_rows() - 1) * (get_cols() - 1);
+	grid_score_boxes.resize(n_boxes);
+	grid_score_boxes.shrink_to_fit();
+
+	for (int row = 0; row < get_rows() - 1; row++)
+	{
+		for (int col = 0; col < get_rows() - 1; col++)
+		{
+			ScoreBox &box = grid_score_boxes[get_box_states().get_box_state_index(row, col)];
+			box.owner = nullptr;
+			box.score = 0;
+			box.top_left = &get_grid_point(row, col);
+		}
+	}
 }
 
 void Grid::update_grid_points()
@@ -210,6 +228,7 @@ void Grid::update_grid_points()
 void Grid::init_grid_lines()
 {
 	update_grid_points();
+	update_grid_score_boxes();
 	grid_box_states.update();
 
 	grid_lines.resize(n_edges);
@@ -246,21 +265,56 @@ void Grid::init_grid_lines()
 	}
 }
 
-void Grid::add_grid_score_boxes(const std::vector<ScoreBox>& score_boxes, Player &player)
+void Grid::add_grid_score_boxes(const std::vector<ScoreBox>& score_boxes)
 {
 	for (auto &box : score_boxes) 
 	{
-		grid_score_boxes.push_back(box);
-		player.score += box.score;
+		int index = get_box_index(box);
+		if (index != -1)
+		{
+			grid_score_boxes[index].owner = box.owner;
+			grid_score_boxes[index].score = box.score;
+
+			box.owner->score += box.score;
+
+			boxes_placed++;
+		}
 	};
+}
+
+void Grid::remove_grid_score_boxes(const std::vector<ScoreBox>& score_boxes)
+{
+	for (const auto &box : score_boxes)
+	{
+		int index = get_box_index(box);
+		if (index != -1)
+		{
+			grid_score_boxes[index].owner = nullptr;
+			grid_score_boxes[index].score = 0;
+
+			box.owner->score -= box.score;
+			
+			boxes_placed--;
+		}
+	}
 }
 
 void Grid::set_grid_line(int index, Player &owner)
 {
 	grid_lines[index].owner = &owner;
 	taken_grid_lines[index] = true;
+	if (!owner.last_moves.empty())
+		owner.last_moves.back().push_back(index);
 	++lines_placed;
-	add_grid_score_boxes(get_boxes_around_line(index, owner), owner);
+	add_grid_score_boxes(get_boxes_around_line(index, owner));
+}
+
+void Grid::remove_grid_line(int index)
+{
+	remove_grid_score_boxes(get_boxes_around_line(index, *grid_lines[index].owner));
+	taken_grid_lines[index] = false;
+	grid_lines[index].owner = nullptr;
+	--lines_placed;
 }
 
 void Grid::update_grid_collision_rects()
@@ -375,16 +429,23 @@ bool Grid::make_collision_line(Line &new_line, const SDL_Point &pos, Player &pla
 	return line_index != -1;
 }
 
-bool Grid::is_grid_full()
-{
-	return lines_placed == n_edges;
-}
-
 int Grid::get_grid_point_index(int row, int col) const
 {
 	if (row < rows && col < cols)
 		return (row * rows) + col;
 	return -1;
+}
+
+int Grid::get_row(const SDL_Point & point) const
+{
+	int row = round((point.y - grid_points[0].y) / (float)get_point_distance().y);
+	return row >= 0 && row < rows ? row : -1;
+}
+
+int Grid::get_col(const SDL_Point & point) const
+{
+	int col = round((point.x - grid_points[0].x) / (float)get_point_distance().x);
+	return col >= 0 && col < cols ? col : -1;
 }
 
 std::array<int, 2> Grid::get_grid_line_index(int row, int col) const
@@ -558,16 +619,23 @@ void Grid::render_box_score(const char score, const SDL_Point &top_left, const P
 	score_texture->render(x, y);
 }
 
+int Grid::get_box_index(const ScoreBox & box) const
+{
+	int row = get_row(*box.top_left);
+	int col = get_col(*box.top_left);
+	return get_box_states().get_box_state_index(row, col);
+}
+
 void Grid::clear_grid()
 {
 	init_grid_lines();
-	grid_score_boxes.clear();
 
 	resize_update();
 
 	prev_n_lines = 0;
 	prev_n_boxes = 0;
 	lines_placed = 0;
+	boxes_placed = 0;
 }
 
 void Grid::set_grid_size(int rows, int cols)
@@ -577,15 +645,23 @@ void Grid::set_grid_size(int rows, int cols)
 	n_edges = 2 * rows * cols - rows - cols;
 
 	int n_points = rows * cols;
-	int n_boxes = (rows - 1) * (cols - 1);
 	grid_points.resize(n_points);
 	grid_collision_rects.resize(n_edges);
-	grid_score_boxes.resize(n_boxes);
 
 	clear_grid();
 }
 
-bool Grid::new_line_placed(int &prev_lines)
+bool Grid::lines_placed_changed(int &prev_lines) const
+{
+	if (lines_placed != prev_lines)
+	{
+		prev_lines = lines_placed;
+		return true;
+	}
+	return false;
+}
+
+bool Grid::new_line_placed(int & prev_lines) const
 {
 	if (lines_placed > prev_lines)
 	{
@@ -595,11 +671,21 @@ bool Grid::new_line_placed(int &prev_lines)
 	return false;
 }
 
-bool Grid::score_changed(int &prev_boxes)
+bool Grid::new_box_placed(int & prev_boxes) const
 {
-	if (grid_score_boxes.size() > prev_boxes)
+	if (boxes_placed > prev_boxes)
 	{
-		prev_boxes = grid_score_boxes.size();
+		prev_boxes = boxes_placed;
+		return true;
+	}
+	return false;
+}
+
+bool Grid::score_changed(int &prev_boxes) const
+{
+	if (boxes_placed != prev_boxes)
+	{
+		prev_boxes = boxes_placed;
 		return true;
 	}
 	return false;

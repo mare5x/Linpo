@@ -13,7 +13,8 @@ Linpo::Linpo(Grid &game_grid)
 	game_over_screen_was_shown{ false },
 	player_index(0),
 	prev_n_lines(0),
-	prev_n_boxes(0)
+	prev_n_boxes(0),
+	undid_last_move(0)
 {	
 	enable_ai(ai_enabled);
 }
@@ -28,13 +29,20 @@ void Linpo::update()
 		ai_logic->make_move(get_current_player());
 	}
 
-	if (game_grid.new_line_placed(prev_n_lines))
+	if (game_grid.lines_placed_changed(prev_n_lines))
 	{
 		if (!game_grid.score_changed(prev_n_boxes))
 		{
-			// next player's turn, since a move was made and the player didn't fill up a box
-			player_index = (player_index + 1) % players.size();
+			if (!undid_last_move)
+			{
+				// next player's turn, since a move was made and the player didn't fill up a box
+				player_index = (player_index + 1) % players.size();
+
+				if (get_current_player().last_moves.empty() || !get_current_player().last_moves.back().empty())
+					get_current_player().last_moves.push_back({});
+			}
 		}
+		undid_last_move = false;
 	}
 }
 
@@ -61,20 +69,56 @@ void Linpo::reset_game(bool clear_grid)
 	player_index = 0;
 	prev_n_lines = 0;
 	prev_n_boxes = 0;
+	undid_last_move = false;
 
 	game_over_item.reset(nullptr);
 	game_over_screen_was_shown = false;
 
 	for (auto &player : players)
+	{
 		player.score = 0;
+		player.last_moves.clear();
+		player.last_moves.push_back({});
+	}
 }
 
 void Linpo::undo_last_move()
 {
 	SDL_Log("Undoing last move!\n");
 
-	//player_index = (player_index - 1) % players.size();
-	//game_grid.undo_last_move();
+	if (game_grid.is_grid_empty())
+		return;
+
+	if (!get_current_player().is_ai)
+	{
+		if (!get_current_player().last_moves.empty() && get_current_player().last_moves.back().empty())
+		{
+			get_current_player().last_moves.pop_back();
+			player_index = (player_index - 1) % players.size();
+		}
+	}
+
+	if (ai_enabled)
+	{
+		while (get_current_player().is_ai && !get_current_player().last_moves.empty())
+		{
+			for (int line : get_current_player().last_moves.back())
+			{
+				game_grid.remove_grid_line(line);
+			}
+			get_current_player().last_moves.pop_back();
+
+			player_index = (player_index - 1) % players.size();
+		}
+	}
+
+	if (!get_current_player().last_moves.empty() && get_current_player().last_moves.back().size() > 0)
+	{
+		game_grid.remove_grid_line(get_current_player().last_moves.back().back());
+		get_current_player().last_moves.back().pop_back();
+	}
+
+	undid_last_move = true;
 }
 
 void Linpo::set_ai_enabled(bool decision)
@@ -125,11 +169,6 @@ const Player* Linpo::get_winner() const
 		}
 	}
 	return winner;
-}
-
-Player &Linpo::get_current_player()
-{
-	return players[player_index];
 }
 
 PlayerArray& Linpo::get_player_array()

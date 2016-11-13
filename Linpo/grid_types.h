@@ -8,8 +8,8 @@
 class Line
 {
 public:
-	SDL_Point* start;
-	SDL_Point* end;
+	const SDL_Point* start;
+	const SDL_Point* end;
 	Player* owner;
 	
 	bool has_owner() const { return owner != nullptr; }
@@ -21,9 +21,11 @@ typedef SDL_Rect CollisionRect;
 
 struct ScoreBox
 {
-	SDL_Point* top_left;
+	const SDL_Point* top_left;
 	char score;
 	Player* owner;
+
+	bool has_owner() const { return owner != nullptr; }
 };
 
 class BoxState

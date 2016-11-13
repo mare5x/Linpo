@@ -10,6 +10,7 @@ PlayerArray::PlayerArray()
 	{
 		players[i].id = i;
 		players[i].color = &COLORS[i];
+		players[i].last_moves.push_back({});
 	}
 }
 

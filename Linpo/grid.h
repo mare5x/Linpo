@@ -49,6 +49,11 @@ public:
 	std::vector<ScoreBox> get_boxes_around_line(int line_index, Player &owner) const;
 
 	int get_grid_point_index(int row, int col) const;
+	const SDL_Point& get_grid_point(int row, int col) const { return grid_points[get_grid_point_index(row, col)]; }
+	/* Calculates the row for a given point, returns -1 if its an invalid row. */
+	int get_row(const SDL_Point &point) const;
+	/* Calculates the column for a given point, returns -1 if its an invalid column. */
+	int get_col(const SDL_Point &point) const;
 
 	/* Note: [0] = horizontal, [1] = vertical line and -1 if either line doesn't exist at (row, col). */
 	std::array<int, 2> get_grid_line_index(int row, int col) const;
@@ -79,13 +84,19 @@ public:
 	int get_cols() const { return cols; }
 	SDL_Point get_point_distance() const;
 
-	void add_grid_score_boxes(const std::vector<ScoreBox> &score_boxes, Player &player);
+	void add_grid_score_boxes(const std::vector<ScoreBox> &score_boxes);
+	void remove_grid_score_boxes(const std::vector<ScoreBox> &score_boxes);
 
 	void set_grid_line(int index, Player &owner);
+	void remove_grid_line(int index);
 
-	bool is_grid_full();
-	bool new_line_placed(int &prev_lines);
-	bool score_changed(int &prev_boxes);
+	bool is_grid_full() const {	return lines_placed == n_edges; }
+	bool is_grid_empty() const { return lines_placed == 0; }
+
+	bool lines_placed_changed(int &prev_lines) const;
+	bool new_line_placed(int &prev_lines) const;
+	bool new_box_placed(int &prev_boxes) const;
+	bool score_changed(int &prev_boxes) const;
 private:
 	void handle_mouse_click(Player &player);
 	void handle_mouse_hover(Player &player);
@@ -100,6 +111,7 @@ private:
 	bool hover_line_update_pending();
 	bool grid_texture_update_pending();
 
+	void update_grid_score_boxes();
 	void update_grid_points();
 	void init_grid_lines();
 	void update_grid_collision_rects();
@@ -109,6 +121,7 @@ private:
 	ScoreBox make_box(const std::array<int, 4>& box_indices, Player &player) const;
 	int calculate_box_score(const std::array<int, 4> &line_indices, const Player &last_player) const;
 	void render_box_score(const char score, const SDL_Point &top_left, const Player &player);
+	int get_box_index(const ScoreBox &box) const;
 
 	SDL_Rect viewport_rect;
 
@@ -124,6 +137,7 @@ private:
 	Line hover_line, prev_hover_line;
 	int prev_n_lines, prev_n_boxes;
 	int lines_placed;
+	int boxes_placed;
 
 	std::vector<SDL_Point> grid_points;
 	std::vector<Line> grid_lines;

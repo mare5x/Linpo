@@ -38,7 +38,10 @@ public:
 	/* Returns nullptr if there is no winner. If its a draw, it returns the first winning player based on the scoreboard order. 
 	   Note: it assumes the game is over. */
 	const Player* get_winner() const;
-	Player &get_current_player();
+
+	Player &get_current_player() { return players[player_index]; }
+	Player &get_previous_player() { return players[(player_index - 1) % players.size()]; }
+
 	PlayerArray &get_player_array();
 private:
 	bool is_ai_turn();
@@ -55,4 +58,6 @@ private:
 
 	int player_index;
 	int prev_n_lines, prev_n_boxes;
+
+	bool undid_last_move;
 };
