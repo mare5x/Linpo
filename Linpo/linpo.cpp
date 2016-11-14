@@ -94,7 +94,7 @@ void Linpo::undo_last_move()
 		if (!get_current_player().last_moves.empty() && get_current_player().last_moves.back().empty())
 		{
 			get_current_player().last_moves.pop_back();
-			player_index = (player_index - 1) % players.size();
+			player_index = get_previous_player_index();
 		}
 	}
 
@@ -108,7 +108,7 @@ void Linpo::undo_last_move()
 			}
 			get_current_player().last_moves.pop_back();
 
-			player_index = (player_index - 1) % players.size();
+			player_index = get_previous_player_index();
 		}
 	}
 
@@ -154,6 +154,13 @@ void Linpo::enable_ai(bool decision)
 {
 	for (int i = 1; i < players.size(); ++i)
 		players[i].is_ai = decision;
+}
+
+int Linpo::get_previous_player_index()
+{
+	// size_t (unsigned int) messed up the modulo!!!!!
+	int ret = ((player_index - 1) % static_cast<int>(players.size()));
+	return ret >= 0 ? ret : ret + players.size();
 }
 
 const Player* Linpo::get_winner() const

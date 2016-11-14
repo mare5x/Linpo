@@ -47,6 +47,9 @@ private:
 	bool is_ai_turn();
 	void enable_ai(bool decision);
 
+	// C++ modulo operator is retarded (and so am I).
+	int get_previous_player_index();
+
 	Grid &game_grid;
 	std::unique_ptr<AI_Logic> ai_logic;
 
