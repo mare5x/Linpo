@@ -54,66 +54,20 @@ int AI_Logic::get_smart_line(Player & player)
 			{
 				// TODO: add boxes in a chain to a queue for further moves, so I don't have to recalculate
 
-				int sacrifice_length = 2;
-				if (!box_states.is_chain_part_open_ended(box_state))
-					sacrifice_length = 4;
-
-				if (best_sacrifice_box_line == -1 && box_states.calc_box_chain_length(box_state) == sacrifice_length && game_grid.get_free_lines_size() > sacrifice_length && !box_states.safe_box_available()) // && box_states.calc_number_of_chains() > 1)
+				if (best_sacrifice_box_line == -1)
 				{
-					if (sacrifice_length == 2)
+					int sacrifice_length = get_sacrifice_length(box_state);
+
+					best_sacrifice_box_line = get_sacrifice_line(box_state, sacrifice_length);
+					if (best_sacrifice_box_line == -1)
 					{
-						int line_index = box_states.get_free_line(box_state);
-
-						auto other_box_state = box_states.get_next_box_in_chain(box_state);
-						auto other_box_free_lines = box_states.get_free_lines(other_box_state);
-
-						// sacrifice box
-						// only sacrifice if its the last completable box
-						if (other_box_free_lines.size() > 1)
-						{
-							if (other_box_free_lines[0] == line_index)
-								best_sacrifice_box_line = other_box_free_lines[1];
-							else
-								best_sacrifice_box_line = other_box_free_lines[0];
-						}
-						else
-						{	// no sacrifice
-							best_3_box = i;
-							break;
-						}
+						best_3_box = i;
+						break;
 					}
-					else  // len = 4
+					else
 					{
-						const auto &boxes = box_states.get_box_chain_part(box_state);
-
-						int prev_marked_line = -1;
-						for (const auto box : boxes)
-						{
-							for (int free_line : box_states.get_free_lines(*box))
-							{
-								if (free_line == prev_marked_line)
-									continue;
-
-								game_grid.mark_line_taken(free_line, true);
-								prev_marked_line = free_line;  // don't check lines we've already checked
-
-								if (box_states.get_free_lines_size(*box) == 1)
-								{
-									best_sacrifice_box_line = free_line;
-									game_grid.mark_line_taken(free_line, false);
-									goto decision;
-								}
-
-								game_grid.mark_line_taken(free_line, false);
-							}
-						}
-
-						// no sacrifice
-						if (best_sacrifice_box_line == -1)
-						{
-							best_3_box = i;
-							break;
-						}
+						if (sacrifice_length == 4)
+							goto decision;
 					}
 				}
 				else
@@ -188,4 +142,72 @@ int AI_Logic::get_rand_index() const
 	}
 
 	return index;
+}
+
+int AI_Logic::get_sacrifice_length(const BoxState & box_state) const
+{
+	if (!game_grid.get_box_states().is_chain_part_open_ended(box_state))
+		return 4;
+	return 2;
+}
+
+bool AI_Logic::sacrifice_possible(const BoxState &box_state, int sacrifice_length) const
+{
+	return game_grid.get_box_states().calc_box_chain_length(box_state) == sacrifice_length && game_grid.get_free_lines_size() > sacrifice_length && !game_grid.get_box_states().safe_box_available();  // && game_grid.get_box_states().calc_number_of_chains() > 1)
+}
+
+int AI_Logic::get_sacrifice_line(const BoxState & box_state, int sacrifice_length) const
+{
+	if (!sacrifice_possible(box_state, sacrifice_length))
+		return -1;
+
+	const GridBoxStates &box_states = game_grid.get_box_states();
+
+	if (sacrifice_length == 2)
+	{
+		int line_index = box_states.get_free_line(box_state);
+
+		auto other_box_state = box_states.get_next_box_in_chain(box_state);
+		auto other_box_free_lines = box_states.get_free_lines(other_box_state);
+
+		// sacrifice box
+		// only sacrifice if its the last completable box
+		if (other_box_free_lines.size() > 1)
+		{
+			if (other_box_free_lines[0] == line_index)
+				return other_box_free_lines[1];
+			else
+				return other_box_free_lines[0];
+		}
+		else
+		{	// no sacrifice
+			return -1;
+		}
+	}
+	else  // len = 4
+	{
+		const auto &boxes = box_states.get_box_chain_part(box_state);
+
+		int prev_marked_line = -1;
+		for (const auto box : boxes)
+		{
+			for (int free_line : box_states.get_free_lines(*box))
+			{
+				if (free_line == prev_marked_line)
+					continue;
+
+				game_grid.mark_line_taken(free_line, true);
+				prev_marked_line = free_line;  // don't check lines we've already checked
+
+				if (box_states.get_free_lines_size(*box) == 1)
+				{
+					game_grid.mark_line_taken(free_line, false);
+					return free_line;
+				}
+
+				game_grid.mark_line_taken(free_line, false);
+			}
+		}
+	}
+	return -1;
 }
