@@ -38,6 +38,9 @@ void Linpo::update()
 				// next player's turn, since a move was made and the player didn't fill up a box
 				player_index = (player_index + 1) % players.size();
 
+				if (is_ai_turn())
+					ai_logic->reset();
+
 				if (get_current_player().last_moves.empty() || !get_current_player().last_moves.back().empty())
 					get_current_player().last_moves.push_back({});
 			}
@@ -119,6 +122,8 @@ void Linpo::undo_last_move()
 	}
 
 	undid_last_move = true;
+	game_over_screen_was_shown = false;
+	game_over_item.reset(nullptr);
 }
 
 void Linpo::set_ai_enabled(bool decision)
