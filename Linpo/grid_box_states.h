@@ -22,6 +22,14 @@ public:
 	const BoxState& get_next_box_in_chain(const BoxState &box_state) const;
 
 	const std::vector<const BoxState*> get_box_chain_part(const BoxState &box_state) const;
+	const std::vector<const BoxState*> get_box_chain(const BoxState &box_state) const;
+	/* Return a vector of chain parts joined together into a single chain/array ordered by increasing length. 
+	   Basically, shortest chain part first. */
+	const std::vector<const BoxState*> get_box_chain_parts(const BoxState &box_state) const;
+
+	/* Return an ordered vector of chains based on their length and sorted in such a way that allows seamless iteration. 
+	   Time complexity: O(N). */
+	const std::vector<const BoxState*> get_all_box_chains() const;
 
 	/* Calculates not only the chain leading from box_state but also the surrounding chains around box_state.
 	   Note: box_state must be part of an actual chain. */
@@ -58,11 +66,18 @@ public:
 
 	bool is_box_full(const BoxState &box_state) const { return get_taken_lines_size(box_state) == 4; }
 private:
-	void mark_box_chain(const BoxState &box_state, std::unordered_set<int> &marked_boxes) const;
-	void mark_possible_chain(const BoxState &box_state, std::unordered_set<int> &marked_boxes) const;
+	// box_chain optionally fills in the vector
+	void mark_box_chain(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes, std::vector<const BoxState*> * const box_chain = nullptr) const;
+	void mark_possible_chain(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes) const;
+	
+	/* Marks only if a box is strictly part of the chain, i.e. boxes must be connected by free lines. */
+	void mark_box_chain_strict(const BoxState &box_state, std::unordered_set<const BoxState*> * const marked_boxes = nullptr, std::vector<const BoxState*> * const box_chain = nullptr) const;
+
+	/* Strictly marks a box chain and optionally fills in a sorted vector of the chain. */
+	void mark_box_chain_parts(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes, std::vector<const BoxState*> * const ordered_box_chain = nullptr) const;
 
 	int calc_box_chain_length_part(const BoxState &box_state) const;
-	int calc_box_chain_length(const BoxState &box_state, std::unordered_set<int> &marked_boxes) const;
+	int calc_box_chain_length(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes) const;
 
 	/* Returns a vector of BoxStates adjacent to box_state that are part of a chain (have 1 free line). 
 	   Note: this includes box_state. */

@@ -15,6 +15,12 @@ void AI_Logic::make_move(Player &player)
 	// else game is over and do nothing
 }
 
+void AI_Logic::reset()
+{
+	move_queue.clear();
+	move_queue_index = 0;
+}
+
 int AI_Logic::get_greedy_line(Player &player)
 {
 	// big O(rows * cols) AKA shit
@@ -36,14 +42,29 @@ int AI_Logic::get_greedy_line(Player &player)
 int AI_Logic::get_smart_line(Player & player)
 {
 	// O((rows - 1) * (cols - 1))
+	const GridBoxStates &box_states = game_grid.get_box_states();
 
 	int best_0_box_line = -1;
 	int best_1_box_line = -1;
 	int best_2_box = -1;
-	int best_3_box = -1;
 	int best_sacrifice_box_line = -1;
 
-	const GridBoxStates &box_states = game_grid.get_box_states();
+	if (move_queue_index < move_queue.size())
+	{
+		const auto box = move_queue[move_queue_index];
+		move_queue_index++;
+
+		// if the last 4 boxes are left in the chain it might be time to sacrifice
+		if ((move_queue.size() - (move_queue_index - 1)) <= 4)  // - 1 reverses the move_queue_index++
+		{
+			int sacrifice_length = get_sacrifice_length();
+			best_sacrifice_box_line = get_sacrifice_line(*box, sacrifice_length);
+			if (best_sacrifice_box_line != -1)
+				return best_sacrifice_box_line;
+		}
+		return box_states.get_free_line(*box);  // even if this is -1, the game should continue going on as normal, returning to the next move in queue (no free lines if previous line filled in 2 boxes)
+	}
+
 	for (int i = 0; i < box_states.size(); ++i)
 	{
 		const BoxState &box_state = box_states.get_box_state(i);
@@ -52,30 +73,23 @@ int AI_Logic::get_smart_line(Player & player)
 		{
 			if (box_lines_taken == 3)
 			{
-				// TODO: add boxes in a chain to a queue for further moves, so I don't have to recalculate
+				// all box chains are needed only because of edge cases (user undoing moves and not being optimal about it)
+				move_queue = box_states.get_all_box_chains();
+				move_queue_index = 1;
 
 				if (best_sacrifice_box_line == -1)
 				{
-					int sacrifice_length = get_sacrifice_length(box_state);
+					int sacrifice_length = get_sacrifice_length();
 
-					best_sacrifice_box_line = get_sacrifice_line(box_state, sacrifice_length);
+					best_sacrifice_box_line = get_sacrifice_line(*move_queue.front(), sacrifice_length);
 					if (best_sacrifice_box_line == -1)
-					{
-						best_3_box = i;
-						break;
-					}
+						return box_states.get_free_line(*move_queue.front());
 					else
-					{
 						if (sacrifice_length == 4)
-							goto decision;
-					}
+							return best_sacrifice_box_line;
 				}
 				else
-				{
-					// make box and end turn
-					best_3_box = i;
-					break;
-				}
+					return box_states.get_free_line(*move_queue.front());
 			}
 			else if (box_lines_taken == 2)
 				best_2_box = i;  // there is no safe line anyways
@@ -90,22 +104,16 @@ int AI_Logic::get_smart_line(Player & player)
 		}
 	}
 
-	// TODO: if best_2_box is the only move pick the one that's part of the shortest chain
-	// manage to sacrifice 4 boxes in a 2 x 2 box if there is a larger chain still left
-	// sometimes doesn't sacrifice 
-	// make better sacrificing algorithm
+	// TODO: dont allow the enemy to make a sacrifice (in a size 2 chain)
 
-	// dont allow the enemy to make a sacrifice (in a size 2 chain)
-
-decision:
-	if (best_3_box != -1)
-	{
-		//// if chain is composed of multiple parts (2) then first start filling in the short one which gives us room to sacrifice
-		const auto &box_state_origin = box_states.get_shortest_part_of_chain(box_states.get_box_state(best_3_box));
-		return box_states.get_free_line(box_state_origin);
-		//return box_states.get_free_line(box_states.get_box_state(best_3_box));
-	}
-	else if (best_sacrifice_box_line != -1) return best_sacrifice_box_line;
+	//if (best_3_box != nullptr)
+	//{
+	//	//// if chain is composed of multiple parts (2) then first start filling in the short one which gives us room to sacrifice
+	//	const auto &box_state_origin = box_states.get_shortest_part_of_chain(*best_3_box);
+	//	return box_states.get_free_line(box_state_origin);
+	//	//return box_states.get_free_line(box_states.get_box_state(best_3_box));
+	//}
+	if (best_sacrifice_box_line != -1) return best_sacrifice_box_line;
 	else if (best_1_box_line != -1) return best_1_box_line;
 	else if (best_0_box_line != -1) return best_0_box_line;
 
@@ -146,13 +154,22 @@ int AI_Logic::get_rand_index() const
 
 int AI_Logic::get_sacrifice_length(const BoxState & box_state) const
 {
-	if (!game_grid.get_box_states().is_chain_part_open_ended(box_state))
-		return 4;
-	return 2;
+	if (game_grid.get_box_states().is_chain_part_open_ended(box_state))
+		return 2;
+	return 4;
+}
+
+int AI_Logic::get_sacrifice_length() const
+{
+	if (game_grid.get_box_states().get_free_lines_size(*move_queue.back()) > 1)
+		return 2;
+	return 4;
 }
 
 bool AI_Logic::sacrifice_possible(const BoxState &box_state, int sacrifice_length) const
 {
+	if (!move_queue.empty())
+		return (move_queue.size() - (move_queue_index - 1)) == sacrifice_length && game_grid.get_free_lines_size() > sacrifice_length && !game_grid.get_box_states().safe_box_available();  // && game_grid.get_box_states().calc_number_of_chains() > 1)
 	return game_grid.get_box_states().calc_box_chain_length(box_state) == sacrifice_length && game_grid.get_free_lines_size() > sacrifice_length && !game_grid.get_box_states().safe_box_available();  // && game_grid.get_box_states().calc_number_of_chains() > 1)
 }
 
