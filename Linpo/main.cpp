@@ -280,8 +280,6 @@ int main(int argc, char* argv[])
 }
 
 
-// UNDO BUTTON
-
 // FIX INVISIBLE MENU:
 	//resize -> maximize -> pause
 
@@ -297,12 +295,3 @@ int main(int argc, char* argv[])
 // TODO: use std::set for grid_lines
 // TODO: make textures be only of necessary size
 // TODO: textures for everything (? maybe)
-
-// OPTIONS-MENU:
-//	ESC key or button on screen
-//  board size
-//	Reset game
-//	N Players
-//	(Font size)
-
-// render pause button -> two vertical rects

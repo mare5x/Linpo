@@ -24,7 +24,7 @@ public:
 	const std::vector<const BoxState*> get_box_chain_part(const BoxState &box_state) const;
 	const std::vector<const BoxState*> get_box_chain(const BoxState &box_state) const;
 	/* Return a vector of chain parts joined together into a single chain/array ordered by increasing length. 
-	   Basically, shortest chain part first. */
+	   Basically, shortest chain part first. NOTE: the chain does not necessarily start with box_state! */
 	const std::vector<const BoxState*> get_box_chain_parts(const BoxState &box_state) const;
 
 	/* Return an ordered vector of chains based on their length and sorted in such a way that allows seamless iteration. 
@@ -67,14 +67,15 @@ public:
 	bool is_box_full(const BoxState &box_state) const { return get_taken_lines_size(box_state) == 4; }
 private:
 	// box_chain optionally fills in the vector
-	void mark_box_chain(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes, std::vector<const BoxState*> * const box_chain = nullptr) const;
-	void mark_possible_chain(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes) const;
+	void mark_box_chain(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes, std::vector<int> &marked_lines, std::vector<const BoxState*> * const box_chain = nullptr, bool unmark_lines = true) const;
+	void mark_possible_chain(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes, std::vector<int> &marked_lines, bool unmark_lines = true) const;
 	
 	/* Marks only if a box is strictly part of the chain, i.e. boxes must be connected by free lines. */
-	void mark_box_chain_strict(const BoxState &box_state, std::unordered_set<const BoxState*> * const marked_boxes = nullptr, std::vector<const BoxState*> * const box_chain = nullptr) const;
+	void mark_box_chain_strict(const BoxState &box_state, std::vector<int> &marked_lines, std::unordered_set<const BoxState*> * const marked_boxes = nullptr, std::vector<const BoxState*> * const box_chain = nullptr, bool unmark_lines = true) const;
 
-	/* Strictly marks a box chain and optionally fills in a sorted vector of the chain. */
-	void mark_box_chain_parts(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes, std::vector<const BoxState*> * const ordered_box_chain = nullptr) const;
+	/* "Strictly" marks a box chain and optionally fills in a sorted vector of the chain. 
+	   NOTE: don't forget to unmark marked lines. */
+	void mark_box_chain_parts(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes, std::vector<int> &marked_lines, std::vector<const BoxState*> * const ordered_box_chain = nullptr, bool unmark_lines = true) const;
 
 	int calc_box_chain_length_part(const BoxState &box_state) const;
 	int calc_box_chain_length(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes) const;
@@ -85,6 +86,8 @@ private:
 
 	/* Only returns a line index if that line yields ZERO points. (unlike get_safe_line()).*/
 	int get_actual_safe_line(const BoxState &box_state) const;
+
+	void unmark_marked_lines(const std::vector<int> &marked_lines) const;
 
 	Grid &grid;
 

@@ -1,5 +1,6 @@
 #include <unordered_set>
 #include <queue>
+#include <algorithm>
 #include "grid_box_states.h"
 #include "grid.h"
 
@@ -48,15 +49,17 @@ const BoxState & GridBoxStates::get_next_box_in_chain(const BoxState & box_state
 const std::vector<const BoxState*> GridBoxStates::get_box_chain_part(const BoxState & box_state) const
 {
 	std::vector<const BoxState*> box_chain;
-	mark_box_chain_strict(box_state, nullptr, &box_chain);
+	std::vector<int> marked_lines;
+	mark_box_chain_strict(box_state, marked_lines, nullptr, &box_chain);
 	return box_chain;
 }
 
 const std::vector<const BoxState*> GridBoxStates::get_box_chain(const BoxState & box_state) const
 {
 	std::unordered_set<const BoxState*> marked_boxes;
+	std::vector<int> marked_lines;
 	std::vector<const BoxState*> box_chain;
-	mark_box_chain(box_state, marked_boxes, &box_chain);
+	mark_box_chain(box_state, marked_boxes, marked_lines, &box_chain);
 	return box_chain;
 }
 
@@ -64,13 +67,15 @@ const std::vector<const BoxState*> GridBoxStates::get_box_chain_parts(const BoxS
 {
 	std::vector<const BoxState*> ordered_result;
 	std::unordered_set<const BoxState*> marked_boxes;
-	mark_box_chain_parts(box_state, marked_boxes, &ordered_result);
+	std::vector<int> marked_lines;
+	mark_box_chain_parts(box_state, marked_boxes, marked_lines, &ordered_result);
 	return ordered_result;
 }
 
 const std::vector<const BoxState*> GridBoxStates::get_all_box_chains() const
 {
 	std::unordered_set<const BoxState*> marked_boxes(box_states.size());
+	std::vector<int> marked_lines;
 	std::vector<const BoxState*> ordered_box_chain;
 	std::vector<std::vector<const BoxState*> > box_chains;
 
@@ -80,10 +85,12 @@ const std::vector<const BoxState*> GridBoxStates::get_all_box_chains() const
 			continue;
 
 		std::vector<const BoxState*> box_chain;
-		mark_box_chain_parts(box_state, marked_boxes, &box_chain);
+		mark_box_chain_parts(box_state, marked_boxes, marked_lines, &box_chain, false);
 		if (!box_chain.empty())
 			box_chains.push_back(std::move(box_chain));
 	}
+
+	unmark_marked_lines(marked_lines);
 
 	std::sort(box_chains.begin(), box_chains.end(), [](const auto &a, const auto &b) { return a.size() < b.size(); });
 	for (const auto &box_chain : box_chains)
@@ -119,13 +126,12 @@ int GridBoxStates::get_rand_safe_line(const BoxState & box_state) const
 	return line_index;
 }
 
-void GridBoxStates::mark_box_chain(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes, std::vector<const BoxState*> * const box_chain) const
+void GridBoxStates::mark_box_chain(const BoxState &box_state, std::unordered_set<const BoxState*> &marked_boxes, std::vector<int> &marked_lines, std::vector<const BoxState*> * const box_chain, bool unmark_lines) const
 {
 	// using a queue traverse all paths in box chain
 	if (get_taken_lines_size(box_state) != 3)
 		return;
 
-	std::vector<int> marked_lines;
 	std::queue<const BoxState*> box_queue;
 	box_queue.push(&box_state);
 
@@ -162,18 +168,19 @@ void GridBoxStates::mark_box_chain(const BoxState &box_state, std::unordered_set
 		}
 	}
 
-	for (int marked_line : marked_lines)
-		grid.mark_line_taken(marked_line, false);
+	if (unmark_lines)
+		unmark_marked_lines(marked_lines);
 }
 
-void GridBoxStates::mark_possible_chain(const BoxState & box_state, std::unordered_set<const BoxState*>& marked_boxes) const
+void GridBoxStates::mark_possible_chain(const BoxState & box_state, std::unordered_set<const BoxState*>& marked_boxes, std::vector<int> &marked_lines, bool unmark_lines) const
 {
 	int chain_line_index = get_free_line(box_state);
-	grid.mark_line_taken(chain_line_index, true);
+	grid.mark_line_taken(chain_line_index, true);  // this will get unmarked in mark_box_chain
+	marked_lines.push_back(chain_line_index);
 
-	mark_box_chain(box_state, marked_boxes);
+	mark_box_chain(box_state, marked_boxes, marked_lines, nullptr, unmark_lines);
 
-	grid.mark_line_taken(chain_line_index, false);
+	//grid.mark_line_taken(chain_line_index, false);
 }
 
 std::vector<const BoxState*> GridBoxStates::get_chain_part_origins(const BoxState & box_state) const
@@ -198,13 +205,19 @@ int GridBoxStates::get_actual_safe_line(const BoxState & box_state) const
 	return -1;
 }
 
-void GridBoxStates::mark_box_chain_strict(const BoxState & box_state, std::unordered_set<const BoxState*> * const marked_boxes, std::vector<const BoxState*>* const box_chain) const
+void GridBoxStates::unmark_marked_lines(const std::vector<int>& marked_lines) const
+{
+	for (int line : marked_lines)
+		grid.mark_line_taken(line, false);
+}
+
+void GridBoxStates::mark_box_chain_strict(const BoxState & box_state, std::vector<int> &marked_lines, std::unordered_set<const BoxState*> * const marked_boxes, std::vector<const BoxState*>* const box_chain, bool unmark_lines) const
 {
 	if (get_free_lines_size(box_state) == 1)
 	{
 		const BoxState* prev_box = nullptr;
 		const BoxState* next_box = &box_state;
-		std::vector<int> lines_marked;
+		
 		while (next_box != prev_box)
 		{
 			prev_box = next_box;
@@ -225,63 +238,47 @@ void GridBoxStates::mark_box_chain_strict(const BoxState & box_state, std::unord
 				break;
 			}
 			grid.mark_line_taken(chain_line_index, true);
-			lines_marked.push_back(chain_line_index);
+			marked_lines.push_back(chain_line_index);
 
 			if (box_chain)
 				box_chain->push_back(prev_box);
 		}
-
-		for (int line : lines_marked)
-			grid.mark_line_taken(line, false);
 	}
+	if (unmark_lines)
+		unmark_marked_lines(marked_lines);
 }
 
-void GridBoxStates::mark_box_chain_parts(const BoxState & box_state, std::unordered_set<const BoxState*>& marked_boxes, std::vector<const BoxState*>* const ordered_box_chain) const
+void GridBoxStates::mark_box_chain_parts(const BoxState & box_state, std::unordered_set<const BoxState*>& marked_boxes, std::vector<int> &marked_lines, std::vector<const BoxState*>* const ordered_box_chain, bool unmark_lines) const
 {
 	if (get_taken_lines_size(box_state) != 3)
 		return;
 
-	int free_line = get_free_line(box_state);
-	grid.mark_line_taken(free_line, true);
-
-	marked_boxes.insert(&box_state);
-
 	std::vector< std::vector<const BoxState*> > chain_parts;  // has max four parts
+
+	// CURRENT PROBLEM!: need to share marked lines between mark_box_chain_parts calls!!!
+
+	std::vector<const BoxState*> current_chain_part;
+	mark_box_chain_strict(box_state, marked_lines, &marked_boxes, &current_chain_part, false);
+	if (!current_chain_part.empty())
+		chain_parts.push_back(std::move(current_chain_part));
 
 	for (const BoxState* const adjacent_box : box_state.get_adjoining_boxes())
 	{
 		if (get_free_lines_size(*adjacent_box) == 1)
 		{
-			std::vector<const BoxState*> current_chain_part;
-			mark_box_chain_strict(*adjacent_box, &marked_boxes, &current_chain_part);
+			current_chain_part.clear();
+			mark_box_chain_strict(*adjacent_box, marked_lines, &marked_boxes, &current_chain_part, false);
 			if (!current_chain_part.empty())
 				chain_parts.push_back(std::move(current_chain_part));
 		}
 	}
 
-	grid.mark_line_taken(free_line, false);
+	if (unmark_lines)
+		unmark_marked_lines(marked_lines);
 
 	// everything below is for filling in ordered_box_chain
 	if (!ordered_box_chain)
 		return;
-
-	// special case when a chain has length 3 and the box_state is in the middle
-	if (chain_parts.size() == 2 && chain_parts[0].size() == 1 && chain_parts[1].size() == 1)
-	{
-		// first add the length 1 part then the length 2 
-		const auto &adjoining_box = get_adjoining_box_with_line(box_state, free_line);
-		if (chain_parts.front().front() == &adjoining_box)
-			ordered_box_chain->push_back(chain_parts.back().front());
-		else
-			ordered_box_chain->push_back(chain_parts.front().front());
-
-		ordered_box_chain->push_back(&box_state);
-		ordered_box_chain->push_back(&adjoining_box);
-
-		return;
-	}
-
-	ordered_box_chain->push_back(&box_state);
 
 	std::sort(chain_parts.begin(), chain_parts.end(), [](const auto &a, const auto &b) { return a.size() < b.size(); });
 	for (const auto &chain_part : chain_parts)
@@ -292,29 +289,14 @@ void GridBoxStates::mark_box_chain_parts(const BoxState & box_state, std::unorde
 
 int GridBoxStates::calc_box_chain_length_part(const BoxState & box_state) const
 {
-	// FIX THIS (USE MARKING, PROBLEM WITH LENGTH 2 CHAINS)
-	int chain_length = 0;
-	if (get_free_lines_size(box_state) == 1)
-	{
-		chain_length++;
-
-		const auto &next_box = get_next_box_in_chain(box_state);
-
-		int chain_line_index = get_free_line(box_state);
-		grid.mark_line_taken(chain_line_index, true);
-
-		chain_length += calc_box_chain_length(next_box);
-
-		grid.mark_line_taken(chain_line_index, false);
-	}
-
-	return chain_length;
+	return get_box_chain_part(box_state).size();
 }
 
 int GridBoxStates::calc_box_chain_length(const BoxState & box_state, std::unordered_set<const BoxState*>& marked_boxes) const
 {
 	int prev_size = marked_boxes.size();
-	mark_box_chain(box_state, marked_boxes);
+	std::vector<int> marked_lines;
+	mark_box_chain(box_state, marked_boxes, marked_lines);
 	return marked_boxes.size() - prev_size;
 }
 
@@ -331,6 +313,7 @@ int GridBoxStates::calc_box_chain_length(const BoxState & box_state) const
 int GridBoxStates::calc_number_of_possible_chains() const
 {
 	std::unordered_set<const BoxState*> marked_boxes(box_states.size());
+	std::vector<int> marked_lines;
 
 	int number_of_chains = 0;
 	for (const auto &box_state : box_states)
@@ -342,15 +325,16 @@ int GridBoxStates::calc_number_of_possible_chains() const
 
 		if (taken_lines_size == 3)
 		{
-			mark_box_chain(box_state, marked_boxes);
+			mark_box_chain(box_state, marked_boxes, marked_lines, nullptr, false);
 			number_of_chains++;
 		}
 		else if (taken_lines_size == 2)
 		{
-			mark_possible_chain(box_state, marked_boxes);
+			mark_possible_chain(box_state, marked_boxes, marked_lines, false);
 			number_of_chains++;
 		}
 	}
+	unmark_marked_lines(marked_lines);
 	return number_of_chains;
 }
 
@@ -374,11 +358,14 @@ const BoxState* GridBoxStates::find_shortest_possible_chain() const
 	int min_length = box_states.size() + 1;
 
 	std::unordered_set<const BoxState*> marked_boxes(box_states.size());
+	std::vector<int> marked_lines;
 
 	const BoxState* box = nullptr;
 	
 	for (const auto &box_state : box_states)
 	{
+		marked_lines.clear();
+
 		// sometimes a chain is of different length depending on which line gets taken first -> no marking?
 
 		int taken_lines_size = get_taken_lines_size(box_state);
@@ -396,9 +383,9 @@ const BoxState* GridBoxStates::find_shortest_possible_chain() const
 		int prev_boxes_size = marked_boxes.size();
 
 		if (taken_lines_size == 2)
-			mark_possible_chain(box_state, marked_boxes);
+			mark_possible_chain(box_state, marked_boxes, marked_lines);
 		else
-			mark_box_chain(box_state, marked_boxes);
+			mark_box_chain(box_state, marked_boxes, marked_lines);
 
 		int chain_length = marked_boxes.size() - prev_boxes_size;
 
